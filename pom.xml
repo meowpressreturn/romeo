@@ -54,6 +54,7 @@
               <Built-By>Unspecified</Built-By>
               <!-- Include the distro's config folder on the classpath -->
               <Class-Path>config/</Class-Path>
+              <SplashScreen-Image>images/romeoSplash.gif</SplashScreen-Image>
             </manifestEntries>
           </archive>
         </configuration>
