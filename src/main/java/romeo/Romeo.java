@@ -382,15 +382,28 @@ public class Romeo {
           } catch(Exception e) {
             throw new RuntimeException("Problem copying the units file to resources", e);
           }
+        } else {
+          //The user cancelled the file dialog
+          showCsvRequiredError();
         }
       } else {
-        String sorryText = "Yeah, sorry mate. Romeo's gonna need that file. If you're desperate you could just use an empty text file"
-            + " (but then no unit definitions will be imported and you will have to create them manually via the UI).";
-        sorryText = Convert.wordWrap(sorryText, 80); 
-        JOptionPane.showMessageDialog(_mainFrame, sorryText, "NOROMEO4U Error", JOptionPane.ERROR_MESSAGE);
-        throw new NoUnitCsvFileException(false);
+        //The user responded 'no'
+        showCsvRequiredError();
       }
     }
+  }
+  
+  /**
+   * Show the 'sorry' message indicating the csv is required, and throw
+   * a {@link NoUnitCsvFileException}
+   * @throws NoUnitCsvFileException
+   */
+  private static void showCsvRequiredError() {
+    String sorryText = "Yeah, sorry mate. Romeo's gonna need that file. If you're desperate you could just use an empty text file"
+        + " (but then no unit definitions will be imported and you will have to create them manually via the UI).";
+    sorryText = Convert.wordWrap(sorryText, 80); 
+    JOptionPane.showMessageDialog(_mainFrame, sorryText, "NOROMEO4U Error", JOptionPane.ERROR_MESSAGE);
+    throw new NoUnitCsvFileException(false);    
   }
 
   /**
