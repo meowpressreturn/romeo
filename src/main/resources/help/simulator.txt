@@ -1,0 +1,63 @@
+The simulator allows you to run battles and analyse the results. It is also very handy for evaluating the firepower of different units combinations in fleets.
+
+You can record the scenarios you evaluate. The name of the current scenarion is displayed in the dropdown combo box at the top of the simulator screen. By default it says "New Scenario". This indicates that you aren't viewing any particular scenario. 
+
+When you wish to save the scenario (eg: the fleet information you have entered) then click the save button with the little plus icon to the right of the scenario selector . You will be prompted to name give the scanerio a name by which you can recognise it in the scenario selector. 
+
+If you make changes to an existing scenario you may click the save button again to update the recorded details.
+
+If you want to save the fleet information as a new scenario under a new name then you can select 'New Scenario' in the selector again before clicking the save button.
+
+If you no longer want a scenario the remove button (to the right of the save button) will erase the currently selected scenario. If you wish to purge all of the saved scenarios there is a button to do this on the options screen.
+
+Fleet details may be entered into the fleet fields in the simulator pane. The fleet fields allow for both UI assisted entry of the units in the fleet and quick entry via text. (Note that there is no assisted entry mechanism implemented for flags in the current version).
+
+To use the UI assisted method, select the type of unit in the drop down field and use the + and - buttons to add and remove units of that type from the fleet. The X button allows for removal of all the units of that type from the fleet.
+
+When you add units to a fleet, the unit type appears in the table below the drop down field together with some stats and the total quantity. The total firepower of the fleet is also listed.
+
+You can delineate units from different source fleets via the drop down box to the left of the unit selection drop down. By default the source fleet is allocated number 0 (for attacker shown as A in the box and B (base) for defender). In the case of the defender source fleet zero is considered as the base fleet.
+
+The drop down allows you to differentiate between up to ten fleets. Do note that these fleets still all belong to the same player. (To add more players to a battle use the big "Add" button to add additional fleel fields) This allows for X-Factor computations that are based on which of a players fleets a unit is in. (For those X-Factors currently in UltraCorps™ as of the end of the mega game "Juliet" only the base/non-base dichotomy is important, however in the past individual fleets did matter for certain X-Factors and this may prove the case again in the future). 
+
+The UI assisted method of entering fleet composition is easy to use but can be time consuming. The text field above the drop down box provides a quicker method. Each unit type has an acronym. These acronymns can be assigned from the Unit editing form, and Romeo attempts to recognise and provide a default value for acronyms of the units used in UltraCorps™ at the current time.
+
+As well as using the drop down box to select the unit type to work with you may also click one of the rows in the table below to reselect an existing unit type.
+
+The text to specify a fleet follows the simple format: f:n * acronym, f:n* acronym, etc... where n is the number of units of the type, and f the source fleet id. Each element is seperated by a comma and invalid entries are highlighted in red and ignored. Any spaces or newlines in the text are also ignored. As you type the table below will be updated. (Nb: there is currently a known issue where the delete key doesnt update the table immediately when it should, however this causes little trouble, just press space or something to force an update). The letter casing of the acronymn is not significant. First round X-Factors are calculated for the unit and the resulting stats with X-Factors active are what is shown in the table. (nb: During battle X-Factors will be recalculated on a round by round basis so these stats might not apply beyond the first round).
+
+The source fleet id is optional. If not specified it defaults to 0, which in the case of the defenders field is considered the base fleet for X-Factor calculations.
+
+Example (Based on Juliet units and X-Factors):
+3 * xmc, 12 * x5, 20 * sog, 1:10*sOG, 1:1*XmC, 2 * xmc, 5 * sog
+Will give a fleet consisting of
+5 Xiron Medium Cruisers, 12 X-5 Raiders & 25 Sentinels of Garsasso under source 0 and 10 Sentinels of Garsasso and 1 Xiron Medium Cruiser under fleet 1. If this is the defender's fleet the source zero sentinels will be at full strength but the source one sentinels will have reduced offence and defense. If this is an attacking fleet then all sentinels will be reduced in firepower.
+
+A useful feature of the text entry field is that you can specify the same type of unit more than once and the totals will be added together for you. This comes in handy when you are entering data that relates to multiple fleets in the game (and you dont care to differentiate them fully).
+
+The wand button to the left of the drop down box will 'noramlise' the fleet contents in the text box, merging multiple elements of the same unit, formatting the text neatly, and arranging the units in their natural order and using the configured case of the acronymn.
+
+The normalised form of the example given above would be:
+25 * SOG, 12 * X5, 5 * XMC, 1:10*SOG, 1:1 * XMC
+
+Romeo's battle simulator also supports the concept of "flags" that may be applied to a player. These allow you to indicate the presence of certain conditions that can be acted apon by x-factors. To add a flag you need to type a ! followed by the flags text into the field, seperated from the units information by commas. For example, a fleet that had the ORN flag (used by the default XF-TAPS xFactor) might look like this:
+10 * BRB, 20 * BRBv3, -ORN, 20 * TAPS
+The -text may occur anywhere in the fleet just like quantities. Since flags are just on/off settings it does not matter if the flag is specified multiple times. (There is currently no button for assisted entry of flags, this may be added in a future version).
+
+Add and Remove buttons are provided to allow extra fleet fields to be added to enter fleet details for the additional players participating in a battle. The reset button will clear the existing data and return the simulator to its usual 2 fleet configuration.
+
+Click the execute button to run the simulation. (The number of battles the simulator runs may be configured in the preferences form).
+
+Simulation results will appear in the panel on the right. You will be presented with the number of wins, losses, and ties for the attacking fleet and various other statistics and charts spread across several tabs.
+
+In previous versions of Romeo these would show two types of average. The normal average which is based on totals accumulated across the battles divided by the number of battles, and the 'adjusted' average. As of Romeo 0.6.0, only the adjusted average is shown in most places.
+
+The adjusted average is based on accumulated totals but the divisor is different. It uses the number of battles that reached the round in question for the round based graphs, and for the numbers of unit survivors it uses the number of battles which that player won.
+
+For Romeo's reporting purposes a tie is _not_ treated as a win by the defender.
+
+The PD graphs display PD values rather than numbers of kills so you will need to divide by the appropriate amount (currently 10) to determine how many units of population this will actually eliminate.
+
+NOTE: The survivor tables in the units tab do not currently take into account PD or spider and ult perks.
+
+

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<adjustments>
+  <adjustment signature="-207363c1ea2d24adeea8833f541e2f0c"  acronym="ULT" complexity="0"/>
+  <adjustment signature="13e03873859867aeade5b25ed6b00278"   acronym="POP" complexity="0"/>
+  <adjustment signature="-14e1ea9e86e4d76f185f454476e022be"  acronym="A90"/><!-- new one (A90) -->
+  <adjustment signature="86ef9f41bf499902d05f8e78d06089b"    acronym="Bio"/><!-- old one (U90) -->
+  <adjustment signature="-91a175710ae7f1469e7eb2887bfc555"   acronym="CB"/>
+  <adjustment signature="349f1e16cc3e4c7f8022825745527ce0"   acronym="A7"/>
+  <adjustment signature="-5926b16d6b7be5e1e6fa6beb6b9f17df"  acronym="ATR"/>
+  <adjustment signature="-220755b42e6c38b2b244d8f54bb75b9c"  acronym="ATO2"/>
+  <adjustment signature="-13a518dc9c9b1979631b644327af90d9"  acronym="ATO3"/>
+  <adjustment signature="724f0be65cf602dbd0b42c0141023e70"   acronym="BRB"/>
+  <adjustment signature="-7d62cc0c7fb5eb1e0656089f58fdfba4"  acronym="BRBv2"/>
+  <adjustment signature="-5e4f1bbf47cfd4c07eb72e4e279e935b"  acronym="BRBv3"/>
+  <adjustment signature="-54b0c0094571261d2bbf2e82e5dc522f"  acronym="Org"/>
+  <adjustment signature="-3f88d560f7ac113c9f9e1831f7641029"  acronym="OrgII"/>
+  <adjustment signature="67be7763ba3f1bd403d7d459a5b8aef1"   acronym="OrgIIv2"/>
+  <adjustment signature="39d9f8ae745155d55d1d9dd05bf1bf08"   acronym="OrgIIv3"/>
+  <adjustment signature="75af511fe037093c9b7f7179fe2fa0ce"   acronym="OrgIIv4"/>
+  <adjustment signature="228f66473fbccb38ff76b41ecc8ff8c3"   acronym="ESF"/>
+  <adjustment signature="-3443c2a2448bd3c521c8666c4bfa15df"  acronym="S200"/>
+  <adjustment signature="67fb432e012a2b35c2ce52075a5b8f94"   acronym="GPA"/>
+  <adjustment signature="-58deffa1005a20a6d8a44f2dde193dfd"  acronym="HC4"/>
+  <adjustment signature="305d4defe439a901cbffc453abf2b151"   acronym="HEW10"/>
+  <adjustment signature="4e07d206a06792a05463f50f9477a080"   acronym="HEW9"/>
+  <adjustment signature="30fcfa8b7e108e96db56b7f3ec7c4565"   acronym="HSF"/>
+  <adjustment signature="-2efeafb930fb4b21a8404792bedec5ff"  acronym="Inf"/>
+  <adjustment signature="24a7550446cfed880de04a944aecae11"   acronym="Bot"/>
+  <adjustment signature="33374b7b4e55d132c94c0c7c5251b813"   acronym="Botv2"/>
+  <adjustment signature="-10f1f3d9f047f3163ccea675522222ea"  acronym="Botv3"/>
+  <adjustment signature="21f1c661dfd57ea4efa7a842d4578891"   acronym="Botv4"/>
+  <adjustment signature="-338b112a80d2cc616f8927866d998db4"  acronym="Nv3"/>
+  <adjustment signature="-5c7683061354f471f831c7ae059580ad"  acronym="N"/>
+  <adjustment signature="-7ccbdc25bb26cd632a4636c772dc5b36"  acronym="Nv2"/>
+  <adjustment signature="-3acc15383d566b6ef58552cab8f04e51"  acronym="NZF"/>
+  <adjustment signature="-3329c7d29e605917a06b1e486e1cabd8"  acronym="NZQ"/>
+  <adjustment signature="38dca58c6e3a9f219aabc97fa254812"    acronym="OMG"/>
+  <adjustment signature="-380e0adb0648eefe3a810f9069950935"  acronym="OSAA2"/>
+  <adjustment signature="258a5d9ef754d35a6e4a41698c356b01"   acronym="RCW"/>
+  <adjustment signature="3bf1c28936e5642d00dbf191147d51be"   acronym="S80"/>
+  <adjustment signature="-4a68e53f22197e71a0a7d46902c8c4e5"  acronym="SOG"/>
+  <adjustment signature="7cd42dd97f1bee3fa08477cafc822318"   acronym="SSF"/>
+  <adjustment signature="-3d9c7020d94ab13d9bb90f791aa1b043"  acronym="TAPS"/>
+  <adjustment signature="-54c2e4fb2a72261f5b273fe5157fb350"  acronym="TKB"/>
+  <adjustment signature="-607db7fb2d1594104086c2bf5175af12"  acronym="TKBv2"/>
+  <adjustment signature="4a6ad00ba28d8ffc5e157fe0a7946848"   acronym="Hauler"/> <!-- current name -->
+  <adjustment signature="61e0e33cca24a40e519bf3d9405bf165"   acronym="Hauler"/> <!-- ancient name variation -->
+  <adjustment signature="-18cefca6ee63b3dcf65d676aa571d39b"  acronym="S420"/>
+  <adjustment signature="6de75f9b827f762d321d1136c28fb67a"   acronym="SCUT"/>
+  <adjustment signature="-6bcad1549cc6dfa94541b6470d4c7427"  acronym="Tank"/>
+  <adjustment signature="-26991140df80ddcf28399526466471c3"  acronym="Mek"/>
+  <adjustment signature="-7229f3f8b994f57780cc61f1a56e2014"  acronym="X5"/>
+  <adjustment signature="-3a7e79d694cc2f466e8cc5a6014e1fab"  acronym="X6"/>
+  <adjustment signature="692507d4a9ae9073f88c420576a4d832"   acronym="X7"/>
+  <adjustment signature="-5cd9c11a265033dbbd0245f1aaf26132"  acronym="X8"/>
+  <adjustment signature="-77ce5fb97735a3805299a1ccf09cd97"   acronym="XMC"/>
+  <adjustment signature="-5378cf15f35d7c0805f54874c827f1f3"  acronym="XHC"/>
+  <adjustment signature="-61f2ac4b93a1b376c5fa7ec091229c55"  acronym="Zv2"/>
+  <adjustment signature="1e62fb9682f7754b9403646386edd57e"   acronym="Zv4"/>
+  <adjustment signature="624b1ff275185c486af999a17c8dcfb3"   acronym="Z"/>
+  <adjustment signature="223815d10b31941639e71af21cd8a1bb"   acronym="Zv3"/>
+  <!-- as of 0.6.3 acronyms are provided for all the default units and upgrades -->
+  <adjustment signature="6e40c56178f02911d70f145a0befecca"   acronym="UL"/>
+  <adjustment signature="5930221814ff88bb3390bb0746b760cb"   acronym="Acid"/>
+  <adjustment signature="-22e3f1258cd6b3b7ab46f309ee25315d"  acronym="B99"/>
+  <adjustment signature="4287c93544e2e46cbcff7bfdf6a55ba6"   acronym="B6R"/>
+  <adjustment signature="-66990628923b1642db1823d2974879f8"  acronym="BTA"/>
+  <adjustment signature="-3e605d744261a5ad0389e18e61a480fb"  acronym="DCF"/>
+  <adjustment signature="-6d895dd0701d9ccdbfc29f55ebb88c03"  acronym="DNA"/>
+  <adjustment signature="-5289a5e87ba1577329e76ed4cc8f3bcc"  acronym="G21"/>
+  <adjustment signature="40b0c22fabefd4222c5eb7d4ae06b037"   acronym="Kit"/>
+  <adjustment signature="1e9dad81b54238885bb7fe23bef6bb8d"   acronym="HAA"/>
+  <adjustment signature="11a04917b2b93b80cf85117f2163ea0e"   acronym="TAOS"/><!--TAOS-->
+  <adjustment signature="-2fea77310ac74d8cf724c41a892f7d38"  acronym="Car"/>
+  <adjustment signature="-54332a2c4ccaabd9f12ca55546794c46"  acronym="Helmet"/>
+  <adjustment signature="-68ef9188a45b54c8af3ebef5726f30db"  acronym="Pod"/>
+  <adjustment signature="-22a2980e43c14c900ecf98656761a7af"  acronym="Hyper"/>
+  <adjustment signature="-204cb2f5b1fc53eb8838e6d9b272e56e"  acronym="Coil"/>
+  <adjustment signature="1eb01dbd31d6fe0f069f1b58d16dc41d"   acronym="ZMB"/>
+</adjustments>

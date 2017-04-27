@@ -1,0 +1,21 @@
+The 'Unit Info' tab provides a variety of graphs and displays providing an analysis of various units in the database.
+
+One point worth noting is that at present the upgrade units in the database use the cost and complexity of the upgrade as their cost and complexity. This means that they dont include the total cost and complexity of the preceeding versions of the unit. This makes them look very favourable on many of the graphs as the true acquisition cost of the unit is not shown.
+
+Base Costs
+Simple graph of the base cost of the units. This is sorted by cost when Romeo starts up. If you modify the cost in the database you can click the sort button above the graph to re-sort the order the units appear in the graph.
+
+Lic vs Cpx and others
+A scatter graph showing units plotted in terms of their license and complexity. Move the mouse over the dots to get a tooltip popup showing what unit the dot represents. There are several other similar charts showing one stat of a unit against another.
+
+Comparison
+At this stage the comparison is not as useful as it was hoped to be. The axis on the radar plot show values between 0 and 1, with 1 values being furthest from the centre. In all cases the further from the centre the better is that aspect of the unit compared to others, so a far out cost value actually means the unit is cheap. Currently the 0..1 vaues are respective to all units in the database which makes it hard to visually differentiate between some units. For example a 98 and 99 defense value would show up very close to each other, yet in practice the difference is considerably more significant. Future versions of this graph will adjust a number of the factors to hopefully give a better indication of true utility. Additionally it is intended that in the future the graph will display values that are relative to other units being compared only rather than the entire unit database. The meaning of the various axes are as follows:
+Weaponry: Based on relative attacks*offense
+Defense: Based on relative defense
+Precision: Based on PD. Less PD is better.
+Deployability: How deployable is the unit. Based on speed or required carry.
+Logistics: A measure of how effective the unit is at moving stuff around for you based on speed and carry capacity.
+Cost: Based on relative cost of the unit.
+Complexity: Based on the units relative complexity.
+License: Based on relative cost of the license
+

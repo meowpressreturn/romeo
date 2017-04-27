@@ -1,0 +1,22 @@
+There are several types of data record tracked by Romeo that can be managed via the Romeo user interface. Units, XFactors, Worlds and their History, and Players.
+
+Unit records are used to configure unit statistics. Generally the default unit statistics are read in from the file unit.csv on the first startup of a Romeo installation and default X-Factors and acronyms attached. This file must be obtained from the units help page of the UltraCorps™ web site and placed in Romeo's resources folder prior to running a Romeo installation for the first time. After the initial import, Unit stats can be edited and units created or removed at any time via Romeo's user interface, and they may also be updated from new versions of unit.csv at any time. (Actually if you want to configure all the units by hand instead of importing them you can place an empty unit.csv file in resources).
+
+XFactor records are used to configure X-Factors to be applied in the battle simulator. Each Unit may have a single optional XFactor record associated with it. The default set of XFactors are setup when the program is first run. As with Units, XFactors can be created, edited or removed at any time via the Romeo UI.
+
+World records allow you to record parts of the game map and to make notes about specific worlds in the game. Romeo has a Map feature which displays Worlds and provides tools for distance calculations which are useful when planning game tactics. Romeo 0.5.1 introduced a map import feature that allows for world data to be imported directly from CSV files made available in the UltraCorps™ "All Worlds" page of Mega and PUB games. Romeo 0.6.0 extended support for tracking historical changes to worlds.
+
+Player records allow you to keep simple notes about particular players and to manage map colours for these players. It also provides a handy place to keep notes on your diplomatic status with each player. 
+
+To view the lists of records go to the "Data" tab and then select the subtab for the required record type. Selecting a record in the table, via doubleclicking, will open its details in a form for editing in the right hand pane. To delete the record use the 'Delete' button that appears on its editing form.
+
+To create a new data record select the appropriate option from the "File" menu. This will open a new form for editing in the right hand pane. There are also keyboard shortcuts for these menu options. CTRL+W to create a new World, CTRL+P for a Player, CTRL+U to create a Unit, and CTRL+X to create an XFactor.
+
+Currently you do not need to have created a Player record to assign an owner to a world. The bindings between world owner and player are very loose. You will need to provide a player record to change the colour of such worlds however. Generally it is now anticipated that you will be importing player and map data directly from csv, rather than adding them manually.
+
+
+
+
+
+
+

@@ -1,0 +1,68 @@
+<assembly>
+  <id>bin</id>
+
+  <formats>
+    <format>zip</format>
+  </formats>
+  
+  <!-- Copy the help about.txt file as the LICENCE.txt file in distro root -->
+  <files>
+    <file>
+      <source>src/main/resources/help/about.txt</source>
+      <outputDirectory></outputDirectory>
+      <destName>LICENSE.txt</destName>
+    </file>
+  </files>
+
+  <!-- Put a copy of the dependencies artifacts in lib -->
+  <dependencySets>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact><!-- dont put romeo jar 
+        in lib -->
+      <outputDirectory>lib</outputDirectory>
+      <unpack>false</unpack>
+    </dependencySet>
+  </dependencySets>
+
+  <fileSets>
+
+    <!-- Everything in src/main/files needs to go in the distro's root and 
+      have variable replacement filtering applied to it -->
+    <fileSet>
+      <filtered>true</filtered>
+      <directory>src/main/files</directory>
+      <outputDirectory></outputDirectory><!-- copy to distros root -->
+      <includes>
+        <include>*</include>
+      </includes>
+    </fileSet>
+
+    <!-- Romeo's resources are now divided between the resources folder (which 
+      stays in the jar now) and the config folder which contains things like the 
+      context.xml which we want to make easier to edit in the distro -->
+    <fileSet>
+      <directory>/src/main/config</directory>
+      <outputDirectory>config</outputDirectory><!-- copy to distro's config 
+        folder -->
+      <includes>
+        <include>*</include>
+      </includes>
+      <excludes>
+        <exclude>unit.csv</exclude><!-- dont copy the unit file we use for 
+          running in dev env -->
+      </excludes>
+    </fileSet>
+
+    <!-- We put the romeo jar in the distro root rather than in lib because 
+      its an executable jar file you can usually open directly instead of having 
+      to use the bat or sh file -->
+    <fileSet>
+      <directory>${project.build.directory}</directory>
+      <outputDirectory></outputDirectory> <!-- romeo artifact jar goes in distro root -->
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+
+  </fileSets>
+</assembly>

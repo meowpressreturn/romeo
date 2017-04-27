@@ -1,0 +1,25 @@
+Romeo tracks X-Factors by means of the XFactor data record. Each Unit data record may optionally have an associated XFactor data record.
+
+To see the list of XFactor data records, select the 'Data' tab in the left pane and the 'XFactor' subtab. Additional XFactors may be added via the Create->New XFactor menu option, the keyboard shortcut for which is now CTRL-T (this has been changed from CTRL-X since Romeo 0.6.2 as CTRL-F is now used for Find).
+
+To view or modify an existing XFactor data record, select it in the list of records and a form will open in the right pane to allow it to be edited. If you wish to delete the XFactor the form provides a button to do so.
+
+Romeo's default set of xFactors are loaded on first startup and Romeo will attempt to attach these to the appropriate units if it can find them in the list of Units data records. After the initial import XFactors may be maintained via the user interface.
+
+Romeo uses XFEL (XFactor Expression Language) to specify the trigger conditions for an X-Factor and the effect that it has on the combat statistics of the unit that uses it.
+
+(Note: Certain potential types of X-Factors like the one that once applied to the C.R.Org II v2 (?) and caused it to target units in both the friendly and enemy fleets cannot yet be specified, nor can the way that particular X-Factor's random triggering was evaluated seperately for each indvidual org rather than the type as a whole).
+
+Most other X-Factors that are no longer in the UltraCorps™ rules such as the TK unit X-Factor and the lone Zenrin Master can be specified using the expression framework, and it should be flexible enough to handle most of the new combat X-Factors that will be introduced in the near future.
+
+To configure an X-Factor you must create a record containing its definition. Select 'New X-Factor' from the 'create' menu. You must give the X-Factor a name, which you would do well to make unique should you hope to identify it later when assigning it to a unit. You may also provide an optional description.
+
+In the trigger field put the expression that evaluates when the X-Factor becomes active during a battle. If you enter an expression with an invalid syntax the field will turn red and you will be unable to save the record until you correct it. Not that it is quite possible to define xfactors that are semantically legal but still broken - for example ones that attempt to divide by zero. Unfortunately support for catching or reporting such errors is not well developed in the current version of Romeo (see issue #19).
+
+Refer to the Expression Reference and Expression Tutorial topics in the help for details on specifying the expression.
+
+When the X-Factor is active the statistics of the unit to which it applies will change in accordance with the values returned from the Attacks,Offense,Defense, and PD expressions. If you leave these blank then the normal value for that statistic will apply.
+
+When the destruct field evaluates to true then the unit will immediately be marked as a casualty in the battle at the start of the round when the evaulation is made. As an unremoved casualty it will still be targetable by enemy units for the remainer of that round and will still inflict PD.
+
+Finally to apply the X-Factor to a unit type you edit the unit and select the X-Factor from the drop down list. Note that the present version of Romeo only allows a single X-Factor to be applied to a particular unit. You must therefore model multiple xfactors as a single xfactor.

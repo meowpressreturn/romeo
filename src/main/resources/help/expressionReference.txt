@@ -1,0 +1,141 @@
+All expression elements follow the format of an operation name followed by a set of 0 or more comma seperated parameters inside brackets. 
+
+Expressions generally operate on numeric (double) values or on boolean true/false values. For the purposes of logic expressions any non zero number evaluates as true, while for numeric expressions true evaluates to 1 and false to zero.
+
+Note: Unit acronymns in expressions are not automatically updated if you change the acronym in the unit editing form.
+
+Extra spaces, tabs, and newlines are ignored to facilitate formatting the expressions in a human friendly manner.
+
+---------------------------------------
+
+ADJUST(expr,operand)
+
+Adjusts a numeric value. 
+expr: Expression, evaluated as Double
+operand: ROUND|FLOOR|CEILING
+ROUND rounds to nearest whole number, FLOOR rounds down, and CEILING rounds up.
+returns: Double
+
+---------------------------------------
+
+ARITHMETIC(expr1,operand,expr2)
+
+Performs an act of arithmetic with the results of expr1 and expr2.
+expr1,expr2: Expressions, evaluated as Double
+operand: ADD|SUBTRACT|MULTIPLY|DIVIDE|MIN|MAX|ROOT|POWER
+MIN returns the lowest of expr1 vs expr2, MAX the highest
+ROOT gives the expr2 root of expr1 but only square root is supported at this stage. If expr2 evaluates to other than 2 the expression will fail
+POWER raises expr1 to the power of expr2
+returns: Double
+
+---------------------------------------
+
+COMPARISON(expr1,operand,expr2)
+
+Magnitude comparison operation
+expr1,expr2: Expressions, evaluated as Double
+operand: NOT_EQUAL|EQUAL|GREATER_THAN|GREATER_OR_EQUAL|LESS_THAN|LESS_OR_EQUAL
+returns: Boolean
+
+---------------------------------------
+
+CONTEXT(operand)
+
+Returns the value of a context variable
+operand: ROUND|IS_ATTACKER|IS_DEFENDER|SOURCE|ATTACKS|OFFENSE|DEFENSE|IS_BASE|IS_NOT_BASE
+ROUND gives the current round number in the battle
+IS_ATTACKER gives true if this unit is in attacking players fleet
+IS_DEFENDER gives true if its the defenders unit
+ATTACKS,OFFENSE,DEFENSE return the unadjusted statistic for the unit
+IS_BASE, IS_NOT_BASE Return a boolean indicating if the unit is in the base fleet
+returns: Integer for ROUND or Boolean for other operands
+
+---------------------------------------
+FLAG(operand,expr)
+
+Evaluate to true if the flag whose name is returned by expr is present for the fleet
+specified in the operand. The expr would usually just be a simple VALUE expression such
+as VALUE("FOO") however any expression can be used, the result is converted to a string
+to determine the flag text. If the expression returns null then FLAG evaluates to false
+as it does when the specified flag is not present for the specified fleet. Note that flag
+text is case-insensitive. 
+nb: OPPOSING_PLAYERS will evaluate to true if any of the opposing players have the flag
+set.
+operand: ANY_PLAYER|THIS_PLAYER|OPPOSING_PLAYERS
+expr:    An expression that returns the name of the flag to look for.
+returns: Integer number of specified unit
+
+---------------------------------------
+
+IF(exprCondition,exprThen,exprElse)
+
+Choose from two expressions based on a value
+exprCondition: Expression, evaluated as Boolean
+exprThen: Expression, evaluated and returned if exprCondition true
+exprElse: Expression, evaluated and returned if exprCondition false
+returns: Result of second expression if the first evaluated as true or the third if it evaluated as false
+
+---------------------------------------
+
+LOGIC(expr1,operand,expr2)
+
+Logical operations. The left and right subexpressions are evaluated into booleans and the
+logic operand is applied. Do not confuse the EQUAL operator here with that in COMPARISON.
+This one only works on boolean results!
+
+expr1,expr2: Expressions, evaluated as Boolean
+operand: AND|OR|XOR|NOR|NOT|EQUAL
+returns: Boolean
+
+---------------------------------------
+
+PRESENT(acronym)
+
+Determine if any of a specified type of unit is present in the players fleet
+acronymn: A Unit acronym
+returns: Boolean true if there are any of that unit for this player
+
+---------------------------------------
+
+QUANTITY(operand,acronym,sourceId)
+
+Get the number of a particular type of unit. Note that in Romeo 0.5.0 the operand THAT_PLAYER
+has been replaced with the new syntax OPPOSING_PLAYERS and refers to all opposing fleets
+considered together.
+operand: ANY_PLAYER|THIS_PLAYER|OPPOSING_PLAYERS
+acronym: A Unit acronym
+sourceId: This will allow you to differentiate between different fleets that are under the same player. At present (0.3) there is no way of specifying the sourceIds when entering fleets in the simulator. If you specify null then sourceId is not considered and the quantity returned covers all units under the specified player. The base fleet for the defender will have a sourceId 0 (currently all units have sourceId=0).
+returns: Integer number of specified unit
+
+---------------------------------------
+
+RND(min,max)
+
+Generate a random integer in the range min to max (the max is included). It is an error to
+specify the same value for min and max, but if you specify a max that is less than the min
+(eg: wrong order) they will be swapped automatically.
+Note that the min and max values are literal integers, and not expressions. The values given must
+be parseable as integers. (Previous versions of Romeo would treat invalid numbers here as 0. This
+is no longer the case).
+min,max: Integer min and max values (inclusive)
+returns: Random integer between min and max inclusive
+
+---------------------------------------
+
+VALUE(value)
+
+Specify a value
+value: A Double, an Integer, a quoted string (using "), a Boolean true|false, or NULL
+nb: the current parsing mechanism does not support escaping, so use of brackets or commas in a String is
+not supported
+returns: value
+
+---------------------------------------
+
+
+
+
+
+
+
+

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xfactors>
+
+  <xfactor>
+    <name>XF-NZF</name>
+    <description>+0..5 AT, 1 per 100 NZF</description>
+    
+    <!-- todo: add queen effects -->
+    
+    <trigger><![CDATA[
+      COMPARISON(
+    		QUANTITY(THIS_PLAYER,NZF,null),
+    		GREATER_OR_EQUAL,
+    		VALUE(100))
+      ]]>
+    </trigger>
+    
+    <attacks><![CDATA[
+      ARITHMETIC(
+      	CONTEXT(ATTACKS),
+      	ADD,
+      	ARITHMETIC(
+      		ADJUST(
+      			ARITHMETIC(
+      				QUANTITY(THIS_PLAYER,NZF,null),
+      				DIVIDE,
+      				VALUE(100.0)),
+      			FLOOR),
+      		MIN,
+      		VALUE(5)))
+      ]]>
+    </attacks>  
+        
+    <link>
+      <unit>NZF</unit>
+    </link>
+     
+  </xfactor>
+  
+  <xfactor>
+    <name>XF-HEW</name>
+    <description>1 defense for non-base HEW</description>
+    
+    <trigger><![CDATA[
+      CONTEXT(IS_NOT_BASE)
+      ]]>
+    </trigger>
+    
+    <defense><![CDATA[
+      VALUE(1)
+      ]]>
+    </defense>
+    
+    <link>
+      <unit>HEW10</unit>
+      <unit>HEW9</unit>
+    </link>
+    
+  </xfactor>
+  
+  <xfactor>
+    <name>XF-SOG</name>
+    <description>Non-base SOG loses 1/3 offense and 2/3 defense</description>
+    
+    <trigger><![CDATA[
+      CONTEXT(IS_NOT_BASE)
+      ]]>
+    </trigger>
+    
+    <offense><![CDATA[
+      ADJUST(
+      	ARITHMETIC(
+      		CONTEXT(OFFENSE),
+      		MULTIPLY,VALUE(0.6666)),
+      	ROUND)
+      ]]>
+    </offense>
+    
+    <defense><![CDATA[
+      ADJUST(
+      	ARITHMETIC(
+      		CONTEXT(DEFENSE),
+      		MULTIPLY,VALUE(0.3333)),
+      	ROUND)
+      ]]>
+    </defense> 
+    
+    <link>
+      <unit>SOG</unit>
+    </link>
+  
+  </xfactor>
+  
+  <xfactor>
+    <name>XF-OMG</name>
+    <description>Non-base OMG doesnt fire in first 4 rounds</description>
+    
+    <trigger><![CDATA[
+      LOGIC(
+      	CONTEXT(IS_NOT_BASE),
+      	AND,
+      	COMPARISON(
+      		CONTEXT(ROUND),
+      		LESS_THAN,
+      		VALUE(5)))
+      ]]>
+    </trigger>
+    
+    <attacks><![CDATA[
+      VALUE(0)
+      ]]>
+    </attacks> 
+    
+    <link>
+      <unit>OMG</unit>
+    </link>
+    
+  </xfactor>
+
+  <xfactor>
+    <name>XF-TAPS</name>
+    <description>Attacks*2 with BRBv3, +10 defense if -ORN flag set</description>
+    
+    <trigger><![CDATA[
+      LOGIC(
+        PRESENT(BRBv3),
+        OR,
+        FLAG(
+            THIS_PLAYER,
+            VALUE("ORN")))
+      ]]>
+    </trigger>
+    
+    <attacks><![CDATA[
+      IF(
+        PRESENT(BRBv3),
+        ARITHMETIC(
+            CONTEXT(ATTACKS),
+            MULTIPLY,
+            VALUE(2)),
+        CONTEXT(ATTACKS))
+      ]]>
+    </attacks> 
+    
+    <defense><![CDATA[
+      IF(
+        FLAG(
+           THIS_PLAYER,
+           VALUE("ORN")),
+        ARITHMETIC( 
+            CONTEXT(DEFENSE),
+            ADD,
+            VALUE(10)),
+        CONTEXT(DEFENSE)) 
+    ]]>
+    </defense>
+    
+    <link>
+      <unit>TAPS</unit>
+    </link>
+    
+  </xfactor>
+  
+  <xfactor>
+    <name>XF-U90</name>
+    <description>0 PD round 1 explodes for 500 round 2 unless in base</description>
+    
+    <trigger><![CDATA[
+      VALUE(true)
+      ]]>
+    </trigger>
+    
+    <pd><![CDATA[
+      IF(
+      	CONTEXT(IS_BASE),
+      	VALUE(0),
+      	IF(
+      		COMPARISON(
+      			CONTEXT(ROUND),
+      			NOT_EQUAL,
+      			VALUE(2)),
+      		VALUE(0),
+      		CONTEXT(PD)))
+      ]]>
+    </pd>
+    
+    <remove><![CDATA[
+      LOGIC(
+      	CONTEXT(IS_NOT_BASE),
+      	AND,
+      	COMPARISON(
+      		CONTEXT(ROUND),
+      		EQUAL,
+      		VALUE(2)))
+      ]]>
+    </remove>  
+    
+    <link>
+      <unit>Bio</unit>
+      <unit>A90</unit>
+    </link>
+    
+  </xfactor>
+  
+  <xfactor>
+    <name>XF-X</name>
+    <description>X units gain 1 attack, 15 defense with HC4 present</description>
+    
+    <trigger><![CDATA[
+      PRESENT(HC4)
+      ]]>
+    </trigger>
+    
+    <attacks><![CDATA[
+      ARITHMETIC(
+      	CONTEXT(ATTACKS),
+      	ADD,
+      	VALUE(1))
+      ]]>
+    </attacks>
+    
+    <defense><![CDATA[
+      ARITHMETIC(
+      	CONTEXT(DEFENSE),
+      	ADD,
+      	VALUE(15))
+      ]]>
+    </defense>
+    
+    <link>
+      <unit>X5</unit>
+      <unit>X6</unit>
+      <unit>X7</unit>
+      <unit>X8</unit>
+    </link>
+    
+  </xfactor>
+  
+
+  <!--<xfactor>
+    <name></name>
+    <description></description>
+    
+    <trigger><![CDATA[
+    
+      ]]>
+    </trigger>
+    
+    <attacks><![CDATA[
+    
+      ]]>
+    </attacks>
+    
+    <offense><![CDATA[
+    
+      ]]>
+    </offense>
+    
+    <defense><![CDATA[
+    
+      ]]>
+    </defense>
+    
+    <pd><![CDATA[
+    
+      ]]>
+    </pd>
+    
+    <remove><![CDATA[
+    
+      ]]>
+    </remove>  
+  </xfactor>-->
+  
+  
+</xfactors>

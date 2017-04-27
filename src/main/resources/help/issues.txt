@@ -1,0 +1,389 @@
+Known issues and feature requests:
+
+#3   Unit comparison radar chart should show values relative to other units being compared rather than all units.
+
+#5   Tooltips for unit comparison chart. 
+
+#12  Data import/export to csv file (note: UC Rules prohibit tools contacting the server directly, this feature is to allow allies to pool knowledge and to facilitate distributing updated unit stats). (nb: as of 0.5.1 we have both map and unit import (from the game provided csvs), but not yet export)
+
+#13  Ability to maintain several databases for different games from one installation of Romeo.
+
+#15  Friendly UI for X-Factor expressions
+
+#17  The default unit stats use the upgrade cost and license cost for the cost and license cost for upgraded units. This is convenient for reference when looking at the units table, however when looking at the various graphs makes the unit appear much cheaper as it doesnt include the costs of the previous units in the upgrade path.
+
+#18  In the small top-right corner of the records tables we could put a tiny 'new' button for creating a new record of that type - 0.5.0 with new layout, it need not be small. Can also have delete.
+
+#20  Ability to affect targetting in X-Factors a'la the 'Crazy Org' X-Factor in the old UC
+
+#27  Include the upgrades in the unit db and add them to get TCO for units in charts
+
+#29  True cost of the upgraded units is not reflected by the data (which now defaults to zero cost for these units!). This makes their representation on many of the comparison charts quite meaningless. Whats more if you add in the true cost manually it will just get erased on the next import. Ideally we need a feature to link the upgraded unit to the upgrade so we can automatically calculate the true cost based on the current costs in the imported data. (See also #17)
+
+#30  Should add feature to the unit import UI to allow for specification of column order via the UI.
+
+#33  The way PD is displayed in the graphs could use some work as it is not very clear visually speaking.
+
+#34  Entradishar-Sxullborg. There goes my appetite.
+
+#36  There are a number of occurences of the infamous "Shlemiel the painter's algorithm" (see: http://www.joelonsoftware.com/articles/fog0000000319.html ), most notably with regards to IService notifications. The resulting slowdowns are most apparent if you add a large number of World records (see issue #106). 
+
+#44  There is no 'assisted entry' facility for flags in the fleet field. Users have no choice but to use the keyboard.
+
+#46  Simulator now reports averages for surviving non-combat units but does not take the special nature of pop and ult into account. In other words the PD is not applied to quantities of the population unit and the Skull perk is not applied to ult in the results reported.
+
+#47  Spiders perk is not simulated.
+
+#49  The unit.csv file must be placed into resources for the initial default value import on first use, however once this has been done the unit.csv is no longer referred to unless explicitly specified by the user. The check for its presence should therefore be removed so it can be safely deleted after initial import.
+
+#50  When selecting a row for an entry in the fleet the source id for that row is not selected in the source combo box. This requires manually changing the value in the combo box too, in order to update the quantity for that source.
+
+#54  The word wrapping in the help dialogs is not yet perfect. There are some off by one errors.
+
+#55  The first attacker should get allocated the colour red in the graphs. Currently it is allocated to the first fleet in the battle which is now the defender.
+
+#59  New colour picker should let you use arrow keys to select the colour
+
+#62  Request to enable copy/paste via a context menu in the fleet fields. =Requested by Agramer=
+
+#66  Player form layout doesn't utilise space correctly. (Eg: when stretched horizontally labels are separated from 
+their appropriate field by unwanted whitespace)
+
+#69  Using arrow keys to navigate the scanner range dropdown in World form does not work.
+
+#77  World import needs a progress bar
+
+#83  Using the turn to predict future ult and pop based on ei and rer.
+
+#85  Need more sanity checks on import csvs. Eg: importing worlds as units etc... doesnt get caught
+
+#93  Improve the slider useability. Should be able to zoom in further, and not so sensitive for the higher zoomouts
+
+#96  When showing deltas, a delta value isn't shown if there was no change, however this may be confusing as we also don't show a delta value when no data for the previous turn is available. In the latter case we should indicate this with +? values.
+
+#99  Worlds form should also show deltas for pop, ult, fp
+
+#102 Read the r,g,b colours for ColorPicker and for team defaults from a configuration file
+
+#105 Graph that shows wins against length of battle
+
+#106 World import is incredibly slow (something like a 3 second delay after each import). Why? Fix!
+
+#108 Have an additional "Unknown" scanner type with a 25 range as the default to differentiate worlds the user has actually confirmed a scanner type for from those they have left as default.
+
+#111 Move the scanner value from worlds to worlds_history, and allow it to be edited on a historical basis. On import inherit the value from the last available of the earlier turn's data
+
+#112 Need an option to change team colours at one go
+
+#118 Support escaping in the strings used in XFEL (eg: for VALUE expressions) so that quotes may be used in them.
+
+#119 Add support to the FLAG expression for operands ALL_PLAYERS, NO_PLAYERS, ALL_OPPOSING_PLAYERS, and make ANY_OPPOSING_PLAYER a synonym for OPPOSING_PLAYERS
+
+#123 Add support to the PRESENT expression for OPPOSING_PLAYERS
+
+#124 Show selected turns labour, capital, ownership etc in the Worlds data table rather than the somewhat useless X and Y cordinates
+
+#125 Players form should have a table of worlds owned by that player for the selected turn
+
+#128 UnitTypesSelector should use available space but also shrink if necessary (split from issue #24)
+
+#130 The unitScrollIncrement value should be configurable somewhere
+
+#132 Add a note to the world import report when there is an error to indicate that the user can double-click the bad row to get the individual error message. Additionally, all such errors should be written to the log.
+
+#134 When importing an empty csv file a confirmation dialog should be displayed before proceeding
+
+#136 The fleet fields should provide additional seperate assesments of shootiness and soak
+
+#137 The buttons to save and load scenarios are insufficiently distinctive. Saving and creating should use different images.
+
+#138 Add a feature to export the player stats summary for current turn to a csv to facilitate use of the information by mapmakers
+
+#141 Initialising the worlds cache in the worldService is very expensive. Try to avoid doing so where possible (eg: update the cache with world changes rather than always just flushing it). This also ties in with #106
+
+#142 Add a feature to allow the text from UC's firepower rankings page to be manually pasted into Romeo and parsed to extract total actual firepower figures for the current turn =Requested by HCobb=
+
+#144 Multiple file world import should provide an option to skip files for turns there is already history in the database
+
+#145 Add some kind of validation for the csv imports to check the sanity of what is imported (eg: pick up accidental importation of a unit file as a map and that kind of thing) 
+
+#147 Fix multiple world file import sending service notifications on the wrong thread
+
+#149 The 'find world' function exhibits some oddities with matching when different case is involved, eg: "archer" finding "Marcher" instead of "Archer". Also exact matches don't beat other matches, eg always finding "Marstrom" instead of "Mars" when searching for any case variant of "Mars"
+
+#150 If importing from a non team game with blank team columns, assign owned worlds to team 'Somebody' and unowned worlds to team 'Nobody'. Do not auto-allocate player colours though
+
+#151 If the file selection dialog is cancelled when locating the unit.csv to copy at initial startup, Romeo will continue attempting to run initialisers instead of terminating. The unit service initialiser will create the units table but then terminate Romeo with an error. Running Romeo a subsequent time will complete the initial setup, but with an empty unit database.
+
+#152 
+
+---------------------------------------
+
+Addressed in Romeo 0.3
+
+#4   (FEATURE ADDED) X-Factors in combat are poorly supported. Needs fully configurable x factors,and a better way of specifying them in battle.
+
+#10  (TOOLBAR REMOVED) Reevaluate whether its worth retaining the toolbar as it only has new world and new unit buttons which are available elsewhere and it wastes a fair bit of space.
+
+#23  (FIXED) The average firepower was discovered using battlesThatGotThisFar as divisor instead of numberOfBattles. The 'adjusted average' firepower uses the later, the average firepower the former. As a result of the bug though, both graphs were showing the adjusted firepower values.
+(20081205 - Is it not the other way around???)
+
+---------------------------------------
+
+Addressed in Romeo 0.3.1
+
+#21  (FIXED) The X label on long battles in some of the graphs gets messed up due to not enough space for all the labels
+
+#14  (FEATURE ADDED) Need to be able to differentiate between source fleets in a fleet field (to allow for more flexible x-factor calculation such as differentiating between base and non-base units on the defenders side)
+
+#26  (FIXED) Update issue when removing text in the fleet field or unit type selector field
+
+---------------------------------------
+
+Addressed in Romeo 0.4.0
+
+#16  (FEATURE ADDED) Support for importing csvs produced from the units help page in UC
+
+---------------------------------------
+
+Addressed in Romeo 0.4.1
+
+#30  (FEATURE ADDED) U-90 Biobomb's special behaviour is not implemented
+#31  (FEATURE ADDED) Calculation of PD sustained in battle
+
+---------------------------------------
+
+Addressed in Romeo 0.5.0_rc2
+
+#1   (FIXED) Poor formatting of help text (needs to at least wrap on word boundaries). (In the meantime you could always just read the file directly in vi or notepad etc.. Its under resources/help directory in the Romeo distribution).
+
+#2   (PARTIAL FIX) Modifications to the scanner speed of a unit is not reflected in the list of scanners on the world form until after the application is restarted. (The scanner choices are now updated however issue #53 applies now)
+
+#6   (PARTIAL FIX) The java colour selector used for specifying world colour isnt a very good fit for selecting world colours, and it should also be possible to tie in world colour more directly with the world owner for convenience while still allowing independent colouring of worlds if desired. (Tying to world owner may be implemented when we add player records. For now in is not - reopened as #56).
+
+#8   (FEATURE ADDED) Arrows to show which of the unit or world table columns is being sorted on after the user has double clicked the column to select it to sort on.
+
+#11  (FEATURE ADDED) Support for more than two player battles.
+
+#19  (FIXED) Poor/non-existent reporting of broken battles due to illegal expressions (divide by zero, etc...) (btw: divide by zero evaluates to infinity it seems rather than an exception. We have also added a FAIL expression that takes a single expression to give its message. This throws an ExpressionFailure exception when it is evaluated. Its not intended for general use hence not documented in the XFEL reference)
+
+#23  (DUPLICATE of #11) Allow more than 1 attacker
+
+#25  (WONT FIX) The unit edit form should also show the firepower when the X-Factor is active for units that have an X-Factor (This will not be fixed as the xFactor requires information on the fleets to be correctly evaluated in many cases). 
+
+#37  (FEATURE ADDED) FleetFields in the simulator should provide an indication of fleets carrying capacity
+
+#38  (FIXED) Unit.csv with an empty field (for example the price field from the csv you get when not in a game) causes an error. (ie: A-7 Mauler,1.70,50,50,48,3,3,-30,0,65,25,,200). =Reported by Goljerp= (Empty columns are now parsed correctly and the importer will not overwrite existing value for columns that are empty)
+
+#39  (GRAPH REMOVED) In the Battle Simulations Report in the Rounds section the graph has an error in it. It uses a greater than sign rather then an equal to or greater then sign for your highest number so far as I can tell. IE 1=0, 2=xxx, 3=xxxx, >4=xxxx. That technically implies no battles lasted 4 rounds and then the graph lower down shows differently. =Reported by Phunbaba= (The graph referred to in this bug was removed from Romeo in 0.5.0)
+
+#41  (FEATURE ADDED) For those who are running this on Mac OS X (or Linux), you'll need to change the ";"s to ":"s in the classpath (the part after the "-cp" flag). Also, the Readme has an error in the command line argument: it should be "romeo.Main", not "Romeo.Main". =Reported by Goljerp=
+
+#42  (FIXED) The FleetField is unaware of the contents of the opponents FleetFields so if there are X-Factors dependent on what is in the opposing fleet(s) it will not evaluate these correctly and thus will not display accurate statistics. (When simulating the battle the opposing fleets are taken into account so this will not affect simulation results).
+
+#43  (FIXED) The stats displayed by the fleet field were not being updated automatically when an XFactor expression was modified and saved in the XFactor edit form. It was necessary for user to 'touch' the field to have the values refreshed as no listener was attached to the IXFactorService. 
+
+#45  (FIXED) X-Factors depending on the presence of particular non-combat units in a battle does not work as the simulator is removing non-combat units prior to executing combat logic. It should retain but ignore them. This will also allow reporting of them in the survivors tables. (Implemented as described, but see issue #46)
+
+#48  (FEATURE ADDED) Report adjusted average surviving units.
+
+#51  (FEATURE ADDED) There should be a feature to keep notes on players and assign them a default colour and allow for easy selection of them as owner on the worlds form which could also set the colour.
+
+#56  (FEATURE ADDED) Method to tie in world colour more directly with the world owner for convenience while still allowing independent colouring of worlds if desired (Players provide default colour - see #51).
+
+---------------------------------------
+
+Addressed in Romeo 0.5.0
+
+#60  (FIXED) romeoW.bat doesnt let you close the DOS window. (It uses java instead of javaw). =Reported by Agramer=
+
+#64  (TWEAKED) Much more noticable delay between clicking execute and the display of the progressor bar =Reported by Sentrion= (Set the millisToDecidePopup to 250 and the millisToPopup to 500 for the ProgresMonitor)
+
+#65  (FIXED) World colour gets improperly edited to that of the first player if you have the world edit form open and the owner of that world is not in the player list or is empty.
+
+---------------------------------------
+
+Addressed in Romeo 0.5.1_alpha1
+
+#70  (FIXED) Showing text for worlds when there are many worlds causes terrible map redraw slowdown
+
+#71  (FEATURE ADDED) Right click map centering and other map enhancements
+
+#72  (FEATURE ADDED) Worlds csv import feature
+
+#73  (FEATURE ADDED) Update world colours when player colour is changed
+
+#61  (TWEAKED) The reset button is inconveniently close to the execute button in the simulator screen. =Reported by McNaught=
+
+#74  (DUPLICATE) Move the "Reset" button away from the "Execute" button =Requested by Paladin656=
+
+#75  (FEATURE ADDED) Firepower field for worlds and displayed on map
+
+#76  (FEATURE ADDED) Attempt to centre map initially
+
+---------------------------------------
+
+Addressed in Romeo 0.5.1_alpha2
+
+#78  (FIXED) SQL Error when saving worlds with over 1000 firepower
+
+---------------------------------------
+
+Addressed in Romeo 0.5.2
+
+#80  (FIXED) Double-clicking on a world on the map does not open its record
+
+#82  (FIXED) Unable to compile due to additions to DataSource interface in newer Java libraries
+
+---------------------------------------
+
+Addressed in Romeo 0.6.0
+
+#40  (RETIRED) Hsqldb code reports a NoClassDefFoundError on startup on a 1.4.1 JVM on the Mac. (May be a JRE/classpath issue on that machine?) =Reported by Goljerp=  - Romeo now requires a 1.7 or greater JVM and we have updated the version of HSQLDB in use. 
+
+#81  (FIXED) Trying to click a world on the map while cursor is still moving doesnt work
+
+#7   (FEATURE ADDED) A way of configuring which world to centre the map on at startup is needed.
+
+#26  (FEATURE ADDED) A way of setting the current turn, tracking what turn world info was updated, and using the turn to predict ult and pop based on ei and rer.  - Ult/pop prediction re-logged as feature request #83
+
+#35  (RETIRED) Hitting enter from the numberOfBattles field should be equivalent to clicking the execute button - The numberOfBattles field has been removed from the simulator
+
+#52  (RETIRED) Needs more ponies. -Ponies are so 2011
+
+#57  (RETIRED) Eliminate the menu bar. Provide a tab for the help (buttons to open the help pages perhaps) and in the data tab for the crud operations. Ensure that the keyboard shortcuts for these are still usuable however.
+
+#84  (FIXED) XFactor expression fields still show as invalid when empty once they have been dirtied
+
+#67  (FEATURE ADDED) It would be great if the simulator could remember my default number for battles to calc is 10000, not 100 =Requested by Mcnaught= -The numberOfBattles setting is accessible via File->Preferences. It has been removed from the simulator page itself though.
+
+#88  (FEATURE ADDED) Remember map control settings between sessions
+
+#89  (FEATURE ADDED) Move import actions to their own menu
+
+#90  (FIXED) The tabs in the battle report should have their own independent scrollbars
+
+#91  (FIXED) Simplify the navigatorPanel (make it just load one panel at a time)
+
+#28  (RETIRED) Back button for origin selection
+
+#9   (FIXED) The scanner range for worlds with no scanner should be configurable somewhere. Its currently hardcoded at 25. -Added a preferences field for this. nb: see also #53
+
+#68  (FEATURE ADDED) Important romeo feature request: for tracking it is often important to know how much FP the game considers a certain fleet to be, i.e. the flat FP without any X factors. this should be displayed alongside the "effective" FP, PA & CA atop of the fleet input field in the simulator =Requested by Mcnaught= -this is now a configurable preference option and can be enabled from the preferences page
+
+#92  (FIXED) Import file dialogs should remember the folder whence came the imports
+
+#58  (FEATURE ADDED) The exception thrown when the database is already in use (ie: another romeo open or try too soon to restart) is common enough that it should be detected and get a more friendly ApplicationException type message explaining to the user what is going on.
+
+#53  (FIXED) World still stores range rather than the type of scanner so the world ranges dont get updated on the map or in the edit form when the scanners range is changed and re-opening the world form will see the combo default back to whatever scanner is available at the old range or the default visual range. Furthermore since scanner types arent tracked for World if there are two scanners with same range then the combo will always select the first one when form is reopened. -Worlds now track the scanner type
+
+#22  (RETIRED) Sometimes the firepower graphs just dont render and come up blank -Haven't seen this in ages, and JFreeChart has been updated since. Will open new issue if it reoccurs.
+
+---------------------------------------
+
+Addressed in Romeo 0.6.1
+
+#98  (FEATURE ADDED) Add a "team" field to the Player record
+
+---------------------------------------
+
+Addressed in Romeo 0.6.2
+
+#86  (RETIRED) Delete buttons should prompt for confirmation -it appears this was fixed in a previous release
+
+#87  (FEATURE ADDED) Add a find-world feature
+
+#100 (FEATURE ADDED) Import the team for players when available in the worlds.csv and allocate a default team colour
+
+#95  (FEATURE ADDED) History graphs to show player progress in various metrics -added a graph of worlds by turn for players and for teams (the 'various metrics' can be added in a future version)
+
+#97  (FEATURE ADDED) The currently selected tab should be remembered when closing and reopening Romeo
+
+#101 (FIXED) Import the scanner range from units.csv now that its available there, remove the adjustments for scanner
+
+#103 (FEATURE ADDED) Multiple worlds.csv import from directory with numbered files
+
+#104 (DONE) Refactor access to the Spring context
+
+#107 (FIXED) The biobomb adjustment and x-factor wasn't being applied due to its name having changed.
+
+---------------------------------------
+
+Addressed in Romeo 0.6.3
+
+#24  (FIXED) FleetField and UnitTypesSelector should use available space but also shrink if necessary (involves figuring out how to make the combo box play nice) - Fixed for FleetField, but not for UnitTypeSelector which has been split to a new issue #128
+
+#31b (FIXED) CSV field quoting not implemented (therefore using quotes to embed commas and such like does not work)
+
+#32  (DONE) Need to revise the rules we use for importing/not-importing non-combat units in light of the move in 0.4.1 to using the official unit.csv for populating the default unit data after installation. - We now always import all units in the units file.
+
+#63  (FEATURE ADDED) Support multiple instances of the simulator to allow for tweaking of fleets and different scenarios without having to retype the bulk of the details each time. =Requested by Agramer= - This has been implemented by way of 'Scenarios' which allow fleets contents for a simulation to be persisted and easily switched between
+
+#94  (FEATURE ADDED) Show total (visible) firepower in the players table and on the player form (for selected turn)
+
+#110 (FEATURE ADDED) Graph of teams firepower, labour, capital by turn
+
+#109 (FEATURE ADDED) Graph of players firepower, labour, capital by turn
+
+#113 (FEATURE ADDED) If a unit file has not been placed in resources at startup time, present a dialog to select and copy one
+
+#114 (FIXED) It would appear that data change listeners are being called multiple times for a single change which is causing redundant reloads of data (probably part of the problem with #106 (have a look for badly writeen ItemEvent listeners)). - Created a saveWorldWithHistory() for world changes, and fixed most other places with redundant calls. This is still the case for the multiple csv world import though (#106)
+
+#115 (FIXED) Preselect the 'close' button in the import result dialogs so the user can just hit enter to close it - done by Swing buttons work from SPACE not ENTER for some reason. eh, close enough
+
+#116 (FIXED) Organise the colour selecter a bit better and add a few more colours
+
+#117 (FIXED) When there are no units recorded in the database FleetField and UnitSelectorCombo throw NullPointerException trying to return their ListCellRenderer components which does horrible horrible things to Swing
+
+#120 (FIXED) The range of values generated by the RND expression should be inclusive of the max, but is actually exclusive
+
+#121 (FIXED) Edits to XFactors cause a new record to be saved instead of updating the existing one. It would appear this bug was introduced in 0.6.1 
+
+#122 (FIXED) Deleting an XFactor record does not clear the foreign key in units that link to it although it looks like it does in the UI. This does not seem to affect functionality however.
+
+#126 (FIXED) When upgrading an ancient (eg: 0.1.0, 0.2.0, etc) database that doesn't have a Players table, the color and ownership information (if available) for the worlds should be used to create new Player records so that the map colors can be preserved
+
+#127 (FIXED) We need some extensive refactoring and tightening up of data types and nullability checks and start to add unit tests for the existing and new code
+
+#130 (FEATURE ADDED) Provide default adjustments for all the items in the current unit csv including upgrades
+
+#131 (FIXED) Creating a player with a duplicate name causes an exception in the PlayerChooser and this will prevent Romeo from opening. - As of 0.6.3 player names must be unique and duplicate names in an existing database will be modified to make them unique (see #143)
+
+#133 (DUPLICATE) Provide a file selector to locate the unit.csv on initial startup - this is a duplicate of #113 which we implemented in this version
+
+#135 (FIXED) The colours in the error dialog are boring and don't 'pop'. It needs exciting new colours
+
+#139 (FIXED) An exception thrown while parsing the worlds csv file should be displayed in a dialog box
+
+#140 (FIXED) Generate scanner units during old db uprades if implied by range in a world record and no suitable unit exists
+
+#143 (FIXED) Names for players, units, worlds, xfactors should be required to be unique and trimmed and case-insensitive. Likewise for the acronym of a unit. Attempts to save a record with such a duplicate should present a friendly error message. Such duplicates and trimming issues in existing databases should be fixed as part of the upgrade process in the service initialisers
+
+#146 (FIXED) Use the path selected for the unit.csv on initial startup as the default for the import path (extends #113)
+
+#148 (FIXED) Sorting order in the data tables should be case-insensitive
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+Romeo supports importing updated Unit data from a CSV file.
+
+WARNING: Currently Romeo (0.6.4) does not yet support historical unit data, so importing unit data will overwrite existing unit data for units having the same name.
+
+Importing is accomplished by selecting the "Import Unit Data" option in the "File" menu (shortcut is CTRL-D). You will be prompted to select the CSV file from which to import.
+
+When Romeo imports Units there are two possibilities. The first possibility is that the Unit is not currently modelled in Romeo, the second is that it is. To determine if the unit already exists in Romeo, Romeo will search its database for the Unit by its name (as the CSV file lacks an acronym). The search is case-insensitive but the rest of the spelling must match or Romeo won't be able to tell that its the same unit.
+
+When importing a Unit, the Romeo will _attempt_ to assign it an acronym and relevant pre-configured x-factors from the tables of adjustments that ship with Romeo. These tables are keyed with the signature of various names of units in the current UltraCorps™ rules (a signature is used rather than the name itself so as to avoid reproducing the table of unit names). If Romeo does not recognise the unit its name will be reused as a placeholder acronym. You can change this to a more suitable acronym manually via the unit editing form.
+
+For units that are already in Romeo, data from the columns in the CSV are imported and overwrite existing data. Columns not in the CSV such as scanner range, acronym or xfactor are unaffected. (Empty column values are ignored).
+(Since 0.6.3 Romeo no longer discriminates between combat and non-combat units for imports and will import all the units in a file).
+
+Romeo uses the current (as of the time of writing) UltraCorps™ CSV file format by default when determining how to map the columns in the CSV to the Romeo Unit model.
+
+Lines beginning with a # symbol are not treated as containing Unit data.
+
+The following column sequence is assumed:
+name, firepower, maximum, offense, defense, attacks, pd, carry, speed, complexity, basePrice, cost, license
+
+Not all of these values are imported. For example firepower is a calculated value in Romeo, and the value for maximum and basePrice are currently ignored. Romeo does import the current cost, but at present (0.6.3) maintains it globally rather than maintaining a history of costs.
+
+If the UltraCorps™ csv format changes, or you need to import a custom format, this is also possible so long as the file is still a CSV. To tell Romeo about the different column arrangment, two lines (don't let the dodgy word-wrapping here mislead you!) similar to the following need to be added to the file:
+
+#!COLUMNS=acronym,name,firepower,maximum,offense,defense,attacks,pd,carry,speed,complexity,price,currentPrice,license,scanner,unitID,turnAvailable,stealth,scanner
+#!NAMECOLUMN=name
+
+The #!COLUMNS= directive tells the CSV parser that the order of the columns is about to change, while the #!NAMECOLUMN= tells it the name of the column that contains the units name. This will always need to be "name" for the current version of Romeo.
+
+When importing from a CSV with a different column arrangement you can thus edit it to include a suitable #!COLUMNS= directive listing the order of the columns. You can even change this order at any time by including another such directive midway through the file. (Specifying the column order via the UI so as to avoid the need to edit the file is listed as a desired feature under issue #30).
+
+It is possible for you to configure the new order permanently by editing the context.xml file and changing the order they are listed in the unitCsvColumns bean. (Take care to make a backup first as errors in this file can prevent Romeo from operating. Because of this it is reccomended not to do this however , but rather edit the csv manually and wait for an updated version of Romeo to be released).
+
+The names assigned to columns are important. If the spelling or capitalisation are not exactly as Romeo expected then Romeo will not copy values for that column into its database and errors may occur, because Romeo is picky that way. 
+

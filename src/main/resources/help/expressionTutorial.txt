@@ -1,0 +1,169 @@
+Romeo's expression language is quite straightforward, however the syntax is verbose and not particulaly user friendly. Until a new version brings a more friendly expression editing interface it is necessary to use the syntax directly to formulate expressions to determine when an X-Factor is active and what the attacks, offense, defense, and pd stats of the unit are as a result.
+
+At the start of each round of battle the 'trigger' expression of the X-Factor is evaluated. If this expression returns true then the X-Factor is considered to be active. If false then the X-Factor has no effect.
+
+When an X-Factor is active, the units attacks, offense, and defense statistics are determined by the expressions specified for these in the X-Factor definition. For statistics where no expression is specified the units normal statistic is used.
+
+Lets look at an X-Factor and its expressions. We shall consider a simple Nozama swarm xfactor without adding Nozama Queen effects. Even without accounting for queens this expresssion is quite complicated in both trigger and effect.
+
+The swarm effect applies to Nozama Fighters and results in them gaining an extra attack for every 100 Nozama Fighters the player has in the battle up to a limit of 5 extra attacks. To trigger the xfactor we can define a trigger that checks to see if there are at least 100 NZF belonging to the player at the battle:
+
+COMPARISON(QUANTITY(THIS_PLAYER,NZF,null),GREATER_OR_EQUAL,VALUE(100))
+
+To start with its easier to read if we make use of some spacing. Extra spaces, tabs, and newlines are ignored so we can use them to make it easier for us to read:
+
+COMPARISON(
+	QUANTITY(THIS_PLAYER,NZF,null),
+	GREATER_OR_EQUAL,
+	VALUE(100))
+	
+Now we can clearly see the divides between the elements. An expression element always has a name - for example VALUE , and always has a pair of brackets that hold any parameters the element takes. The parameters are seperated by commas.
+
+The COMPARISON element takes three parameters. The first and the last are sub-expressions while the middle one is an operand stating what type of comparison to do to the results that come from them. Depending on that comparison either a true or a false is returned, and since this is the outermost element that true or false will determine whether the X-Factor is active or not this round.
+
+The right - or bottom now that we reformatted it - expression is just a VALUE, containing the parameter 100 - the number of units that we need to exceed the threshold for activation of the swarm X-Factor. 
+
+In the first expression we are getting the number of Nozama Fighters to compare. We use a QUANTITY element for this. QUANTITY takes 3 parameters. The first specifies which players units we want a quantity measurement for. Since we are interested in the number of Nozama Fighters belonging to the same player as the unit we are evaluating the XFactor for we specify THIS_PLAYER. Had we wanted to count the number in the opposing fleet we would have used THAT_PLAYER.
+
+Next comes the acronym of the unit. This is the acronym as specified in the Unit form. If you misspell it then the count you get will  be zero unless you accidentally name some other unit, so take care to get it right.
+
+It is worth noting that in the current (0.3) release of Romeo, if you change an acronym in the Unit editing form it does not update any expressions that refer to that unit by acronym.
+
+The final parameter to QUANTITY is what is called the 'sourceId'. This is an integer number and will be used to differentiate between units belonging to a player that come from different fleets. For the defending player sourceId 0 refers to the base fleet. If you specify null, as is the case in our Nozama example, then all the units of that type fighting for the specified player will be counted.
+
+Now lets look at the attacks expression:
+ARITHMETIC(
+	CONTEXT(ATTACKS),
+	ADD,
+	ARITHMETIC(
+		ADJUST(
+			ARITHMETIC(
+				QUANTITY(THIS_PLAYER,NZF,null),
+				DIVIDE,
+				VALUE(100)),
+			FLOOR),
+		MIN,
+		VALUE(5)))
+		
+What we are trying to do is divide the number of nozama by 100 to find out how many bonus attacks we are getting. We need to chop of any extra fractions and we need to cap the extra attacks at 5. Lets look at how we would assemble the above statement if we were writing it from scratch.
+
+Firstly we need the number of Nozama in the battle fighting for the same player as the unit we are evaluating. We arent interested in whether they are base fleets or not, just that they belong to the same side. The following expression gives us the answer:
+
+QUANTITY(THIS_PLAYER,NZF,null)
+
+Now we need to divide it by 100 to determine how many extra attacks we get, so we nest it in an ARITHMETIC element, and we use a VALUE element as the other input. 
+ARITHMETIC(
+	QUANTITY(THIS_PLAYER,NZF,null),
+	DIVIDE,
+	VALUE(100))
+	
+Be sure to get the right number of brackets. All opening brackets need to be matched by a closing bracket at the appropriate place as this is what Romeo uses to understand how we have nested our expressions, and dont forget the commas we must always between the seperate parameters.
+
+We still have a problem with the answer we get from this, in that unless we had an exact multiple of 100 we will have a fractional part to our result. For example if we had 647 Nozama Fighters our expression will evaluate to 6.47 and we dont want this, rather we want to round down to the nearest whole number - in this case 6. So we use an ADJUST element and the FLOOR operator and wrap it around our expression thusly:
+
+ADJUST(
+	ARITHMETIC(
+		QUANTITY(THIS_PLAYER,NZF,null),
+		DIVIDE,
+		VALUE(100)),
+	FLOOR)
+	
+Our expression will now evaluate to 6 but we still need to deal with the rule that the swarming Nozamas only get a maximum of 5 extra attacks. We do this using another ARITHMETIC expression and the MIN operator. The MIN operator will cause the ARITHMETIC element to return the lower result of its two nested expression parameters. 
+
+So we nest our expression as one of the parameters to an ARITHMETIC MIN and a VALUE of 5 for the other:
+
+ARITHMETIC(
+	ADJUST(
+		ARITHMETIC(
+			QUANTITY(THIS_PLAYER,NZF,null),
+			DIVIDE,
+			VALUE(100)),
+		FLOOR),
+	MIN,
+	VALUE(5))
+
+You can see that we could equally well have specified it the other way round, ie:
+
+ARITHMETIC(
+	VALUE(5),
+	MIN,
+	ADJUST(
+		ARITHMETIC(
+			QUANTITY(THIS_PLAYER,NZF,null),
+			DIVIDE,
+			VALUE(100)),
+		FLOOR))
+
+So now we have an expression that tells us how many extra attacks are delivered as a result of our X-Factor. We havent finished yet however. We need to return the total number of attacks the unit has. To do this we must add these extra attacks to the original number of attacks.
+
+The basic attacks stat for the unit in question is easily obtained using a CONTEXT element specifying ATTACKS as the parameter. We can then use another ARITHMETIC element to add to that our extra attacks expression thus giving us the complete expression:
+
+ARITHMETIC(
+	CONTEXT(ATTACKS),
+	ADD,
+	ARITHMETIC(
+		ADJUST(
+			ARITHMETIC(
+				QUANTITY(THIS_PLAYER,NZF,null),
+				DIVIDE,
+				VALUE(100)),
+			FLOOR),
+		MIN,
+		VALUE(5)))
+		
+		
+------------------------------------------
+Tricks and tips:
+----------------
+		
+0.) Formatting and readability
+If you still find it hard tracking all the brackets you could try an even more spread out way of formatting the expression to make it clearer. For example:
+
+ARITHMETIC
+(
+	CONTEXT(ATTACKS),
+	ADD,
+	ARITHMETIC
+	(
+		ADJUST
+		(
+			ARITHMETIC
+			(
+				QUANTITY(THIS_PLAYER,NZF,null),
+				DIVIDE,
+				VALUE(100)
+			),
+			FLOOR
+		),
+		MIN,
+		VALUE(5)
+	)
+)
+
+The X-Factor form fields are a bit cramped for this one so you may find it easier to edit in Notepad first and paste it in.
+
+1.) Fractions
+Reducing a statistic by a fractional proportion is easier if you first convert the fraction to a decimal yourself and then multiply by the difference between that and 1. For example to reduce the offense of a unit by 1/3, our first idea might be dividing 1 by 3 and then subtracting that from offense:
+
+ARITHMETIC(
+	CONTEXT(OFFENSE),
+	SUBTRACT,
+	ARITHMETIC(
+		VALUE(1),
+		DIVIDE,
+		VALUE(3)))
+		
+Which works, but you will agree that the following is somewhat simpler:
+ARITHMETIC(
+	CONTEXT(OFFENSE),
+	MULTIPLY,
+	VALUE(0.6666))
+	
+Which will of course return the remaining 2/3 of the offense. Its true that .3333 is not as accurate in theory, but in practice we round the final result to a whole number (in this case implicitly) and as the numbers we deal with are typically small we dont end up rounding away from the correct answer.
+
+2.) Specifying values directly vs calculating them
+In the above case - part of the SOG X-Factor, you might ask why not just use VALUE(10) for offense? (As the basic offense is 15).
+
+The reason is that the game rules stated that the offense was cut by 1/3 not that it was set to 10. The implication is that while this X-Factor is likely to remain unchanged in the future, its quite probable that the basic offense value  for the SOG will be tweaked from time to time and the new offense value when the X-Factor is in effect will now need to be 1/3 less than whatever its new basic offense statistic has been changed to.
+
+By calculating the answer from the basic offense rather than directly specifying it we need only change the Unit record when this occurs and can leave the X-Factor expression unchanged. It also means that if another unit with different offense and defense is also given the same X-Factor we dont need to create another X-Factor to represent this but can just link the unit to this X-Factor too. (The X+HC4 X-Factor is a good example of this scenario).

@@ -1,0 +1,38 @@
+Quick Ref: Distance Display
+AAA /DD/
+or
+AAA (B) <C/DD/E>
+
+A=Distance from origin
+B=Ticks to travel at fleet speed
+C=Ticks outgoing fleet visible to target
+D=Target recorded scanner range
+E=Ticks incoming fleet visible to origin
+
+Detailed Guide: Using the Worlds Map
+
+The Worlds Map feature presents world data in a similar format to that of the game itself, however unlike the web based interface it allows for instant readouts on distance and easy scrolling. Additionally it presents the results of some useful calculations that can aid in the development of strategy.
+
+Before you can use the map it is necessary to add some world data to the Romeo database. Usually you will use the import facility to import map data. Romeo supports tracking of information from turn to turn. First select the turn for which you wish to import data using the turn selection buttons under the map. Then use the "Import Map CSV" option in the "Import" menu to select the CSV file to import. (You can also add worlds by hand by using the "New World" option from the "File" menu.)
+
+When creating a new world or editing an existing one you will be presented with a world form in the right panel.
+
+This provides fields for various information. The most important fields are the X and Y coordinates. These are necessary for Romeo to position the world on the map, and (if editing by hand) you can obtain these values from the mouseover information presented by the games map. It is recommended that you supply the name of the world to help you identify it easily later on when you have added more worlds.
+
+Setting a correct value for the scanner range of the world will allow you to make use of the several of the calculations that are facilitated by the map.
+
+Take heed: THE CSV DOWNLOADED FROM THE UltraCorps™ SITE DOES _NOT_ INCLUDE SCANNER RANGES SO THESE YOU MUST SET BY HAND. Sorry.
+
+The results of these calculations are presented below the name of the world in the map. They are based on an 'origin' world selected by clicking on one of the worlds on the map.
+
+It is also necessary to select a fleet speed for the calculations using the combo box below the map display. If no fleet speed is selected only the distance and scanner range from the origin to the world in question will be displayed. For example 115 /25/ which indicates that the world is 115 away and has a recorded scanner range of 25. If you select a fleet speed, such as 50, the display will change to show: 115 (3) <1/25/2>
+
+Here the value in brackets is the number of ticks the fleet will need to travel to that world, while the number before the scanner range is 1 indicating that that fleet will be visible to the world for one tick while in transit. The value to the right of the scanner indicates how many ticks a fleet coming from that world will be visible to the origin world. In the example here the origin world has a 200 scanner range so a fleet coming in at speed 50 from the target world will be visible for 2 ticks.
+
+To move around the map you use the scroll bars, while the slider below the map will adjust the zoom. When moving the mouse over the map, the world nearest to the mouse will be highlighted. Clicking the left mouse button on a world will set this as the origin world for distance calculations and double clicking will display the form for the world in the panel on the right hand side. Note that the nearest world to the mouse is in terms of the map and might not be one of the worlds actually visible in the currently displayed part of the map. 
+
+Right clicking will centre the map on the highlighted world. The mouse cursor will be moved so that it points at this world too. Holding CTRL and right clicking will attempt to centre the map where the mouse is pointing and will not move the cursor.
+
+Checkboxes below the map allow you to narrow down which information about a world you wish to see as showing it all makes the display very cluttered. If you have data for the previous turn then the "Deltas" option tells Romeo to also display the changes in value. This is useful for keeping an eye on things such as enemy firepower moving around.
+
+As of Havana edition (0.6.x) the worlds are displayed with thicker borders if they have more firepower, and larger circles if they are more populated. You may adjust the cutoffs for the different sizes from the preferences form.

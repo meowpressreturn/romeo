@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+        http://www.springframework.org/schema/beans     
+          http://www.springframework.org/schema/beans/spring-beans.xsd ">
+
+  <!-- DataSource for the database used to store the data.
+    Romeo uses the HSQLDB database, in process, and the path below thus also defines the
+    location of the database to be created on first use -->
+  <bean id="dataSource" class="romeo.persistence.QndDataSource">
+    <property name="driver" value="org.hsqldb.jdbcDriver"/>
+    <property name="database" value="jdbc:hsqldb:database/romeo"/>
+  </bean>
+  
+  <!-- The key generator implementation -->
+  <bean id="keyGen" class="romeo.utils.KeyGenImpl">
+  </bean>
+  
+  <!-- The Romeo class is the primary class in Romeo and is called from Main.main()
+    once the application context has been loaded  -->
+  <bean id="romeo" class="romeo.Romeo">
+    <property name="dataSource" ref="dataSource"/> 
+    <property name="initialisers">
+      <list>
+      
+        <!-- The HSQLDB settings initialiser will prepare Romeo's hsqldb database, setting up
+             its configuration and such like -->
+        <bean class="romeo.persistence.HsqldbSettingsInitialiser">
+        </bean>
+        
+        <!-- Prepares the various SETTINGS_xxx tables used to persist various simple settings -->
+        <bean class="romeo.settings.impl.SettingsServiceInitialiser">
+        </bean>
+        
+        <!-- World service initialiser will prepare or update the db for the World 
+             and Worlds_History data record  -->
+        <bean class="romeo.worlds.impl.WorldServiceInitialiser">
+          <constructor-arg ref="keyGen"/>
+          <constructor-arg ref="settingsService"/>
+        </bean> 
+             
+        <!-- Unit service initialiser prepares or updates db for Unit records and manages the initial
+             import from the csv and attachment of default acronymns -->  
+        <bean class="romeo.units.impl.UnitServiceInitialiser">
+          <constructor-arg ref="unitImporter"/>
+          <constructor-arg ref="unitCsvColumns"/>
+          <constructor-arg>
+            <bean class="romeo.importdata.impl.AdjustmentsFileReader"/>
+          </constructor-arg>
+        </bean>
+        
+        <!-- XFactor service initialiser prepares or updates the db for XFactor records and manages
+             the initial import and attachment of default XFactors -->
+        <bean class="romeo.xfactors.impl.XFactorServiceInitialiser">
+          <!-- Be sure unit initialiser comes earlier because this refers to stuff
+               in UNITS table too (ie: it links up default XFactors to units) -->
+          <constructor-arg ref="unitService"/>
+          <constructor-arg>
+            <bean class="romeo.importdata.impl.XFactorFileReader"/>
+          </constructor-arg>
+          <constructor-arg ref="keyGen"/>
+        </bean>
+        
+        <!-- Player service initialiser prepares or updates the db for the Player record -->
+        <bean class="romeo.players.impl.PlayerServiceInitialiser">
+          <constructor-arg ref="keyGen"/>
+        </bean>
+        
+        <!-- Creates the SCENARIOS table -->
+        <bean class="romeo.scenarios.impl.ScenarioServiceInitialiser">
+        </bean>
+        
+      </list>
+    </property>
+  </bean>
+  
+  <!-- Manages persistence and some queries for Players -->
+  <bean id="playerService" class="romeo.players.impl.PlayerServiceImpl">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg ref="keyGen"/>
+  </bean>
+  
+  <!-- Manages persistence for Units -->
+  <bean id="unitService" class="romeo.units.impl.UnitServiceImpl">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg ref="keyGen"/>
+  </bean>
+  
+  <!-- Manages persistence for XFactors -->
+  <bean id="xFactorService" class="romeo.xfactors.impl.XFactorServiceImpl">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg ref="keyGen"/>
+    <constructor-arg ref="unitService"/>
+  </bean>
+  
+  <!-- Manages persistence for Players -->
+  <bean id="settingsService" class="romeo.settings.impl.SettingsServiceImpl">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg ref="keyGen"/>
+  </bean>
+  
+  <!-- Manages persistence for Worlds -->
+  <bean id="worldService" class="romeo.worlds.impl.WorldServiceImpl">
+  <constructor-arg ref="dataSource"/>
+    <constructor-arg ref="keyGen"/>
+    <constructor-arg ref="playerService"/>
+    <constructor-arg ref="unitService"/>
+    <constructor-arg ref="settingsService"/>     
+  </bean>
+  
+  <!-- Manages persistence for Scenarios -->
+  <bean id="scenarioService" class="romeo.scenarios.impl.ScenarioServiceImpl">
+    <constructor-arg ref="dataSource"/>
+    <constructor-arg ref="keyGen"/>
+  </bean>
+  
+  <!-- The navigator panel. There is but one of these. -->
+  <bean id="navigatorPanel" scope="singleton" class="romeo.ui.NavigatorPanel">
+  </bean>
+  
+  <!-- The main window frame for Romeo -->
+  <bean id="mainFrame" lazy-init="true" class="romeo.ui.MainFrame">
+    <constructor-arg ref="navigatorPanel"/>
+    <constructor-arg ref="worldsMap"/>
+    <constructor-arg ref="unitGraphsPanel"/>
+    <constructor-arg ref="graphsPanel"/>
+    <constructor-arg ref="battlePanel"/> 
+    <constructor-arg ref="settingsService"/>
+    <constructor-arg ref="worldService"/>
+  </bean>
+  
+  <!-- Defines the form for viewing and editing a world (prototypical) 
+       This must now be a WorldForm or subclass thereof -->
+  <bean id="worldForm" scope="prototype" class="romeo.worlds.ui.WorldForm">
+  	<constructor-arg ref="worldService"/>
+  	<constructor-arg ref="settingsService"/>
+  </bean>  
+  
+  <!-- Defines the form for viewing and editing a unit (prototypical) -->
+  <bean id="unitForm" scope="prototype" class="romeo.ui.forms.RomeoForm">
+    <property name="name" value="Unit"/>
+    <property name="formLogic">
+      <bean class="romeo.units.ui.UnitFormLogic">
+        <constructor-arg ref="unitService"/>
+        <constructor-arg ref="xFactorService"/>
+      </bean>
+    </property>
+    <property name="fields">
+      <list>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="name"/>
+          <constructor-arg value="Name"/>
+          <property name="mandatory" value="true"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="firepower"/>
+          <constructor-arg value="Firepower"/>
+          <property name="type" value="5"/>
+          <property name="defaultValue" value="0"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="acronym"/>
+          <constructor-arg value="Acronym"/>
+          <property name="mandatory" value="true"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="empty1"/>
+          <constructor-arg value=""/>
+          <property name="type" value="11"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="attacks"/>
+          <constructor-arg value="Attacks"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>          
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="offense"/>
+          <constructor-arg value="Offense"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>
+              <property name="maxValue" value="100"/>            
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="defense"/>
+          <constructor-arg value="Defense"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>
+              <property name="maxValue" value="100"/>            
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="pd"/>
+          <constructor-arg value="Pop Damage"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>           
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="speed"/>
+          <constructor-arg value="Speed"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>            
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="carry"/>
+          <constructor-arg value="Carry"/>
+          <property name="type" value="1"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="cost"/>
+          <constructor-arg value="Cost"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>           
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="complexity"/>
+          <constructor-arg value="Complexity"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>            
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="license"/>
+          <constructor-arg value="License"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>           
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="scanner"/>
+          <constructor-arg value="Scan Range"/>
+          <property name="type" value="1"/>
+          <property name="details">
+            <bean class="romeo.ui.forms.NumericFieldConstraint">
+              <property name="negativeAllowed" value="false"/>           
+            </bean>
+          </property>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="xfactor"/>
+          <constructor-arg value="X-Factor"/>
+          <property name="type" value="7"/>
+        </bean>
+      </list>   
+    </property>
+  </bean>  
+  
+  <!-- Defines the form for viewing and editing an xfactor (prototypical) -->
+  <bean id="xFactorForm" scope="prototype" class="romeo.ui.forms.RomeoForm">
+    <property name="name" value="X-Factor"/>
+    <property name="formLogic">
+      <bean class="romeo.xfactors.ui.XFactorFormLogic">
+        <constructor-arg ref="xFactorService"/> 
+      </bean>
+    </property>
+    <property name="fields">
+      <list>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="name"/>
+          <constructor-arg value="Name"/>
+          <property name="mandatory" value="true"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="description"/>
+          <constructor-arg value="Description"/>
+        </bean>        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="trigger"/>
+          <constructor-arg value="Trigger"/>
+          <property name="type" value="6"/>
+          <property name="mandatory" value="false"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="xfAttacks"/>
+          <constructor-arg value="Attacks"/>
+          <property name="type" value="6"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="xfOffense"/>
+          <constructor-arg value="Offense"/>
+          <property name="type" value="6"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="xfDefense"/>
+          <constructor-arg value="Defense"/>
+          <property name="type" value="6"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="xfPd"/>
+          <constructor-arg value="PD"/>
+          <property name="type" value="6"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="xfRemove"/>
+          <constructor-arg value="Destruct"/>
+          <property name="type" value="6"/>
+        </bean>
+      </list>   
+    </property>
+  </bean> 
+  
+  <!-- Defines the form for viewing and editing a Player (prototypical) -->
+  <bean id="playerForm" scope="prototype" class="romeo.ui.forms.RomeoForm">
+    <property name="name" value="Player"/>
+    <property name="formLogic">
+      <bean class="romeo.players.ui.PlayerFormLogic">
+        <constructor-arg ref="playerService"/>
+        <constructor-arg ref="worldService"/>
+        <constructor-arg ref="settingsService"/>
+      </bean>
+    </property>
+    <!-- <property name="forceTwoColumns" value="true"/> -->
+    <property name="fields">
+      <list>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="name"/>
+          <constructor-arg value="Name"/>
+          <property name="mandatory" value="true"/>
+        </bean>
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="color"/>
+          <constructor-arg value="Colour"/>
+          <property name="type" value="4"/>
+          <property name="defaultValue" value="255,0,0"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="status"/>
+          <constructor-arg value="Status"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="team"/>
+          <constructor-arg value="Team"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="notes"/>
+          <constructor-arg value="Notes"/>
+          <property name="type" value="2"/>
+          <property name="wide" value="true"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="turn"/>
+          <constructor-arg value="Turn"/>
+          <property name="type" value="5"/>
+          <property name="wide" value="true"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="totalFirepower"/>
+          <constructor-arg value="Firepower"/>
+          <property name="type" value="5"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="worldCount"/>
+          <constructor-arg value="Worlds"/>
+          <property name="type" value="5"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="totalLabour"/>
+          <constructor-arg value="Labour"/>
+          <property name="type" value="5"/>
+        </bean>
+        
+        <bean class="romeo.ui.forms.FieldDef">
+          <constructor-arg value="totalCapital"/>
+          <constructor-arg value="Capital"/>
+          <property name="type" value="5"/>
+        </bean>
+        
+      </list>   
+    </property>
+  </bean>     
+  
+  <!-- Implements the map. The map will read some values from settings service as it initialises
+       so we can't allow this to occur before the initialisers have run, hence
+       lazy-init must be set -->
+  <bean id="worldsMap" scope="singleton" lazy-init="true" class="romeo.ui.GenericMap">
+    <constructor-arg>
+      <bean scope="prototype" class="romeo.worlds.ui.WorldMapLogic">
+        <constructor-arg ref="worldService"/>
+        <constructor-arg ref="unitService"/>
+        <constructor-arg ref="settingsService"/>
+        <constructor-arg ref="playerService"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg>
+      <!-- I had to overload the constructor to allow a single listener to be added via
+      constructor rather than the add method to support this use case. One should
+      have thought Spring would facilitate a way of calling methods like addListener
+      after instantiation and prior to return from the factory but it appears not to do so.
+      Here we are wiring up a listener to open the clicked world in the right panel -->
+      <bean scope="prototype" class="romeo.worlds.ui.WorldNavigatorRecordSelectionListener">
+        <constructor-arg ref="navigatorPanel"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg ref="shutdownNotifier"/>
+    <!-- Takes a java.awt.Font. Constructor args are font, type, size. Where font can be a face
+           or a family. For type 0=plain, 1=bold, 2=italic etc. For more information refer to the
+           java docs at: http://docs.oracle.com/javase/7/docs/api/java/awt/Font.html
+           If you remove this property element, then Romeo will use default font for the map -->     
+    <property name="font">
+      <bean class="java.awt.Font">
+        <constructor-arg value="Arial"/>
+        <constructor-arg value="0"/>
+        <constructor-arg value="10"/>
+      </bean>
+    </property>
+  </bean>
+  
+  <!-- The implementation class for the xfactor expression language parser -->
+  <bean id="expressionParser" class="romeo.xfactors.impl.ExpressionParserImpl">
+    <!--<constructor-arg ref="unitService"/>-->
+  </bean>
+  
+  <!-- The implementation class for the xfactor expression compiler that creates
+    xfactor expression trees from the expression language using an xfactor expression
+    parser -->
+  <bean id="xFactorCompiler" class="romeo.xfactors.impl.XFactorCompilerImpl">
+    <constructor-arg ref="expressionParser"/>
+    <constructor-arg ref="xFactorService"/>
+  </bean>
+  
+  <!-- Prototype for ui expression entry fields -->
+  <bean id="expressionField" scope="prototype" class="romeo.ui.forms.ExpressionField">
+    <constructor-arg ref="expressionParser"/>
+  </bean>
+  
+  <!-- The battle panel that allows for entry of fleet data for simulations.
+       We use Spring dependency injection to give it the services and xf compiler it needs.  -->
+  <bean id="battlePanel" scope="prototype" class="romeo.battle.ui.BattlePanel">
+    <constructor-arg ref="unitService"/>
+    <constructor-arg ref="settingsService"/>
+    <constructor-arg ref="xFactorService"/>
+    <constructor-arg ref="xFactorCompiler"/>
+    <constructor-arg ref="scenarioService"/>
+  </bean>
+  
+  <bean id="battleCalculator" scope="prototype" class="romeo.battle.impl.BattleCalculatorImpl">
+    <constructor-arg ref="xFactorCompiler"/>
+  </bean>
+  
+  <!-- Panel in the UI showing graphs of units stats -->
+  <bean id="unitGraphsPanel" scope="prototype" class="romeo.units.ui.UnitGraphsPanel">
+    <constructor-arg ref="unitService"/>
+  </bean> 
+  
+  <!-- Panel in the UI showing graphs of various things such as history -->
+  <bean id="graphsPanel" scope="prototype" class="romeo.ui.GraphsPanel">
+    <constructor-arg ref="worldService"/>
+    <constructor-arg ref="playerService"/>
+    <constructor-arg>
+      <bean class="romeo.worlds.impl.HistoryChartsHelper">
+        <constructor-arg ref="dataSource"/>
+        <property name="playerHistorySql">
+          <value>
+            <![CDATA[
+            SELECT #STAT# AS value, turn, owner FROM WORLDS_HISTORY
+            GROUP BY owner, turn ORDER BY owner, turn
+            ]]>
+          </value>
+        </property>
+        <property name="teamWorldsSql">
+          <value>
+            <![CDATA[
+            SELECT COUNT(worldId) AS worlds, turn, team
+            FROM WORLDS_HISTORY WH
+            JOIN PLAYERS P
+            ON WH.owner=P.name
+            WHERE team IS NOT NULL
+            GROUP BY team,turn 
+            ORDER BY team,turn
+            ]]>
+          </value>
+        </property>
+        <property name="teamFirepowerSql">
+          <value>
+            <![CDATA[
+            SELECT h.turn AS turn, p.team AS team, SUM(firepower) AS firepower
+            FROM worlds_history h
+            JOIN worlds w ON h.worldId=w.id
+            JOIN players p ON h.owner=p.name
+            GROUP BY team, turn
+            ORDER BY team, turn
+            ]]>
+          </value>
+        </property>
+        <property name="teamLabourSql">
+          <value>
+            <![CDATA[
+            SELECT h.turn AS turn, p.team AS team, SUM(labour) AS labour
+            FROM worlds_history h
+            JOIN worlds w ON h.worldId=w.id
+            JOIN players p ON h.owner=p.name
+            GROUP BY team, turn
+            ORDER BY team, turn
+            ]]>
+          </value>
+        </property>
+        <property name="teamCapitalSql">
+          <value>
+            <![CDATA[
+            SELECT h.turn AS turn, p.team AS team, SUM(capital) AS capital
+            FROM worlds_history h
+            JOIN worlds w ON h.worldId=w.id
+            JOIN players p ON h.owner=p.name
+            GROUP BY team, turn
+            ORDER BY team, turn
+            ]]>
+          </value>
+        </property>
+      </bean>     
+    </constructor-arg>
+  </bean> 
+  
+  <!-- Defines the default order of the properties mapped to columns in the units.csv
+       If the order of columns in the unit.csv is changed then this will need to be
+       reordered accordingly. Dont change the actual names used here as they are the names
+       of properties mapped internally -->
+  <bean id="unitCsvColumns" scope="singleton" class="java.util.ArrayList">
+    <constructor-arg><list>
+      <value>name</value>
+      <value>firepower</value>
+      <value>maximum</value>
+      <value>offense</value>
+      <value>defense</value>
+      <value>attacks</value>
+      <value>pd</value>
+      <value>carry</value>
+      <value>speed</value>
+      <value>complexity</value>
+      <value>basePrice</value>
+      <value>cost</value>
+      <value>license</value>
+      <value>unitId</value> <!-- unused by Romeo -->
+      <value>turnAvailable</value> <!-- unused by Romeo -->
+      <value>stealth</value> <!-- unused by Romeo -->
+      <value>scanner</value>
+    </list></constructor-arg>
+  </bean>
+  
+  <!-- Imports units from csv file -->
+  <bean id="unitImporter" scope="prototype" class="romeo.importdata.impl.UnitImporterImpl">
+    <constructor-arg ref="unitService"/>   
+  </bean>
+  
+  <!-- Defines the default order of the properties mapped to columns in the map.csv
+       If the column order in the csv changes, this is what you need to change so the
+       ImportMapAction can read the data correctly.
+       nb: Dont change the actual names used for the columns here or it wont be able to import.
+       Apparently UC only exports a team column if it is a team game. Romeo currently understands that
+       the team column may be missing, but this only works if the team column is the last column
+       and if uc changes it so team column precedes another column then we will have a situation where
+       different game types have a different column order. You would need to edit this to add or remove
+       the team column in accordance with what type of csv you are importing. Thankfully this is not
+       currently the case. -->
+  <bean id="worldCsvColumns" scope="singleton" class="java.util.ArrayList">
+    <constructor-arg><list>
+      <value>worldID</value><!-- nb World doesnt use this property -->
+      <value>name</value>
+      <value>worldX</value>
+      <value>worldY</value>
+      <value>worldEi</value>
+      <value>worldRer</value>
+      <value>ownerID</value><!-- nb World doesnt use this property -->
+      <value>owner</value> <!-- player name -->
+      <value>ownerRace</value>
+      <value>class</value> <!-- homeworld | nobody -->
+      <value>labour</value> <!-- pop -->
+      <value>capital</value> <!-- ult -->
+      <value>firepower</value> <!-- visible fp only -->
+      <value>team</value> <!-- currently used to import player only. numeric 0=none (but romeo can handle strings here -->
+      <!--<value>scanner</value>--> <!-- uc still doesn't provide us this essential information :-( -->
+    </list></constructor-arg>
+  </bean>
+  
+  <!-- The world importer implementation is stateful and therefore may not be a singleton -->
+  <bean id="worldImporter" scope="prototype" class="romeo.importdata.impl.WorldImporterImpl">
+    <constructor-arg ref="worldService"/>
+    <constructor-arg ref="playerService"/>  
+    <constructor-arg ref="settingsService"/>  
+  </bean>
+  
+  <bean id="preferencesControls" scope="prototype" class="romeo.settings.ui.PreferencesControls">
+    <constructor-arg ref="settingsService"/>
+    <constructor-arg ref="scenarioService"/>
+  </bean>
+  
+  <!-- An IEventHub against which listeners for application shutdown may be registered -->
+  <bean id="shutdownNotifier" scope="singleton" class="romeo.utils.events.EventHubImpl">
+  </bean>
+  
+  <!-- Map Centerer will get the setting for map x,y and origin world from the settings service
+       and apply them to the worldsMaps. It needs to be lazy then to avoid causing the instantiation
+       of the worldsMap at startup before initialisers have had a chance to run and create the settings
+       that worldsMap tries to read -->
+  <bean id="mapCenterer" scope="singleton" lazy-init="true" class="romeo.ui.MapCenterer">
+    <constructor-arg ref="settingsService"/>
+    <constructor-arg ref="worldService"/>
+    <constructor-arg ref="worldsMap"/>
+  </bean>
+  
+</beans>
+  

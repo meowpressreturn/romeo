@@ -1,0 +1,29 @@
+Romeo understands the (current) format of the csv files made available from the "All Worlds" screen of UltraCorps™ Mega games.
+
+The current assumed column order is:
+worldID,name,worldX,worldY,worldEi,worldRer,ownerID,owner,ownerRace,worldType,population,ultranium,firepower, team
+
+(worldID, ownerID, ownerRACE, worldType are currently unused by Romeo)
+(Apparently the team column only appears in team games)
+
+In the event that the file format changes and these columns appear in a different order and an updated version of Romeo is not available it is possible for you to configure the new order by editing the context.xml file and changing the order they are listed in the worldCsvColumns bean. (Take care to make a backup first as errors in this file can prevent Romeo from operating).
+
+Map import is invoked from the "Import Map Data" option in the "File" menu or by using the keyboard shortcut CTRL-M. Romeo will also create Player records for any players it finds in the map that are not already in the Romeo database. It will assign them an initial colour based on the value in the team column.
+
+Since Romeo 0.6.2, the import operates in one of two modes: single-file or multiple-file.
+
+Single file is the traditional mode and will import the selected csv file (regardless of name) into the map & history for the *current turn* (as specified via the turn selection Menu). All the data in the CSV will be imported, and the process will replace existing values for fields in the world/map history that are imported from the csv. (If you have already got some map data for the specified turn then you will be promped as to whether you wish to overwrite it. The notes you have made on worlds are not part of the csv and so will not be overwritten, thus making this a pretty safe operation actually - provided you don't overwrite the map with one from a different turn - or heaven forbid - a different game!).
+
+Multiple file import mode allows you to import an entire folder of world csv files at one go. To use this feature, select a directory instead of a file in the file selection dialog. Romeo will apply some heuristics to determine which files to import: it expects the filenames to start with the word 'worlds' (case insensitive), end with the .csv suffix, and contain the turn number just prior to the .csv. So for example: worlds1.csv, worlds_01.csv, WORLDS_Turn_1.csv are all fine. Note that names like worlds.csv or myWorlds1.csv or worlds_1donwan would be ignored - as would worlds(1).csv (which is important to note because many browsers tend to try and use such a name when downloading files with names that already exist in your download directory. 
+
+The cancel button on the progress dialog allows you to stop the process, however it is NOT transactional, which is to say, it does not rollback the import of those files that had already been processed before you clicked it.
+
+When import is complete the number of worlds and players imported and updated will be displayed in a table. If there was a problem with the format of any of the imported files, the status column will indicate that there was an error for that file, and you can double click it to see the details of the error.
+
+Notes on imports:
+
+Importing of player data only occurs for players that are not already in the Romeo database, so any changes to a player's details that might have been made by a game administrator (such as team) will not be updated, except in the case of a player added to the game after it has started. In other words, player and team information is only imported/updated the first time you import a map.
+
+World and Player name matching is case insensitive. Worlds are not matched on coordinates so correct spelling is important when manually adding worlds you wish to update by import later. The world ID number in the CSV is ignored by Romeo as are Player ID numbers. (Romeo does have its own independent internal id numbers for these records but as a user you will  not need to deal with that).
+
+If you get an error message, or end up with garbage data in the map, try checking that the file you are trying to import is of the correct type - for example: not a unit csv file instead of a map file. Romeo currently doesn't try to do any intelligent checking in regards to this.
