@@ -51,7 +51,7 @@ public class XFactorFormLogic implements IFormLogic, IServiceListener {
     if(_xfactor.isNew()) {
       _form.close();
     } else {
-      loadWith(_xfactorService.loadXFactor(_xfactor.getId()));
+      loadWith(_xfactorService.getXFactor(_xfactor.getId()));
     }
   }
 
@@ -127,7 +127,7 @@ public class XFactorFormLogic implements IFormLogic, IServiceListener {
   public void dataChanged(EventObject event) {
     if( !_xfactor.isNew() && !_form.isDirty()) { //Only load fresh data if user hadnt started an edit operation
       //Try to reload the same xFactor record we had open in the UI
-      IXFactor reloaded = _xfactorService.loadXFactor(_xfactor.getId());
+      IXFactor reloaded = _xfactorService.getXFactor(_xfactor.getId());
       if(reloaded == null) { //It was deleted (turn this into a new record form in case they want it back)
         loadWith( new XFactorImpl(null, _xfactor) );
         _form.setDirty(true);

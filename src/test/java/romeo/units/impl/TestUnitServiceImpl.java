@@ -136,15 +136,15 @@ public class TestUnitServiceImpl {
     
     for(int t=0; t<N; t++) {
 
-      IUnit vip = _unitService.loadUnit(new UnitId("ABC120"));
+      IUnit vip = _unitService.getUnit(new UnitId("ABC120"));
       TestUnitImpl.assertVipCorrect(VIP_ID, vip);      
-      IUnit bs = _unitService.loadUnit(new UnitId("ABC121"));
+      IUnit bs = _unitService.getUnit(new UnitId("ABC121"));
       TestUnitImpl.assertBsCorrect(BS_ID, bs);      
-      assertNull( _unitService.loadUnit( new UnitId("nosuchunit")) );
+      assertNull( _unitService.getUnit( new UnitId("nosuchunit")) );
     }
     
     try {
-      _unitService.loadUnit(null);
+      _unitService.getUnit(null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
@@ -210,7 +210,7 @@ public class TestUnitServiceImpl {
     assertNotNull(id);
     assertRecordCount(3);  
     
-    IUnit loadRap = _unitService.loadUnit(id);
+    IUnit loadRap = _unitService.getUnit(id);
     TestUnitImpl.assertRapCorrect(id, loadRap);
     _listener.reset();
     try {
@@ -228,7 +228,7 @@ public class TestUnitServiceImpl {
       //sets columns correctly 
       _unitService.saveUnit( new UnitImpl(BS_ID, TestUnitImpl.newRap(null) ) );
       assertEquals(1, _listener.getDataChangedCount());
-      IUnit bsRap = _unitService.loadUnit(BS_ID);
+      IUnit bsRap = _unitService.getUnit(BS_ID);
       TestUnitImpl.assertRapCorrect(BS_ID, bsRap);
     }
   }
@@ -316,11 +316,11 @@ public class TestUnitServiceImpl {
   @Test
   public void testDelete() {
     assertRecordCount(2);
-    assertNotNull( _unitService.loadUnit(VIP_ID) );
+    assertNotNull( _unitService.getUnit(VIP_ID) );
     _unitService.deleteUnit(VIP_ID);
     assertRecordCount(1);
     assertEquals(1, _listener.getDataChangedCount() );
-    assertNull( _unitService.loadUnit(VIP_ID) );
+    assertNull( _unitService.getUnit(VIP_ID) );
     
     _listener.reset();
     _unitService.deleteUnit(new UnitId("nosuchid"));

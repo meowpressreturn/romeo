@@ -82,7 +82,7 @@ public interface IWorldService extends IService {
    * @param id
    * @return world
    */
-  public IWorld loadWorld(WorldId id);
+  public IWorld getWorld(WorldId id);
 
   /**
    * Loads a world from the database, given its name. Note that the lookup is
@@ -90,7 +90,7 @@ public interface IWorldService extends IService {
    * @param name
    * @return
    */
-  public IWorld loadWorldByName(String name);
+  public IWorld getWorldByName(String name);
 
   /**
    * Determines the extend of the map in terms of coordinates and return this as
@@ -114,7 +114,7 @@ public interface IWorldService extends IService {
    * @param turn
    * @return
    */
-  public IHistory loadHistory(WorldId worldId, int turn);
+  public IHistory getHistory(WorldId worldId, int turn);
 
   /**
    * Returns all the history for the specified world with the element index
@@ -125,7 +125,7 @@ public interface IWorldService extends IService {
    * @param worldId
    * @return history
    */
-  public List<IHistory> loadHistory(WorldId worldId);
+  public List<IHistory> getHistory(WorldId worldId);
 
   /**
    * Returns true if there is already any history data for the specified turn

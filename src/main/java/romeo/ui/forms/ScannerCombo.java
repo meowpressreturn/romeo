@@ -69,7 +69,7 @@ public class ScannerCombo extends AbstractRecordCombo implements ListCellRendere
     if(unitId == null) {
       setSelectedRecord(null);
     } else {
-      IUnit scanner = ((IUnitService) getService()).loadUnit(unitId);
+      IUnit scanner = ((IUnitService) getService()).getUnit(unitId);
       setScanner(scanner);
     }
   }

@@ -49,7 +49,7 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
     if(_unit.isNew()) {
       _form.close();
     } else {
-      loadWith(_unitService.loadUnit(_unit.getId()));
+      loadWith(_unitService.getUnit(_unit.getId()));
     }
   }
 
@@ -155,7 +155,7 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
   @Override
   public void dataChanged(EventObject event) {
     if(_unit.getId() != null && !_form.isDirty()) { //Only load fresh data if user hadnt started an edit operation
-      IUnit reloaded = _unitService.loadUnit(_unit.getId());
+      IUnit reloaded = _unitService.getUnit(_unit.getId());
       if(reloaded == null) { //It was deleted 
         loadWith(new UnitImpl(null, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", null));
         _form.setDirty(true);

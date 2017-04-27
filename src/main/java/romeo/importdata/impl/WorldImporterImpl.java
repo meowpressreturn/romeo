@@ -102,7 +102,7 @@ public class WorldImporterImpl implements IWorldImporter {
         
         try {
           IWorld world = null;
-          IWorld savedWorld = _worldService.loadWorldByName(name);
+          IWorld savedWorld = _worldService.getWorldByName(name);
           if(savedWorld == null) { //IMPORT WORLD WE DONT HAVE YET
             world = createWorld(worldData,null,null); //Get data from the CSV as a World object
             _report.addImportedWorld();

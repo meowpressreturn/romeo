@@ -84,7 +84,7 @@ public class MockUnitService extends AbstractService implements IUnitService {
   }
 
   @Override
-  public IUnit loadUnit(UnitId id) {
+  public IUnit getUnit(UnitId id) {
     return _data.get(id);
   }
 

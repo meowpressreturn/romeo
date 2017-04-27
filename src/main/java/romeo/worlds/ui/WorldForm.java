@@ -120,7 +120,7 @@ public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener
     }
     IWorld world = null;
     if(record instanceof WorldId) {
-      world = _worldService.loadWorld( (WorldId)record );
+      world = _worldService.getWorld( (WorldId)record );
     }
     else if(record instanceof WorldAndHistory) {
       world = ((WorldAndHistory)record).getWorld();
@@ -143,7 +143,7 @@ public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener
     if(_world.isNew()) {
       close();
     } else {
-      loadWith(_worldService.loadWorld(_world.getId()));
+      loadWith(_worldService.getWorld(_world.getId()));
     }
   }
 
@@ -186,7 +186,7 @@ public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener
     if(world.isNew()) {
       histories = Collections.emptyList();
     } else {
-      histories = _worldService.loadHistory(world.getId());
+      histories = _worldService.getHistory(world.getId());
     }
     BeanTableModel model = (BeanTableModel) _historyTable.getModel();
     model.setData(histories);
@@ -266,7 +266,7 @@ public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener
     if(event.getSource() instanceof IWorldService) {
       if(_world.getId() != null && !isDirty()) { //Only load fresh data if user hadnt started an edit operation
         IWorldService service = (IWorldService) event.getSource();
-        IWorld reloaded = service.loadWorld(_world.getId());
+        IWorld reloaded = service.getWorld(_world.getId());
         if(reloaded == null) { //It was deleted (turn this into a new world form with the old values in case they want it back)
           loadWith( new WorldImpl(null,_world) );
           setDirty(true);

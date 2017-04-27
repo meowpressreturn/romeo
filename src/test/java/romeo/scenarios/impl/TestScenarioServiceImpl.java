@@ -145,14 +145,14 @@ public class TestScenarioServiceImpl {
   public void testLoadScenario() {
     for(int t=0; t<N; t++) {
       //Test more than once to catch caching issues
-      IScenario happycat = _scenarioService.loadScenario(new ScenarioId("ABC121"));
+      IScenario happycat = _scenarioService.getScenario(new ScenarioId("ABC121"));
       assertNotNull(happycat);
       assertEquals( HAPPYCAT_ID, happycat.getId().toString() );
       assertEquals( 2, happycat.getFleets().size() );     
       assertEquals( "100*VIP,5*BS", happycat.getFleets().get(0).trim() );
       assertEquals( "200*VIP, 1*BS", happycat.getFleets().get(1).trim() );
       
-      IScenario ermagerd = _scenarioService.loadScenario(new ScenarioId("ABC123"));
+      IScenario ermagerd = _scenarioService.getScenario(new ScenarioId("ABC123"));
       assertNotNull(ermagerd);
       assertEquals( ERMAGERD_ID, ermagerd.getId().toString() );
       assertEquals( 3, ermagerd.getFleets().size() );     
@@ -160,11 +160,11 @@ public class TestScenarioServiceImpl {
     }
     
     try {
-      _scenarioService.loadScenario(null);
+      _scenarioService.getScenario(null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
-    assertNull( _scenarioService.loadScenario(new ScenarioId("nosuchscenario")) );
+    assertNull( _scenarioService.getScenario(new ScenarioId("nosuchscenario")) );
   }
 
   @Test
@@ -196,7 +196,7 @@ public class TestScenarioServiceImpl {
       }
 
       //Also try loading it from the service to see one just saved will load (as services may do caching stuff)
-      IScenario cb2 = _scenarioService.loadScenario(cheezburger.getId());
+      IScenario cb2 = _scenarioService.getScenario(cheezburger.getId());
       assertNotNull(cb2);
       assertEquals("cheezburger" + t, cb2.getName());
       assertEquals(2, cb2.getFleets().size());
@@ -207,7 +207,7 @@ public class TestScenarioServiceImpl {
       _scenarioService.saveScenario(editBurger);
       assertEquals(1, _listener.getDataChangedCount());
       
-      IScenario loadEditBurger = _scenarioService.loadScenario(cb2.getId());
+      IScenario loadEditBurger = _scenarioService.getScenario(cb2.getId());
       assertEquals( cb2.getId(), loadEditBurger.getId() );
       assertEquals( "editBurger", loadEditBurger.getName() );
     }
@@ -225,7 +225,7 @@ public class TestScenarioServiceImpl {
     ScenarioId id = new ScenarioId(LITTERBOX_ID);
     _scenarioService.deleteScenario(id);
     assertRecordCount(2);
-    assertNull( _scenarioService.loadScenario(id) );    
+    assertNull( _scenarioService.getScenario(id) );    
   }
   
   @Test
@@ -250,9 +250,9 @@ public class TestScenarioServiceImpl {
     assertRecordCount(3);
     _scenarioService.deleteAllScenarios();
     assertRecordCount(0);
-    assertNull( _scenarioService.loadScenario(new ScenarioId(HAPPYCAT_ID)));
-    assertNull( _scenarioService.loadScenario(new ScenarioId(LITTERBOX_ID)));
-    assertNull( _scenarioService.loadScenario(new ScenarioId(ERMAGERD_ID)));
+    assertNull( _scenarioService.getScenario(new ScenarioId(HAPPYCAT_ID)));
+    assertNull( _scenarioService.getScenario(new ScenarioId(LITTERBOX_ID)));
+    assertNull( _scenarioService.getScenario(new ScenarioId(ERMAGERD_ID)));
     assertEquals( 0, _scenarioService.getScenarios().size() );    
     assertEquals( 1, _listener.getDataChangedCount() );
   }

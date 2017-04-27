@@ -145,7 +145,7 @@ public class TestXFactorServiceImpl {
     //Try and load it back (several times to be sure cache is excercised)
     //(Under the impl at time of writing its always going to come from the cache anyway)
     for(int t=0; t<N; t++) {
-      IXFactor reloaded = _xFactorService.loadXFactor(id);
+      IXFactor reloaded = _xFactorService.getXFactor(id);
       assertNotNull(reloaded);
       assertEquals(xf.getName(), reloaded.getName());
     }
@@ -188,7 +188,7 @@ public class TestXFactorServiceImpl {
     for(int t=0; t<N; t++) {
       //id,name,description,xfTrigger,xfAttacks,xfOffense,xfDefense,xfPd,xfRemove
       //"ABC120","First","blah","VALUE(TRUE)","VALUE(1)","VALUE(2)","VALUE(3)","VALUE(4)","VALUE(5)"
-      IXFactor xf = _xFactorService.loadXFactor( new XFactorId("ABC120") );
+      IXFactor xf = _xFactorService.getXFactor( new XFactorId("ABC120") );
       assertNotNull(xf);
       //need to verify all fields got read
       assertEquals("ABC120", xf.getId().toString());
@@ -202,10 +202,10 @@ public class TestXFactorServiceImpl {
       assertEquals("VALUE(5)",xf.getXfRemove());      
     }  
     
-    assertNull( _xFactorService.loadXFactor(new XFactorId("nosuchid")) );
+    assertNull( _xFactorService.getXFactor(new XFactorId("nosuchid")) );
     
     try {
-      IXFactor xf = _xFactorService.loadXFactor(null);
+      IXFactor xf = _xFactorService.getXFactor(null);
       fail("Expected NullPointerException but found " + xf);
     } catch(NullPointerException expected) {}
   }
@@ -213,7 +213,7 @@ public class TestXFactorServiceImpl {
   @Test
   public void testLoadXFactorByName() {
     for(int t=0; t<N; t++) {
-      IXFactor xf = _xFactorService.getByName("First");
+      IXFactor xf = _xFactorService.getXFactorByName("First");
       assertNotNull(xf);
       //need to verify all fields got read
       assertEquals("ABC120", xf.getId().toString());
@@ -227,15 +227,15 @@ public class TestXFactorServiceImpl {
       assertEquals("VALUE(5)",xf.getXfRemove());      
     }  
     
-    assertNull( _xFactorService.getByName("no such xf") );
+    assertNull( _xFactorService.getXFactorByName("no such xf") );
     
     try {
-      IXFactor xf = _xFactorService.getByName(null);
+      IXFactor xf = _xFactorService.getXFactorByName(null);
       fail("Expected NullPointerException but found " + xf);
     } catch(NullPointerException expected) {}
     
     try {
-      _xFactorService.getByName("");
+      _xFactorService.getXFactorByName("");
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
   }

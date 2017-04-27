@@ -64,7 +64,7 @@ public class XFactorServiceImpl extends AbstractPersistenceService implements IX
    * @return xFactor
    */
   @Override
-  public synchronized IXFactor getByName(String name) {
+  public synchronized IXFactor getXFactorByName(String name) {
     name = Objects.requireNonNull(name, "name may not be null").toUpperCase(Locale.US);
     if(name.isEmpty()) {
       throw new IllegalArgumentException("name may not be empty");
@@ -82,7 +82,7 @@ public class XFactorServiceImpl extends AbstractPersistenceService implements IX
    * @return xFactor
    */
   @Override
-  public synchronized IXFactor loadXFactor(XFactorId id) {
+  public synchronized IXFactor getXFactor(XFactorId id) {
     Objects.requireNonNull(id, "id may not be null");
     if(!cacheInitialised()) {
       initCache();
@@ -211,7 +211,7 @@ public class XFactorServiceImpl extends AbstractPersistenceService implements IX
   private void checkDuplicate(IXFactor xfactor) {
     Objects.requireNonNull(xfactor, "unit may not be null");
     Objects.requireNonNull(xfactor.getName(), "xfactor.name may not be null");
-    IXFactor other = getByName( xfactor.getName() );
+    IXFactor other = getXFactorByName( xfactor.getName() );
     if(other != null && !other.getId().equals(xfactor.getId())) {
       throw new DuplicateRecordException("X-Factor name may not be the same as an existing x-factor: " + xfactor.getName());
     }

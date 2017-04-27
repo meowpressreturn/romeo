@@ -130,7 +130,7 @@ public class UnitImporterImpl implements IUnitImporter {
   private List<IUnit> loadUnits(List<UnitId> ids) {
     List<IUnit> units = new ArrayList<>(ids.size());
     for(UnitId id : ids) {
-      units.add( _unitService.loadUnit(id) );
+      units.add( _unitService.getUnit(id) );
     }
     return units;
   }

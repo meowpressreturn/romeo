@@ -49,7 +49,7 @@ public class ScenarioCombo extends AbstractRecordCombo implements ListCellRender
     if(id == null) {
       setSelectedRecord(null);
     } else {
-      IScenario scenario = ((IScenarioService) _service).loadScenario(id);
+      IScenario scenario = ((IScenarioService) _service).getScenario(id);
       setScenario(scenario);
     }
   }

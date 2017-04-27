@@ -253,7 +253,7 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
    * @return world
    */
   @Override
-  public synchronized IWorld loadWorld(WorldId id) {
+  public synchronized IWorld getWorld(WorldId id) {
     Objects.requireNonNull(id, "id may not be null");
     if(!cacheInitialised()) {
       initCache();
@@ -301,7 +301,7 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
    * @return history
    */
   @Override
-  public synchronized IHistory loadHistory(WorldId worldId, int turn) {
+  public synchronized IHistory getHistory(WorldId worldId, int turn) {
     Objects.requireNonNull(worldId, "worldId may not be null");
     if(turn < 1) {
       throw new InvalidTurnException(turn);
@@ -320,7 +320,7 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
    * Load history for a specific world
    */
   @Override
-  public synchronized List<IHistory> loadHistory(WorldId worldId) {
+  public synchronized List<IHistory> getHistory(WorldId worldId) {
     Objects.requireNonNull(worldId, "worldId May not be null");
     if(!cacheInitialised()) {
       initCache();
@@ -377,7 +377,7 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
    * the result is undefined as to which will be returned. 
    */
   @Override
-  public synchronized IWorld loadWorldByName(String name) {
+  public synchronized IWorld getWorldByName(String name) {
     Objects.requireNonNull(name, "name may not be null");
     if(_data == null) {
       initCache();
@@ -654,7 +654,7 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
   private void checkDuplicate(IWorld world) throws DuplicateRecordException {
     //Worlds may not have a name that is a duplicate of an existing name (case-insensitive) of another world
     //Case-insensitive duplicate name check performed via the cache.
-    IWorld other = loadWorldByName( world.getName() ); //nb: will uppercasify it inside the method
+    IWorld other = getWorldByName( world.getName() ); //nb: will uppercasify it inside the method
     if(other != null && !other.getId().equals(world.getId())) {
       throw new DuplicateRecordException("World name may not be the same as that of an existing world: " + world.getName());
     }

@@ -40,7 +40,7 @@ public class ScenarioServiceImpl extends AbstractPersistenceService implements I
   }
 
   @Override
-  public synchronized IScenario loadScenario(ScenarioId id) {
+  public synchronized IScenario getScenario(ScenarioId id) {
     Objects.requireNonNull(id, "id may not be null");
     if(!cacheInitialised()) {
       initCache();

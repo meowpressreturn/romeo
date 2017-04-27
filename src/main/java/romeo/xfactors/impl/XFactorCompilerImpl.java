@@ -86,7 +86,7 @@ public class XFactorCompilerImpl implements IXFactorCompiler, IServiceListener {
   public synchronized CompiledXFactor getXFactor(XFactorId id) {
     CompiledXFactor cxf = _compiledXfactors.get(id);
     if(cxf == null) {
-      IXFactor xf = _xfactorService.loadXFactor(id);
+      IXFactor xf = _xfactorService.getXFactor(id);
       if(xf == null) {
         throw new NoSuchXFactorException(id.toString());
       }

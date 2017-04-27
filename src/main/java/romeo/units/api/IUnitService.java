@@ -42,7 +42,7 @@ public interface IUnitService extends IService, IExternalDataChangeListener {
    * Return a single unit's information given the unit id
    * @param id
    */
-  public IUnit loadUnit(UnitId id);
+  public IUnit getUnit(UnitId id);
 
   /**
    * Return a single unit's information given its acronymn

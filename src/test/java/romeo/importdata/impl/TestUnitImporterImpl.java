@@ -163,7 +163,7 @@ public class TestUnitImporterImpl {
     assertEquals( 1, report.getUpdatedUnitsCount() );
     assertEquals( 3, report.getImportedUnitsCount() );
     
-    IUnit loadRap = _mockUnitService.loadUnit(rapId);
+    IUnit loadRap = _mockUnitService.getUnit(rapId);
     assertEquals( "RAP", loadRap.getAcronym() );
     assertEquals( 100, loadRap.getSpeed() );
     

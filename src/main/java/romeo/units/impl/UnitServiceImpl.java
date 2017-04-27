@@ -221,7 +221,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
    * @return unit
    */
   @Override
-  public synchronized IUnit loadUnit(UnitId id) {
+  public synchronized IUnit getUnit(UnitId id) {
     Objects.requireNonNull(id, "id may not be null");
     //We no longer load individual units from the db when the cache is uninitialised. Now we just 
     //return them from the cache, and initialise first is necessary.

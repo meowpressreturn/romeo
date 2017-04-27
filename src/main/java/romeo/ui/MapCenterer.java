@@ -44,10 +44,10 @@ public class MapCenterer implements Runnable {
     String originString = _settingsService.getString(ISettings.MAP_ORIGIN);
     if(originString != null && !originString.isEmpty()) {
       WorldId originId = new WorldId(originString);
-      IWorld originWorld = _worldService.loadWorld(originId);
+      IWorld originWorld = _worldService.getWorld(originId);
       if(originWorld != null) {
         int turn = (int)_settingsService.getLong(ISettings.CURRENT_TURN);
-        IHistory originHistory = _worldService.loadHistory(originId, turn);
+        IHistory originHistory = _worldService.getHistory(originId, turn);
         if(originHistory != null) {
           //the history and color information isnt actually used in this case,
           //but is needed to construct the object expected by the map

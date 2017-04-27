@@ -271,7 +271,7 @@ public class TestWorldServiceImpl {
   @Test
   public void testLoadWorld() {
     for(int t=0; t<N; t++) {
-      IWorld venus = _worldService.loadWorld( new WorldId("idVenus") );
+      IWorld venus = _worldService.getWorld( new WorldId("idVenus") );
       assertNotNull( venus );
       assertEquals(new WorldId("idVenus"), venus.getId());
       assertEquals("Venus",venus.getName());
@@ -279,18 +279,18 @@ public class TestWorldServiceImpl {
       assertEquals(100, venus.getWorldRer());
       assertEquals(new UnitId("RAP"), venus.getScannerId() );
       
-      IWorld luna = _worldService.loadWorld( new WorldId("idLuna") );
+      IWorld luna = _worldService.getWorld( new WorldId("idLuna") );
       assertNotNull( luna );
       //new Object[] {"idLuna","Luna",10,100, 267,48 }, connection);
       assertEquals( 267, luna.getWorldX() );
       assertEquals( 48, luna.getWorldY() );
       assertNull( luna.getScannerId() );
       
-      assertNull( _worldService.loadWorld(new WorldId("nosuchworld")) );
+      assertNull( _worldService.getWorld(new WorldId("nosuchworld")) );
     }    
     
     try {
-      _worldService.loadWorld( null );
+      _worldService.getWorld( null );
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
@@ -298,7 +298,7 @@ public class TestWorldServiceImpl {
   @Test
   public void testLoadWorldByName() {
     for(int t=0; t<N; t++) {
-      IWorld venus = _worldService.loadWorldByName("Venus");
+      IWorld venus = _worldService.getWorldByName("Venus");
       assertNotNull( venus );
       assertEquals(new WorldId("idVenus"), venus.getId());
       assertEquals("Venus",venus.getName());
@@ -307,25 +307,25 @@ public class TestWorldServiceImpl {
       assertEquals(new UnitId("RAP"), venus.getScannerId() );
       
       //Its case-insesitive now
-      assertNotNull( _worldService.loadWorldByName("venus") );
-      assertNotNull( _worldService.loadWorldByName("venUS") );
-      assertNotNull( _worldService.loadWorldByName("VENUS") );
+      assertNotNull( _worldService.getWorldByName("venus") );
+      assertNotNull( _worldService.getWorldByName("venUS") );
+      assertNotNull( _worldService.getWorldByName("VENUS") );
       
-      IWorld luna = _worldService.loadWorldByName("Luna");
+      IWorld luna = _worldService.getWorldByName("Luna");
       assertNotNull( luna );
       //new Object[] {"idLuna","Luna",10,100, 267,48 }, connection);
       assertEquals( 267, luna.getWorldX() );
       assertEquals( 48, luna.getWorldY() );
       assertNull( luna.getScannerId() );
       
-      assertNull( _worldService.loadWorldByName("nosuchworld") );
+      assertNull( _worldService.getWorldByName("nosuchworld") );
       
       //nb: "" is technically a valid world name so should return null here and not an IAE
-      assertNull( _worldService.loadWorldByName("") );
+      assertNull( _worldService.getWorldByName("") );
     }    
     
     try {
-      _worldService.loadWorldByName( null );
+      _worldService.getWorldByName( null );
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
@@ -382,7 +382,7 @@ public class TestWorldServiceImpl {
   @Test
   public void testLoadHistory() {
     for(int t=0; t<N;t++) {
-      List<IHistory> mercuryHistory = _worldService.loadHistory(new WorldId("idMercury"));
+      List<IHistory> mercuryHistory = _worldService.getHistory(new WorldId("idMercury"));
       assertEquals(3+1, mercuryHistory.size()); //nb: element 0 is null to allow index to match turn number
       assertNull( mercuryHistory.get(0) );
       IHistory turn3 = mercuryHistory.get(3);
@@ -393,7 +393,7 @@ public class TestWorldServiceImpl {
     }  
     
     try {
-      _worldService.loadHistory(null);
+      _worldService.getHistory(null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
@@ -406,7 +406,7 @@ public class TestWorldServiceImpl {
     } catch(SQLException e) {
       throw new RuntimeException(e);
     }
-    List<IHistory> mercuryHistory = _worldService.loadHistory(new WorldId("idMercury"));
+    List<IHistory> mercuryHistory = _worldService.getHistory(new WorldId("idMercury"));
     assertEquals(3+1, mercuryHistory.size()); //nb: element 0 is null to allow index to match turn number
     assertNull( mercuryHistory.get(2) );    
   }
@@ -421,24 +421,24 @@ public class TestWorldServiceImpl {
     }
     
     for(int t=0; t<N;t++) {
-      assertNull( _worldService.loadHistory(new WorldId("idMercury"), 1) );
-      assertNull( _worldService.loadHistory(new WorldId("idMars"), 1) );
-      IHistory mercury3 = _worldService.loadHistory(new WorldId("idMercury"), 3);
+      assertNull( _worldService.getHistory(new WorldId("idMercury"), 1) );
+      assertNull( _worldService.getHistory(new WorldId("idMars"), 1) );
+      IHistory mercury3 = _worldService.getHistory(new WorldId("idMercury"), 3);
       assertMercuryTurn3(mercury3);
-      IHistory mercury2 = _worldService.loadHistory(new WorldId("idMercury"), 2);
+      IHistory mercury2 = _worldService.getHistory(new WorldId("idMercury"), 2);
       assertMercuryTurn2(mercury2);
       
       //Requesting a turn outside the history gives an ITE
       for(int turn : new int[] {-10,-1,0,4,888} ) {
         try {
-          _worldService.loadHistory(new WorldId("idMercury"), turn);
+          _worldService.getHistory(new WorldId("idMercury"), turn);
           fail("Expected InvalidTurnException for turn " + turn);
         } catch(InvalidTurnException expected) {}
       }
     }  
     
     try {
-      _worldService.loadHistory(null,1);
+      _worldService.getHistory(null,1);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}    
   }
@@ -451,7 +451,7 @@ public class TestWorldServiceImpl {
       IWorld yuggoth = new WorldImpl(null, "Yuggoth" + t, 100, 200, new UnitId("RAP"), "beware the shoggoth", 300, 400);
       WorldId id = _worldService.saveWorld(yuggoth);
       assertEquals(1, _listener.getDataChangedCount() );
-      IWorld loadYug = _worldService.loadWorld(id);
+      IWorld loadYug = _worldService.getWorld(id);
       assertNotNull(loadYug);
       assertEquals(id, loadYug.getId() );
       assertEquals("Yuggoth" + t, loadYug.getName());
@@ -465,7 +465,7 @@ public class TestWorldServiceImpl {
       
       IWorld updateYuggoth = new WorldImpl(id, "EditYuggoth"+t, 1000,2000, null, "or dont", 3000, 4000);
       WorldId id2 = _worldService.saveWorld(updateYuggoth);
-      loadYug = _worldService.loadWorld(id);
+      loadYug = _worldService.getWorld(id);
       assertEquals(id, id2);
       assertEquals(id, loadYug.getId() );
       assertEquals("EditYuggoth" + t, loadYug.getName());
@@ -502,8 +502,8 @@ public class TestWorldServiceImpl {
       assertRowCount(8+(t*2)+2);
       
       //The ids in the returned list should match the order of objects passed into save
-      assertEquals("beware the shoggoth", _worldService.loadWorld( ids.get(0) ).getNotes() );
-      assertEquals("or dont", _worldService.loadWorld( ids.get(1) ).getNotes() );
+      assertEquals("beware the shoggoth", _worldService.getWorld( ids.get(0) ).getNotes() );
+      assertEquals("or dont", _worldService.getWorld( ids.get(1) ).getNotes() );
     }
     
     try {
@@ -518,12 +518,12 @@ public class TestWorldServiceImpl {
     WorldId idTerra = new WorldId("idTerra");
     IHistory terra4 = new HistoryImpl(idTerra, 4, "Earth", 123.45d, 1000, 2000);
     
-    assertEquals(4, _worldService.loadHistory(idTerra).size());
+    assertEquals(4, _worldService.getHistory(idTerra).size());
     _worldService.saveHistory(terra4);
     assertEquals(1, _listener.getDataChangedCount());
-    assertEquals(5, _worldService.loadHistory(idTerra).size());  
+    assertEquals(5, _worldService.getHistory(idTerra).size());  
     
-    terra4 = _worldService.loadHistory(idTerra,4);
+    terra4 = _worldService.getHistory(idTerra,4);
     assertEquals(idTerra, terra4.getWorldId());
     assertEquals(4, terra4.getTurn());
     assertEquals("Earth", terra4.getOwner());
@@ -540,13 +540,13 @@ public class TestWorldServiceImpl {
   
   @Test
   public void saveHistories() {    
-    assertEquals(4, _worldService.loadHistory(new WorldId("idTerra")).size());
+    assertEquals(4, _worldService.getHistory(new WorldId("idTerra")).size());
     IHistory terra4 = new HistoryImpl(new WorldId("idTerra"), 4, "Earth", 123.45d, 1000, 2000);
     IHistory venus4 = new HistoryImpl(new WorldId("idVenus"), 4, "Earth", 200.0d, 1500, 3000);
     IHistory mars4 = new HistoryImpl(new WorldId("idMars"), 4, "Mars", 345.67d, 2500, 500);
     List<IHistory> histories = Arrays.asList(terra4,venus4,mars4);
     _worldService.saveHistories(histories);
-    assertEquals(5, _worldService.loadHistory(new WorldId("idMars")).size());
+    assertEquals(5, _worldService.getHistory(new WorldId("idMars")).size());
     
     try {
       _worldService.saveHistories(null);

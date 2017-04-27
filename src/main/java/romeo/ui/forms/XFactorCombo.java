@@ -32,7 +32,7 @@ public class XFactorCombo extends AbstractRecordCombo {
       setXFactor((IXFactor)null);
     } else {
       IXFactorService service = (IXFactorService) getService();
-      IXFactor xf = service.loadXFactor(id);
+      IXFactor xf = service.getXFactor(id);
       setXFactor(xf);
     }
   }

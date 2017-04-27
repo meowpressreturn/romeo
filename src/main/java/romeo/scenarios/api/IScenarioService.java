@@ -8,7 +8,7 @@ public interface IScenarioService extends IService {
 
   public List<IScenario> getScenarios();
 
-  public IScenario loadScenario(ScenarioId id);
+  public IScenario getScenario(ScenarioId id);
 
   public IScenario saveScenario(IScenario scenario);
 

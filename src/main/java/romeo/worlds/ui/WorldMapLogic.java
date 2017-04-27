@@ -309,7 +309,7 @@ public class WorldMapLogic extends AbstractMapLogic implements GenericMap.IObjec
     if(prevTurn < 1 || prevTurn > _mapInfo.getMaxTurn()) {
       return null;
     }
-    IHistory history = _worldService.loadHistory(worldId, _currentTurn - 1);
+    IHistory history = _worldService.getHistory(worldId, _currentTurn - 1);
     return history;
   }
 
