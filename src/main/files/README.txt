@@ -1,12 +1,14 @@
 Romeo ${project.artifact.version}, "Havana" Edition
 -----------------------------
 
+Last updated: 2017-12-22
+
 Romeo requires a  Java 7 or above Java Runtime Environment (JRE) to run.
 This may be downloaded free from the Oracle website if one is not present
 on your computer already:
 http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
-The most up to date version is recommended. (Currently Java 8)
+The most up to date version is recommended. (Currently Java 8 or 9)
 
 IMPORTANT: A unit.csv file MUST be obtained (it may be downloaded from
 the UltraCorps(tm) units help page of the particular game you are in). 
@@ -93,8 +95,4 @@ scanner ranges.  Romeo therefore attempts to identify units to set defaults for
 based on a signature (MD5) of the unit name. If the units have been renamed since
 this version of  Romeo  was released then the acronymns and xfactors will not be able
 to be added automatically. You may do it manually via the Romeo user interface then. 
-
-***REMOVED***
-***REMOVED***
-2017-04-24
 

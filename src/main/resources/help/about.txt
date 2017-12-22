@@ -1,5 +1,5 @@
                                              Romeo
-                                Copyright (c) 2006-2017 ***REMOVED***
+                                Copyright (c) 2006-2017 Andrew Hill
 
                        A strategy analysis tool for the game UltraCorps™.
                        
