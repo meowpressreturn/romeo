@@ -1,37 +1,28 @@
-                                             Romeo
-                                Copyright (c) 2006-2017 Andrew Hill
+Romeo
+Copyright (c) 2006-2017 Andrew Hill
 
-                       A strategy analysis tool for the game UltraCorps™.
-                       
-                       UltraCorps is copyright (c) 1998-2002, 2005-2017 by
-                       Steve Jackson Games. UltraCorps is a trademark of
-                     Steve Jackson Games, which  reserves all  rights. This
-                     program was created and distributed by permission of
-                          Steve Jackson Games. Conquest is Job One!
+Romeo is a strategy analysis tool and battle simulator for the game UltraCorpsâ„¢.
 
-                 Romeo has been developed independently of and is not endorsed
-                              or supported by Steve Jackson Games.
+UltraCorps is copyright (c) 1998-2002, 2005-2017 by Steve Jackson Games. 
+UltraCorps is a trademark of Steve Jackson Games, which reserves all rights.
+This program was created and distributed by permission of Steve Jackson Games. 
+Conquest is Job One!
 
-                  Non-commercial redistribution of Romeo is allowed where this
-                 does not conflict with any licencing policies of Steve Jackson
-               Games. Any modifications made must also comply with these policies
-               and the license terms of the third party libraries used and must
-             include the entire contents of this 'about.txt' / 'license.txt' file.
+Steve Jackson Games' permission to create and distribute such player created programs does not constitute an offer to provide support for Romeo by Steve Jackson Games. This software is not official and is not written by or endorsed by Steve Jackson Games.
 
-            This software is provided "as is" and any express or implied warranties,
-            including, but not limited to, the implied warranties of merchantability
-                      and fitness for a particular purpose are disclaimed.
-        In no event shall the developer be liable for any direct, indirect, incidental,
-         special, exemplary, or consequential damages (including, but not limited to, 
-          procurement of substitute goods or services; loss of use, data, or profits;
-            or business interruption) however caused and on any theory of liability,
-            whether in contract, strict liability, or tort (including negligence or
-             otherwise) arising in any way out of the use of this software, even if
-                           advised of the possibility of such damage.
+Non-commercial modification and redistribution of Romeo is allowed where this does not conflict with the licencing policies of Steve Jackson Games. 
 
-                   This software makes use of several open source third party
-                   libraries. These are included in compliance with the terms
-                         of their respective licenses as listed below:
+In particular, please pay close attention to the requirements for Player-Created Programs
+as listed in the UltraCorps online help at: 
+http://ultracorps.sjgames.com/zgame/help/help.html?topic=64
+  
+Among other things, this details restrictions against automated data retrieval from the game's website (spidering), and against incorporation of text, help files, and other material from the site. 
+
+Any modifications or derivitives of Romeo must be compliant with these policies and comply with the license terms of any third party code or libraries they use and must include the entire contents of this 'about.txt' file.
+
+This software is provided "as is" and any express or implied warranties, including, but not limited to, the implied warranties of merchantability and fitness for a particular purpose are disclaimed. In no event shall the developer be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to, procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
+
+This software makes use of several open source third party libraries. These are included in compliance with the terms of their respective licenses as listed below:
 
 ----------------------------------
 
