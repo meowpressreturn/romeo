@@ -91,8 +91,11 @@ returns: Boolean
 
 PRESENT(acronym)
 
-Determine if any of a specified type of unit is present in the players fleet
-acronymn: A Unit acronym
+Determine if any of a specified type of unit is present in the player's fleet. 
+nb: If you need to know about the presence of units in other player's fleets then you can instead use 
+the QUANTITY operation together with an IF or COMPARISON.
+
+acronym: A Unit acronym
 returns: Boolean true if there are any of that unit for this player
 
 ---------------------------------------
