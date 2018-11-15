@@ -12,6 +12,7 @@ import romeo.xfactors.api.IExpressionParser;
  * Will cause an ExpressionFailure to be raised
  */
 public class Fail implements IExpression {
+  
   protected IExpression _value;
 
   /**

@@ -87,6 +87,11 @@ public class Context implements IExpression {
     OPERAND_TEXT[IS_NOT_BASE] = "IS_NOT_BASE";
     OPERAND_TEXT[PD] = "PD";
   }
+  
+  public static int asOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, OPERAND_TEXT);
+  }
 
   protected int _operand;
 
@@ -103,8 +108,7 @@ public class Context implements IExpression {
       if(tokens.length != 1) {
         throw new IllegalArgumentException("Expecting 1 parameters but found " + tokens.length);
       }
-      String operandToken = tokens[0].toUpperCase(Locale.US);
-      _operand = Convert.toIndex(operandToken, OPERAND_TEXT);
+      _operand = asOperand(tokens[0]);
       validate();
     } catch(IllegalArgumentException illArgs) {
       throw illArgs;

@@ -18,6 +18,7 @@ import romeo.xfactors.api.IExpressionParser;
  * resources folder for details.
  */
 public class Logic implements IExpression {
+  
   /**
    * The AND operand. Tests that both values are true.
    */
@@ -59,6 +60,11 @@ public class Logic implements IExpression {
     OPERAND_TEXT[NOR]   = "NOR";
     OPERAND_TEXT[NOT]   = "NOT";
     OPERAND_TEXT[EQUAL] = "EQUAL";
+  }
+  
+  public static int asOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, OPERAND_TEXT);
   }
   
   /**
@@ -111,8 +117,7 @@ public class Logic implements IExpression {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
       _left = parser.getExpression(tokens[0]);
-      String operandToken = tokens[1].toUpperCase(Locale.US);
-      _operand = Convert.toIndex(operandToken, OPERAND_TEXT);
+      _operand = asOperand(tokens[1]);
       _right = parser.getExpression(tokens[2]);
       validate();
     } catch(IllegalArgumentException illArgs) {

@@ -42,6 +42,11 @@ public class Flag implements IExpression {
     OPERAND_TEXT[THIS_PLAYER] = "THIS_PLAYER";
     OPERAND_TEXT[OPPOSING_PLAYERS] = "OPPOSING_PLAYERS";
   }
+  
+  public static int asOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, OPERAND_TEXT);
+  }
 
   protected int _operand;
   protected IExpression _flag;
@@ -60,8 +65,7 @@ public class Flag implements IExpression {
       if(tokens.length != 2) {
         throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
       }
-      String playerToken = tokens[0].toUpperCase(Locale.US);
-      _operand = Convert.toIndex(playerToken, OPERAND_TEXT);
+      _operand = asOperand(tokens[0]);
       _flag = parser.getExpression(tokens[1]);
       validate();
     } catch(IllegalArgumentException illArgs) {
@@ -75,7 +79,7 @@ public class Flag implements IExpression {
    * Constructor.
    * @param operand an operand indicating which fleet(s) to check for flag
    * @param flag
-   *          expression returning flag text
+   *          expression returning flag text that will be checked for
    */
   public Flag(int operand, IExpression flag) {
     _operand = operand;

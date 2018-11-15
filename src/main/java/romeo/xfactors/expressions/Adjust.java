@@ -33,13 +33,19 @@ public class Adjust implements IExpression {
   public static final int CEILING = 2;
 
   /**
-   * Array of text strings that map to operand constantd
+   * Array of text strings that map to operand constants
+   * (This was done before we had enums in Java!)
    */
   public static final String[] OPERAND_TEXT = new String[3];
   static {
     OPERAND_TEXT[ROUND] = "ROUND";
     OPERAND_TEXT[FLOOR] = "FLOOR";
     OPERAND_TEXT[CEILING] = "CEILING";
+  }
+  
+  public static int asOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, OPERAND_TEXT);
   }
 
   protected IExpression _value;
@@ -62,8 +68,7 @@ public class Adjust implements IExpression {
         throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
       }
       _value = parser.getExpression(tokens[0]);
-      String operandToken = tokens[1].toUpperCase(Locale.US);
-      _operand = Convert.toIndex(operandToken, OPERAND_TEXT);
+      _operand = asOperand(tokens[1]);
       validate();
     } catch(IllegalArgumentException illArgs) {
       throw illArgs;

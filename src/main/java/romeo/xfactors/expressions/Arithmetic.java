@@ -73,6 +73,11 @@ public class Arithmetic implements IExpression {
     OPERAND_TEXT[ROOT] = "ROOT";
     OPERAND_TEXT[POWER] = "POWER";
   }
+  
+  public static int asOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, OPERAND_TEXT);
+  }
 
   protected int _operand;
   protected IExpression _left;
@@ -93,8 +98,7 @@ public class Arithmetic implements IExpression {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
       _left = parser.getExpression(tokens[0]);
-      String operandToken = tokens[1].toUpperCase(Locale.US);
-      _operand = Convert.toIndex(operandToken, OPERAND_TEXT);
+      _operand = asOperand(tokens[1]);
       _right = parser.getExpression(tokens[2]);
       validate();
     } catch(IllegalArgumentException illArgs) {

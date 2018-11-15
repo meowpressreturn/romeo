@@ -16,6 +16,7 @@ import romeo.xfactors.api.IExpressionParser;
  * reference help in the resources folder for details.
  */
 public class Rnd implements IExpression {
+  
   protected Random _rnd = new Random();
   private int _min;
   private int _range;

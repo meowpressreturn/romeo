@@ -16,6 +16,7 @@ import romeo.xfactors.api.IExpressionParser;
  * details.
  */
 public class Quantity implements IExpression {
+  
   /**
    * Operand specifying to count the quantity in any fleet
    */
@@ -41,6 +42,11 @@ public class Quantity implements IExpression {
     OPERAND_TEXT[ANY_PLAYER] = "ANY_PLAYER";
     OPERAND_TEXT[THIS_PLAYER] = "THIS_PLAYER";
     OPERAND_TEXT[OPPOSING_PLAYERS] = "OPPOSING_PLAYERS";
+  }
+  
+  public static int asOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, OPERAND_TEXT);
   }
   
   /**
@@ -87,8 +93,7 @@ public class Quantity implements IExpression {
       if(tokens.length != 3) {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
-      String playerToken = tokens[0].toUpperCase(Locale.US);
-      _operand = Convert.toIndex(playerToken, OPERAND_TEXT);
+      _operand = asOperand(tokens[0]);
       _acronym = tokens[1];
       //note: can be null (now case-insensive as of 0.6.3)
       if(tokens[2].equalsIgnoreCase("null")) {

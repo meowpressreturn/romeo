@@ -9,7 +9,7 @@ import romeo.fleet.model.FleetElement;
 import romeo.xfactors.api.IXFactorCompiler;
 
 /**
- * Bean to wrap various items of interest to xfactors (and other classes) during
+ * Mutable bean to wrap various items of interest to xfactors (and other classes) during
  * a round of battle. Take note that not all properties are available at all
  * times during the progression of the round logic.
  */

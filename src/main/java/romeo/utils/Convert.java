@@ -153,6 +153,13 @@ public class Convert {
     return array;
   }
 
+  /**
+   * Returns the index of the text in the specified array or -1 if it is not found.
+   * String equals() is used to compare.
+   * @param value
+   * @param choices
+   * @return index or -1 if not present
+   */
   public static int toIndex(String value, String[] choices) {
     for(int i = 0; i < choices.length; i++) {
       if(choices[i].equals(value)) {
@@ -646,8 +653,11 @@ public class Convert {
 
   /**
    * If the source string is properly quoted, this will strip the quotes and
-   * return the contents. Throws an exception if the quote isnt closed.
-   * TODO: support for escaping and whitespace before quotes
+   * return the contents. Throws an exception if the quote isnt closed. WARNING:
+   * Currently this just takes the naive approach which is to check if the first
+   * in last characters are a quote, and fail if not, and strip them if so,
+   * without paying any attention to whether there are other unescaped quotes
+   * within the string.
    * @param source
    * @return
    */

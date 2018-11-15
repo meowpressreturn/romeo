@@ -17,6 +17,50 @@ import romeo.xfactors.api.IExpressionParser;
  * details.
  */
 public class Value implements IExpression {
+  
+  /**
+   * Utility method to convert a value token used in a VALUE operation. Applies the following heuristics:
+   * if the text is "null" will return null,
+   * if "true" or "false" (case insensitive) will return a Boolean,
+   * if it starts with a '"' (double quote) will consider it a String and strip the leading and trailing quotes
+   * (nb: currently unescaped internal quotes are not detected (they should cause a failure, but don't yet))
+   * if it contains a '.' will try to return a Double (or fail if cannot parse as such),
+   * otherwise will try to convert to a Long.
+   * @param tokenText
+   * @return
+   */
+  public static Object parseValue(String tokenText) {
+    tokenText = Objects.requireNonNull(tokenText, "token may not be null").trim();
+    final Object value;
+    if("null".equalsIgnoreCase(tokenText)) {
+      value = null;
+    } else if("true".equalsIgnoreCase(tokenText)) {
+      value = Boolean.TRUE;
+    } else if("false".equalsIgnoreCase(tokenText)) {
+      value = Boolean.FALSE;
+    } else {
+      if(tokenText.startsWith("\"")) { 
+        value = Convert.toUnquotedString(tokenText);
+      } else {
+        //Assume its numeric
+        if(tokenText.indexOf('.') != -1) {
+          try {
+            value = new Double(Double.parseDouble(tokenText));
+          } catch(NumberFormatException nfe) {
+            throw new IllegalArgumentException("Invalid numeric (double float) value:" + tokenText);
+          }
+        } else {
+          try {
+            value = new Long(Long.parseLong(tokenText));
+          } catch(NumberFormatException nfe) {
+            throw new IllegalArgumentException("Invalid numeric (long int) value:" + tokenText);
+          }
+        }
+      }
+    }
+    return value;
+  }
+  
   protected Object _value;
 
   /**
@@ -37,33 +81,7 @@ public class Value implements IExpression {
      throw new IllegalArgumentException("VALUE requires one and only one parameter"); 
     }
     String token = parser.trimToken(tokens[0]);
-    
-    if("null".equalsIgnoreCase(token)) {
-      _value = null;
-    } else if("true".equalsIgnoreCase(token)) {
-      _value = Boolean.TRUE;
-    } else if("false".equalsIgnoreCase(token)) {
-      _value = Boolean.FALSE;
-    } else {
-      if(token.startsWith("\"")) { 
-        _value = Convert.toUnquotedString(token);
-      } else {
-        //Assume its numeric
-        if(token.indexOf('.') != -1) {
-          try {
-            _value = new Double(Double.parseDouble(token));
-          } catch(NumberFormatException nfe) {
-            throw new IllegalArgumentException("Invalid numeric (double float) value:" + token);
-          }
-        } else {
-          try {
-            _value = new Long(Long.parseLong(token));
-          } catch(NumberFormatException nfe) {
-            throw new IllegalArgumentException("Invalid numeric (long int) value:" + token);
-          }
-        }
-      }
-    }
+    _value = parseValue(token);
   }
 
   /**
@@ -73,10 +91,10 @@ public class Value implements IExpression {
    */
   public Value(Object value) {
     if(value == null || value instanceof Double || value instanceof Integer || value instanceof Long
-        || value instanceof String) {
+        || value instanceof String || value instanceof Boolean) {
       _value = value;
     } else {
-      throw new IllegalArgumentException("Invalid value type");
+      throw new IllegalArgumentException("Invalid value type:" + value.getClass().getName());
     }
   }
 
