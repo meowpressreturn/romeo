@@ -66,6 +66,15 @@ expr:    An expression that returns the name of the flag to look for.
 returns: Integer number of specified unit
 
 ---------------------------------------
+FAIL(expr)
+
+This operation will cause an exception (error) to be raised. It takes an expression whose
+result is used as the message in the exception. Depending on where the expression is evaluated
+the exception may be reported in a dialog box by Romeo. 
+nb: this operation is probably of limited value but may be of use in debugging.
+expr:    An expression that returns the name of the flag to look for.
+throws: an ExpressionFailure exception preventing further evaluation of the expression
+---------------------------------------
 
 IF(exprCondition,exprThen,exprElse)
 
