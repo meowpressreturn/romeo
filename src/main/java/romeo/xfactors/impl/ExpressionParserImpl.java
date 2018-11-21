@@ -82,11 +82,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "CONTEXT" : return parseContext(params);
         case "FAIL" : return parseFail(params);
         case "FLAG" : return parseFlag(params);
+        case "IF" : return parseIf(params);
        
         default: {
-          if("IF".equals(exprType)) {
-            return new If(params, this, this);
-          } else if("LOGIC".equals(exprType)) {
+          if("LOGIC".equals(exprType)) {
             return new Logic(params, this, this);
           } else if("QUANTITY".equals(exprType)) {
             return new Quantity(params, this, this);
@@ -303,6 +302,24 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise FLAG with params:" + params, e);
+    }
+  }
+  
+  public If parseIf(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 3) {
+        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
+      }
+      IExpression condition = getExpression(tokens[0]);
+      IExpression trueResult = getExpression(tokens[1]);
+      IExpression falseResult = getExpression(tokens[2]);
+      return new If(condition, trueResult, falseResult);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise IF with params:" + params, e);
     }
   }
 }

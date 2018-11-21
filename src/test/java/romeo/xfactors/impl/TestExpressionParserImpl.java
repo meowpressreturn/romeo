@@ -366,6 +366,37 @@ public class TestExpressionParserImpl {
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) { }
   }
+  
+  @Test
+  public void testParseIf() {
+      
+    _p.parseIf("VALUE(false),VALUE(0),VALUE(1)");
+    
+    try {
+      _p.parseIf("VALUE(false),VALUE(0),VALUE(1),VALUE(2)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseIf("VALUE(false),VALUE(0)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseIf("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseIf(",,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseIf(null);
+      fail("Expected NullPointerException");
+    }catch(NullPointerException expected) {}
+  }
 }
 
 
