@@ -1,13 +1,9 @@
 package romeo.xfactors.expressions;
 
-import java.util.Locale;
 import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
-import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the ADJUST expression. This is used to round values. See the
@@ -39,41 +35,9 @@ public class Adjust implements IExpression {
     OPERAND_TEXT[FLOOR] = "FLOOR";
     OPERAND_TEXT[CEILING] = "CEILING";
   }
-  
-  public static int asOperand(String text) {
-    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
-    return Convert.toIndex(operandToken, OPERAND_TEXT);
-  }
 
   protected IExpression _value;
   protected int _operand;
-
-  /**
-   * Constructor that parses the string parameters to initialise this expression
-   * object
-   * @param params
-   *          the parameters to the ADJUST expression
-   * @param parser
-   *          the XFEL parser
-   */
-  public Adjust(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 2) {
-        throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
-      }
-      _value = parser.getExpression(tokens[0]);
-      _operand = asOperand(tokens[1]);
-      validate();
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise ADJUST with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor

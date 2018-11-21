@@ -143,6 +143,54 @@ public class TestExpressionParserImpl {
     assertEquals("blah\" foo bar baz \"bob\" hello\"", _p.trimToken("blah\n\t   \" foo bar baz \"    bob  \" hello\"") );
 
   }
+  
+  
+  @Test
+  public void testParseAdjust() {
+    {
+      Adjust round = _p.parseAdjust("VALUE(0),ROUND");
+      assertEquals( Adjust.ROUND, round.getOperand());
+      assertTrue( round.getValue() instanceof Value);
+    }
+    
+    {
+      Adjust floor = _p.parseAdjust("VALUE(0),FLOOR");
+      assertEquals( Adjust.FLOOR, floor.getOperand() );
+    }
+    
+    {
+      Adjust ceiling = _p.parseAdjust("VALUE(0),CEILING");
+      assertEquals( Adjust.CEILING, ceiling.getOperand() );
+    }
+    
+    try {
+      Adjust a = _p.parseAdjust("VALUE(0),BADOP");
+      fail("Expected IllegalArgumentException but found " + a);
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      Adjust a = _p.parseAdjust("");
+      fail("Expected IllegalArgumentException but found " + a);
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      Adjust a = _p.parseAdjust(",,,,,");
+      fail("Expected IllegalArgumentException but found " + a);
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseAdjust(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    {
+    //Can it handle whitespace?
+      Adjust round = _p.parseAdjust("VALUE(0), ROUND\n  ");
+      assertEquals( Adjust.ROUND, round.getOperand());
+      assertTrue( round.getValue() instanceof Value);
+    }
+    
+  }
 }
 
 

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
@@ -70,36 +71,38 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
 
       String params = xfel.substring(iolb + 1, iorb).trim(); //May be "" -in theory anyhow
 
-      //Hardcoded expression types for now
-      //todo - pull these from so kind of expression registry to allow for easy extension
-      //todo - can use a switch for strings nowadays!
-      if("ADJUST".equals(exprType)) {
-        return new Adjust(params, this, this);
-      } else if("ARITHMETIC".equals(exprType)) {
-        return new Arithmetic(params, this, this);
-      } else if("COMPARISON".equals(exprType)) {
-        return new Comparison(params, this, this);
-      } else if("CONTEXT".equals(exprType)) {
-        return new Context(params, this, this);
-      } else if("IF".equals(exprType)) {
-        return new If(params, this, this);
-      } else if("LOGIC".equals(exprType)) {
-        return new Logic(params, this, this);
-      } else if("QUANTITY".equals(exprType)) {
-        return new Quantity(params, this, this);
-      } else if("RND".equals(exprType)) {
-        return new Rnd(params, this, this);
-      } else if("VALUE".equals(exprType)) {
-        return new Value(params, this, this);
-      } else if("PRESENT".equals(exprType)) {
-        return new Present(params, this, this);
-      } else if("FLAG".equals(exprType)) {
-        return new Flag(params, this, this);
-      } else if("FAIL".equals(exprType)) {
-        return new Fail(params, this, this);
-      } else {
-        throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
-      }
+      switch(exprType) {
+        case "ADJUST": return parseAdjust(params);
+       
+        default: {
+          if("ARITHMETIC".equals(exprType)) {
+            return new Arithmetic(params, this, this);
+          } else if("COMPARISON".equals(exprType)) {
+            return new Comparison(params, this, this);
+          } else if("CONTEXT".equals(exprType)) {
+            return new Context(params, this, this);
+          } else if("IF".equals(exprType)) {
+            return new If(params, this, this);
+          } else if("LOGIC".equals(exprType)) {
+            return new Logic(params, this, this);
+          } else if("QUANTITY".equals(exprType)) {
+            return new Quantity(params, this, this);
+          } else if("RND".equals(exprType)) {
+            return new Rnd(params, this, this);
+          } else if("VALUE".equals(exprType)) {
+            return new Value(params, this, this);
+          } else if("PRESENT".equals(exprType)) {
+            return new Present(params, this, this);
+          } else if("FLAG".equals(exprType)) {
+            return new Flag(params, this, this);
+          } else if("FAIL".equals(exprType)) {
+            return new Fail(params, this, this);
+          } else {
+            throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
+          }          
+        }
+      } //end switch exprType
+      
     } catch(IllegalArgumentException badExpr) {
       throw badExpr;
     } catch(Exception e) {
@@ -202,22 +205,25 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
     return builder.toString();
   }
 
-  /*
-   * public static void main(String[] args) { String[] tests = new String[] {
-   * "ARITHMETIC(VALUE(2),ADD,ARITHMETIC(ADJUST(ARITHMETIC(QUANTITY(THIS_PLAYER,NZF,null),DIVIDE,VALUE(100.0)),FLOOR),MIN,VALUE(5)))",
-   * "ARITHMETIC(VALUE(2),ADD,VALUE(4))",
-   * "COMPARISON(RND(1,100),GREATER_OR_EQUAL,ARITHMETIC(VALUE(50),MAX,QUANTITY(THAT_PLAYER,HC4,null)))",
-   * "LOGIC(COMPARISON(RND(1,100),EQUAL,QUANTITY(ANY_PLAYER,X5,null)),AND,COMPARISON(CONTEXT(ROUND),GREATER_THAN,VALUE(8)))",
-   * "IF(VALUE(true),LOGIC(VALUE(false),NOT,COMPARISON (  CONTEXT(IS_ATTACKER),EQUAL  ,VALUE(true))),   VALUE(\"foobar\n,  CONTEXT(ROUND),RND(1,100)\"))"
-   * , }; ExpressionParserImpl testImpl = new ExpressionParserImpl(null); try {
-   * String cleanMe =
-   * "IF(VALUE (true),    LOGIC(VALUE(   false),NOT,COMPARISON(\nCONTEXT(IS_ATTACKER),EQUAL,VALUE(true)\n   ),VALUE(\"foobar\n,CONTEXT(ROUND),RND(1,100)\"))"
-   * ; System.out.println("CLEANUP:" + cleanMe); System.out.println("CLEANED:" +
-   * testImpl.cleanup(cleanMe)); System.out.println();
-   * 
-   * for(int i=0; i < tests.length; i++) { System.out.println("TESTING.... " +
-   * tests[i]); IExpression expr = testImpl.getExpression(tests[i]);
-   * System.out.println("RESULT..... " + expr.toString()); System.out.println();
-   * } } catch(Exception e) { e.printStackTrace(); } }
-   */
+  public int parseAdjustOperand(String text) {
+    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+    return Convert.toIndex(operandToken, Adjust.OPERAND_TEXT);
+  }
+  
+  public Adjust parseAdjust(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 2) {
+        throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
+      }
+      IExpression value = getExpression(tokens[0]);
+      int operand = parseAdjustOperand( trimToken(tokens[1]) );
+      return new Adjust(value, operand);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to create ADJUST with params:" + params, e);
+    }
+  }
 }
