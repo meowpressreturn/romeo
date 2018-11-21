@@ -7,10 +7,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
-import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestArithmetic {
 
@@ -72,54 +69,7 @@ public class TestArithmetic {
     } catch(NullPointerException expected) {}
   }
   
-  @Test
-  public void testParsingConstructor() {
-    IExpressionParser parser = new ExpressionParserImpl();
-    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-    
-    Arithmetic add = new Arithmetic("VALUE(0),ADD,VALUE(0)", parser, tokeniser);
-    assertEquals( ArithmeticOperand.ADD, add.getOperand() );
-    assertTrue( add.getLeft() instanceof Value );
-    assertTrue( add.getRight() instanceof Value);
-    
-    assertEquals( ArithmeticOperand.SUBTRACT, new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( ArithmeticOperand.MULTIPLY, new Arithmetic("VALUE(0),MULTIPLY,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( ArithmeticOperand.DIVIDE, new Arithmetic("VALUE(0),DIVIDE,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( ArithmeticOperand.MIN, new Arithmetic("VALUE(0),MIN,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( ArithmeticOperand.MAX, new Arithmetic("VALUE(0),MAX,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( ArithmeticOperand.ROOT, new Arithmetic("VALUE(0),ROOT,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( ArithmeticOperand.POWER, new Arithmetic("VALUE(0),POWER,VALUE(0)", parser, tokeniser).getOperand() );
-    
-    try{
-      new Arithmetic("VALUE(0),NOSUCHOP,VALUE(0)", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try{
-      new Arithmetic("", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try{
-      new Arithmetic(",,,", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Arithmetic(null, parser, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)",null, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)",parser, null);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-  }
+
   
   @Test
   public void testAdd() {

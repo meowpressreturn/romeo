@@ -9,6 +9,7 @@ import romeo.xfactors.api.IExpression;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
+import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.expressions.Comparison;
 import romeo.xfactors.expressions.Context;
 import romeo.xfactors.expressions.Fail;
@@ -191,6 +192,43 @@ public class TestExpressionParserImpl {
       assertTrue( round.getValue() instanceof Value);
     }
     
+  }
+  
+  @Test
+  public void testParseArithmetic() {
+
+    Arithmetic add = _p.parseArithmetic("VALUE(0),ADD,VALUE(0)");
+    assertEquals( ArithmeticOperand.ADD, add.getOperand() );
+    assertTrue( add.getLeft() instanceof Value );
+    assertTrue( add.getRight() instanceof Value);
+    
+    assertEquals( ArithmeticOperand.SUBTRACT, _p.parseArithmetic("VALUE(0),SUBTRACT,VALUE(0)").getOperand() );
+    assertEquals( ArithmeticOperand.MULTIPLY, _p.parseArithmetic("VALUE(0),MULTIPLY,VALUE(0)").getOperand() );
+    assertEquals( ArithmeticOperand.DIVIDE, _p.parseArithmetic("VALUE(0),DIVIDE,VALUE(0)").getOperand() );
+    assertEquals( ArithmeticOperand.MIN, _p.parseArithmetic("VALUE(0),MIN,VALUE(0)").getOperand() );
+    assertEquals( ArithmeticOperand.MAX, _p.parseArithmetic("VALUE(0),MAX,VALUE(0)").getOperand() );
+    assertEquals( ArithmeticOperand.ROOT, _p.parseArithmetic("VALUE(0),ROOT,VALUE(0)").getOperand() );
+    assertEquals( ArithmeticOperand.POWER, _p.parseArithmetic("VALUE(0),POWER,VALUE(0)").getOperand() );
+    
+    try{
+      _p.parseArithmetic("VALUE(0),NOSUCHOP,VALUE(0)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseArithmetic("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseArithmetic(",,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseArithmetic(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
   }
 }
 

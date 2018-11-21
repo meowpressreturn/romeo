@@ -11,6 +11,7 @@ import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
+import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.expressions.Comparison;
 import romeo.xfactors.expressions.Context;
 import romeo.xfactors.expressions.Fail;
@@ -72,12 +73,11 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       String params = xfel.substring(iolb + 1, iorb).trim(); //May be "" -in theory anyhow
 
       switch(exprType) {
-        case "ADJUST": return parseAdjust(params);
+        case "ADJUST" : return parseAdjust(params);
+        case "ARITHMETIC" : return parseArithmetic(params);
        
         default: {
-          if("ARITHMETIC".equals(exprType)) {
-            return new Arithmetic(params, this, this);
-          } else if("COMPARISON".equals(exprType)) {
+          if("COMPARISON".equals(exprType)) {
             return new Comparison(params, this, this);
           } else if("CONTEXT".equals(exprType)) {
             return new Context(params, this, this);
@@ -219,6 +219,24 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to create ADJUST with params:" + params, e);
+    }
+  }
+  
+  public Arithmetic parseArithmetic(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 3) {
+        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
+      }
+      IExpression left = getExpression(tokens[0]);
+      ArithmeticOperand operand = ArithmeticOperand.fromString( trimToken(tokens[1]));
+      IExpression right = getExpression(tokens[2]);
+      return new Arithmetic(left, operand, right);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise ARITHMETIC with params:" + params, e);
     }
   }
 }
