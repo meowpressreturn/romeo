@@ -21,6 +21,7 @@ import romeo.xfactors.expressions.Flag;
 import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.expressions.If;
 import romeo.xfactors.expressions.Logic;
+import romeo.xfactors.expressions.Logic.LogicOperand;
 import romeo.xfactors.expressions.Present;
 import romeo.xfactors.expressions.Quantity;
 import romeo.xfactors.expressions.Rnd;
@@ -83,11 +84,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "FAIL" : return parseFail(params);
         case "FLAG" : return parseFlag(params);
         case "IF" : return parseIf(params);
+        case "LOGIC" : return parseLogic(params);
        
         default: {
-          if("LOGIC".equals(exprType)) {
-            return new Logic(params, this, this);
-          } else if("QUANTITY".equals(exprType)) {
+          if("QUANTITY".equals(exprType)) {
             return new Quantity(params, this, this);
           } else if("RND".equals(exprType)) {
             return new Rnd(params, this, this);
@@ -320,6 +320,24 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise IF with params:" + params, e);
+    }
+  }
+
+  public Logic parseLogic(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 3) {
+        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
+      }
+      IExpression left = getExpression(tokens[0]);
+      LogicOperand operand = LogicOperand.fromString(trimToken(tokens[1]));
+      IExpression right = getExpression(tokens[2]);
+      return new Logic(left, operand, right);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise LOGIC with params:" + params, e);
     }
   }
 }

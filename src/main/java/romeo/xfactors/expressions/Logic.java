@@ -5,8 +5,6 @@ import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the LOGIC expression which allows one to perform various logic
@@ -88,30 +86,6 @@ public class Logic implements IExpression {
   protected IExpression _left;
   protected IExpression _right;
   protected LogicOperand _operand;
-
-  /**
-   * Constructor that parses the params
-   * @param params
-   * @param parser
-   */
-  public Logic(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 3) {
-        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
-      }
-      _left = parser.getExpression(tokens[0]);
-      _operand = LogicOperand.fromString(tokeniser.trimToken(tokens[1]));
-      _right = parser.getExpression(tokens[2]);
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise LOGIC with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Adjust.AdjustOperand;
@@ -19,6 +20,7 @@ import romeo.xfactors.expressions.Flag;
 import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.expressions.If;
 import romeo.xfactors.expressions.Logic;
+import romeo.xfactors.expressions.Logic.LogicOperand;
 import romeo.xfactors.expressions.Present;
 import romeo.xfactors.expressions.Quantity;
 import romeo.xfactors.expressions.Rnd;
@@ -396,6 +398,50 @@ public class TestExpressionParserImpl {
       _p.parseIf(null);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
+  }
+  
+  @Test
+  public void testParseLogic() {
+    RoundContext context = new RoundContext(new String[] {});
+    Logic logic = _p.parseLogic("VALUE(\"left\"),AND, VALUE(\"right\")");
+    assertTrue( logic.getLeft() instanceof Value);
+    assertEquals( "left", ((Value)logic.getLeft()).evaluate(context) );
+    assertTrue( logic.getRight() instanceof Value);
+    assertEquals( "right", ((Value)logic.getRight()).evaluate(context) );
+    assertEquals(LogicOperand.AND, logic.getOperand());
+    
+    assertEquals(LogicOperand.OR, _p.parseLogic("VALUE(0),OR,VALUE(0)").getOperand() );
+    assertEquals(LogicOperand.XOR, _p.parseLogic("VALUE(0),XOR,VALUE(0)").getOperand() );
+    assertEquals(LogicOperand.NOR, _p.parseLogic("VALUE(0),NOR,VALUE(0)").getOperand() );
+    assertEquals(LogicOperand.NOT, _p.parseLogic("VALUE(0),NOT,VALUE(0)").getOperand() );
+    assertEquals(LogicOperand.EQUAL, _p.parseLogic("VALUE(0),EQUAL,VALUE(0)").getOperand() );    
+    
+    try {
+      _p.parseLogic("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseLogic(",,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseLogic(",,,,,,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseLogic("VALUE(0),OR,VALUE(0),VALUE(1)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    
+    try {
+      _p.parseLogic(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
   }
 }
 

@@ -6,10 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Logic.LogicOperand;
-import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestLogic {
 
@@ -41,61 +38,6 @@ public class TestLogic {
     
     try {
       new Logic(left, null, right);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-  }
-  
-  @Test
-  public void testParsingConstructor() {
-    IExpressionParser parser = new ExpressionParserImpl();
-    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-    
-    Logic logic = new Logic("VALUE(\"left\"),AND, VALUE(\"right\")", parser, tokeniser);
-    assertTrue( logic.getLeft() instanceof Value);
-    assertEquals( "left", ((Value)logic.getLeft()).evaluate(_context) );
-    assertTrue( logic.getRight() instanceof Value);
-    assertEquals( "right", ((Value)logic.getRight()).evaluate(_context) );
-    assertEquals(LogicOperand.AND, logic.getOperand());
-    
-    assertEquals(LogicOperand.OR, new Logic("VALUE(0),OR,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(LogicOperand.XOR, new Logic("VALUE(0),XOR,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(LogicOperand.NOR, new Logic("VALUE(0),NOR,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(LogicOperand.NOT, new Logic("VALUE(0),NOT,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(LogicOperand.EQUAL, new Logic("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );    
-    
-    try {
-      new Logic("",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Logic(",,",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Logic(",,,,,,,,",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Logic("VALUE(0),OR,VALUE(0),VALUE(1)",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    
-    try {
-      new Logic(null, parser, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Logic("VALUE(true),VALUE.AND,VALUE(true)",null, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Logic("VALUE(true),VALUE.AND,VALUE(true)",parser, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
