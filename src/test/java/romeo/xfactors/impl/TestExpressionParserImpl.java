@@ -339,6 +339,33 @@ public class TestExpressionParserImpl {
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
+  
+  @Test
+  public void testParseFail() {
+    
+    Fail fail = _p.parseFail("VALUE(0)");
+    assertTrue( fail.getExpression() instanceof Value );
+    
+    try {
+      _p.parseFail(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) { }
+    
+    try {
+      _p.parseFail(",,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) { }
+    
+    try {
+      _p.parseFail("VALUE(0),VALUE(0)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) { }
+    
+    try {
+      _p.parseFail("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) { }
+  }
 }
 
 

@@ -5,8 +5,6 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.ExpressionFailure;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Will cause an ExpressionFailure to be raised
@@ -14,32 +12,6 @@ import romeo.xfactors.api.IExpressionTokeniser;
 public class Fail implements IExpression {
   
   protected IExpression _value;
-
-  /**
-   * Constructor that parses the string parameters to initialise this expression
-   * object
-   * @param params
-   *          the parameters to the FAIL expression
-   * @param parser
-   *          the XFEL parser
-   */
-  public Fail(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 1) {
-        throw new IllegalArgumentException("Expecting 1 parameter but found " + tokens.length);
-      }
-      _value = parser.getExpression(tokens[0]);
-      //validate();
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise Fail with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor

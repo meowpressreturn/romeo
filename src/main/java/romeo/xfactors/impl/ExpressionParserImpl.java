@@ -80,6 +80,7 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "ARITHMETIC" : return parseArithmetic(params);
         case "COMPARISON" : return parseComparison(params);
         case "CONTEXT" : return parseContext(params);
+        case "FAIL" : return parseFail(params);
         case "FLAG" : return parseFlag(params);
        
         default: {
@@ -95,8 +96,6 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
             return new Value(params, this, this);
           } else if("PRESENT".equals(exprType)) {
             return new Present(params, this, this);
-          } else if("FAIL".equals(exprType)) {
-            return new Fail(params, this, this);
           } else {
             throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
           }          
@@ -271,6 +270,22 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise CONTEXT with params:" + params, e);
+    }
+  }
+  
+  public Fail parseFail(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 1) {
+        throw new IllegalArgumentException("Expecting 1 parameter but found " + tokens.length);
+      }
+      IExpression valueExpr = getExpression(tokens[0]);
+      return new Fail(valueExpr);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise Fail with params:" + params, e);
     }
   }
   
