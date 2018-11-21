@@ -18,6 +18,7 @@ import romeo.xfactors.expressions.Context;
 import romeo.xfactors.expressions.Context.ContextOperand;
 import romeo.xfactors.expressions.Fail;
 import romeo.xfactors.expressions.Flag;
+import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.expressions.If;
 import romeo.xfactors.expressions.Logic;
 import romeo.xfactors.expressions.Present;
@@ -79,6 +80,7 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "ARITHMETIC" : return parseArithmetic(params);
         case "COMPARISON" : return parseComparison(params);
         case "CONTEXT" : return parseContext(params);
+        case "FLAG" : return parseFlag(params);
        
         default: {
           if("IF".equals(exprType)) {
@@ -93,8 +95,6 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
             return new Value(params, this, this);
           } else if("PRESENT".equals(exprType)) {
             return new Present(params, this, this);
-          } else if("FLAG".equals(exprType)) {
-            return new Flag(params, this, this);
           } else if("FAIL".equals(exprType)) {
             return new Fail(params, this, this);
           } else {
@@ -271,6 +271,23 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise CONTEXT with params:" + params, e);
+    }
+  }
+  
+  public Flag parseFlag(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 2) {
+        throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
+      }
+      FlagOperand operand = FlagOperand.fromString(trimToken(tokens[0]));
+      IExpression flagExpr = getExpression(tokens[1]);
+      return new Flag(operand, flagExpr);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise FLAG with params:" + params, e);
     }
   }
 }

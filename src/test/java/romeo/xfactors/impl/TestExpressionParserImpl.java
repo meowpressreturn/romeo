@@ -16,6 +16,7 @@ import romeo.xfactors.expressions.Context;
 import romeo.xfactors.expressions.Context.ContextOperand;
 import romeo.xfactors.expressions.Fail;
 import romeo.xfactors.expressions.Flag;
+import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.expressions.If;
 import romeo.xfactors.expressions.Logic;
 import romeo.xfactors.expressions.Present;
@@ -305,6 +306,38 @@ public class TestExpressionParserImpl {
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
+  }
+  
+  @Test
+  public void testParseFlag() {
+    assertEquals( FlagOperand.ANY_PLAYER, _p.parseFlag("ANY_PLAYER,VALUE(0)").getOperand() );
+    assertEquals( FlagOperand.THIS_PLAYER, _p.parseFlag("THIS_PLAYER,VALUE(0)").getOperand() );
+    assertEquals( FlagOperand.OPPOSING_PLAYERS, _p.parseFlag("OPPOSING_PLAYERS,VALUE(0)").getOperand() );   
+    
+    try {
+      _p.parseFlag("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseFlag(",");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseFlag(",,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseFlag("ANY_PLAYER, VALUE(0), VALUE(1)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseFlag(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
   }
 }
 

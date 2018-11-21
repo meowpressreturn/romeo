@@ -6,8 +6,6 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Expression that returns true if a specified flag is found. It requires that
@@ -44,30 +42,6 @@ public class Flag implements IExpression {
 
   protected FlagOperand _operand;
   protected IExpression _flag;
-
-  /**
-   * Constructor
-   * @param params
-   *          params string
-   * @param parser
-   */
-  public Flag(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 2) {
-        throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
-      }
-      _operand = FlagOperand.fromString(tokeniser.trimToken(tokens[0]));
-      _flag = parser.getExpression(tokens[1]);
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise FLAG with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor.
