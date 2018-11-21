@@ -11,6 +11,7 @@ import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
+import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestFlag {
@@ -62,19 +63,19 @@ public class TestFlag {
   @Test
   public void testConstructor() {
     Value value = new Value(0);
-    Flag flag = new Flag(Flag.ANY_PLAYER,value);
-    assertEquals( Flag.ANY_PLAYER, flag.getOperand());
+    Flag flag = new Flag(FlagOperand.ANY_PLAYER,value);
+    assertEquals( FlagOperand.ANY_PLAYER, flag.getOperand());
     assertEquals( value, flag.getFlag());
     
     try {
-      new Flag(Flag.ANY_PLAYER, null);
+      new Flag(FlagOperand.ANY_PLAYER, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Flag(888, value);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
+      new Flag(null, value);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
   }
   
   @Test
@@ -82,9 +83,9 @@ public class TestFlag {
     IExpressionParser parser = new ExpressionParserImpl();
     IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    assertEquals( Flag.ANY_PLAYER, new Flag("ANY_PLAYER,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals( Flag.THIS_PLAYER, new Flag("THIS_PLAYER,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals( Flag.OPPOSING_PLAYERS, new Flag("OPPOSING_PLAYERS,VALUE(0)",parser, tokeniser).getOperand() );   
+    assertEquals( FlagOperand.ANY_PLAYER, new Flag("ANY_PLAYER,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals( FlagOperand.THIS_PLAYER, new Flag("THIS_PLAYER,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals( FlagOperand.OPPOSING_PLAYERS, new Flag("OPPOSING_PLAYERS,VALUE(0)",parser, tokeniser).getOperand() );   
     
     try {
       new Flag("",parser, tokeniser);
@@ -124,30 +125,30 @@ public class TestFlag {
   
   @Test
   public void testCheckFlags() {
-    assertTrue( (Boolean)new Flag(Flag.THIS_PLAYER, new Value("TERRAN")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("TERRAN")).evaluate(_context) );
-    assertFalse( (Boolean)new Flag(Flag.OPPOSING_PLAYERS, new Value("TERRAN")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.THIS_PLAYER, new Value("TERRAN")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("TERRAN")).evaluate(_context) );
+    assertFalse( (Boolean)new Flag(FlagOperand.OPPOSING_PLAYERS, new Value("TERRAN")).evaluate(_context) );
     
-    assertTrue( (Boolean)new Flag(Flag.OPPOSING_PLAYERS, new Value("BIO")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.OPPOSING_PLAYERS, new Value("BIO")).evaluate(_context) );
     
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("TERRAN")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("MUTANT")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("BIO")).evaluate(_context) );
-    assertFalse( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("PUMPKIN")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("TERRAN")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("MUTANT")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("BIO")).evaluate(_context) );
+    assertFalse( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("PUMPKIN")).evaluate(_context) );
   }
   
   @Test
   public void testFlagsCaseInsensitive() {
     //it converts the result of the flag expression to uppercase
-    assertTrue( (Boolean)new Flag(Flag.THIS_PLAYER, new Value("TERRAN")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.THIS_PLAYER, new Value("terran")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.THIS_PLAYER, new Value("Terran")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.THIS_PLAYER, new Value("TERRAN")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.THIS_PLAYER, new Value("terran")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.THIS_PLAYER, new Value("Terran")).evaluate(_context) );
     
     //but does it convert the flag to uppercase? (spoiler: it wasn't till I tested...)
     _venusFleet.setFlag("lowerCase", true);
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("Lowercase")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("LOWERCASE")).evaluate(_context) );
-    assertTrue( (Boolean)new Flag(Flag.ANY_PLAYER, new Value("lowerCase")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("Lowercase")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("LOWERCASE")).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.ANY_PLAYER, new Value("lowerCase")).evaluate(_context) );
   }
   
   /**
@@ -156,12 +157,12 @@ public class TestFlag {
   @Test
   public void testExpressionToString() {
     _venusFleet.setFlag("1234.0", true); // this is what the toString of 1234d looks like
-    Flag flag = new Flag(Flag.ANY_PLAYER, new Value(1234d));
+    Flag flag = new Flag(FlagOperand.ANY_PLAYER, new Value(1234d));
     Boolean result = (Boolean)flag.evaluate(_context);
     assertTrue( result );
     
     _venusFleet.setFlag("true",true);
-    assertTrue( (Boolean)new Flag(Flag.OPPOSING_PLAYERS, new Value(true)).evaluate(_context) );
+    assertTrue( (Boolean)new Flag(FlagOperand.OPPOSING_PLAYERS, new Value(true)).evaluate(_context) );
   }
   
 }
