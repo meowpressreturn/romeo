@@ -5,8 +5,6 @@ import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the CONTEXT expression. This evaluates to one of a number of
@@ -77,28 +75,6 @@ public class Context implements IExpression {
   }
 
   protected ContextOperand _operand;
-
-  /**
-   * Constructor that parses the params
-   * @param params
-   * @param parser
-   */
-  public Context(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 1) {
-        throw new IllegalArgumentException("Expecting 1 parameters but found " + tokens.length);
-      }
-      _operand = ContextOperand.fromString(tokeniser.trimToken(tokens[0]));
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise CONTEXT with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor

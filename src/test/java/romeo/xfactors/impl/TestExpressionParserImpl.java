@@ -13,6 +13,7 @@ import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.expressions.Comparison;
 import romeo.xfactors.expressions.Comparison.ComparisonOperand;
 import romeo.xfactors.expressions.Context;
+import romeo.xfactors.expressions.Context.ContextOperand;
 import romeo.xfactors.expressions.Fail;
 import romeo.xfactors.expressions.Flag;
 import romeo.xfactors.expressions.If;
@@ -265,6 +266,45 @@ public class TestExpressionParserImpl {
       _p.parseComparison("VALUE(0),NOT_EQUAL,VALUE(0),VALUE(0)");
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
+  }
+  
+  @Test
+  public void testParseContext() {
+    assertEquals( ContextOperand.IS_DEFENDER, _p.parseContext("IS_DEFENDER").getOperand() );
+    assertEquals( ContextOperand.IS_ATTACKER, _p.parseContext("IS_ATTACKER").getOperand() );
+    assertEquals( ContextOperand.SOURCE, _p.parseContext("SOURCE").getOperand() );
+    assertEquals( ContextOperand.ATTACKS, _p.parseContext("ATTACKS").getOperand() );
+    assertEquals( ContextOperand.OFFENSE, _p.parseContext("OFFENSE").getOperand() );
+    assertEquals( ContextOperand.DEFENSE, _p.parseContext("DEFENSE").getOperand() );
+    assertEquals( ContextOperand.IS_BASE, _p.parseContext("IS_BASE").getOperand() );
+    assertEquals( ContextOperand.IS_NOT_BASE, _p.parseContext("IS_NOT_BASE").getOperand() );
+    assertEquals( ContextOperand.PD, _p.parseContext("PD").getOperand() );    
+    
+    try {
+      _p.parseContext("NOSUCHOP");
+      fail("Expected IllegalArgumentException");
+    }catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseContext("");
+      fail("Expected IllegalArgumentException");
+    }catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseContext(",,,,");
+      fail("Expected IllegalArgumentException");
+    }catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseContext("SOURCE,OFFENSE");
+      fail("Expected IllegalArgumentException");
+    }catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseContext(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
   }
 }
 

@@ -9,10 +9,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Context.ContextOperand;
-import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestContext {
 
@@ -45,57 +42,6 @@ public class TestContext {
     
     _context.setThisPlayer("Earth");
     _context.setFleetElement(_earthElement1);
-  }
-  
-  @Test
-  public void testParsingConstructor() {
-    IExpressionParser parser = new ExpressionParserImpl();
-    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-    assertEquals( ContextOperand.IS_DEFENDER, new Context("IS_DEFENDER",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.IS_ATTACKER, new Context("IS_ATTACKER",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.SOURCE, new Context("SOURCE",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.ATTACKS, new Context("ATTACKS",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.OFFENSE, new Context("OFFENSE",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.DEFENSE, new Context("DEFENSE",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.IS_BASE, new Context("IS_BASE",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.IS_NOT_BASE, new Context("IS_NOT_BASE",parser, tokeniser).getOperand() );
-    assertEquals( ContextOperand.PD, new Context("PD",parser, tokeniser).getOperand() );    
-    
-    try {
-      new Context("NOSUCHOP", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    }catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Context("", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    }catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Context(",,,,", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    }catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Context("SOURCE,OFFENSE", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    }catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Context(null, parser, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Context("PD",null, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Context("PD",parser, null);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
   }
   
   @Test

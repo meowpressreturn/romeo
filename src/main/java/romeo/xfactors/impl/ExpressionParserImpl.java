@@ -15,6 +15,7 @@ import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.expressions.Comparison;
 import romeo.xfactors.expressions.Comparison.ComparisonOperand;
 import romeo.xfactors.expressions.Context;
+import romeo.xfactors.expressions.Context.ContextOperand;
 import romeo.xfactors.expressions.Fail;
 import romeo.xfactors.expressions.Flag;
 import romeo.xfactors.expressions.If;
@@ -77,11 +78,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "ADJUST" : return parseAdjust(params);
         case "ARITHMETIC" : return parseArithmetic(params);
         case "COMPARISON" : return parseComparison(params);
+        case "CONTEXT" : return parseContext(params);
        
         default: {
-          if("CONTEXT".equals(exprType)) {
-            return new Context(params, this, this);
-          } else if("IF".equals(exprType)) {
+          if("IF".equals(exprType)) {
             return new If(params, this, this);
           } else if("LOGIC".equals(exprType)) {
             return new Logic(params, this, this);
@@ -255,6 +255,22 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise COMPARISON with params:" + params, e);
+    }
+  }
+
+  public Context parseContext(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 1) {
+        throw new IllegalArgumentException("Expecting 1 parameters but found " + tokens.length);
+      }
+      ContextOperand operand = ContextOperand.fromString(trimToken(tokens[0]));
+      return new Context(operand);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise CONTEXT with params:" + params, e);
     }
   }
 }
