@@ -8,6 +8,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
+import romeo.xfactors.expressions.Logic.LogicOperand;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestLogic {
@@ -23,25 +24,25 @@ public class TestLogic {
   public void testConstructor() {
     Value left = new Value(true);
     Value right = new Value(false);
-    Logic logic = new Logic( left, Logic.AND, right );
+    Logic logic = new Logic( left, LogicOperand.AND, right );
     assertEquals( left, logic.getLeft() );
-    assertEquals( Logic.AND, logic.getOperand() );
+    assertEquals( LogicOperand.AND, logic.getOperand() );
     assertEquals( right, logic.getRight() );
     
     try {
-      new Logic(null, Logic.AND, right);
+      new Logic(null, LogicOperand.AND, right);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Logic(left, Logic.AND, null);
+      new Logic(left, LogicOperand.AND, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Logic(left, 888, right);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
+      new Logic(left, null, right);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
   }
   
   @Test
@@ -54,13 +55,13 @@ public class TestLogic {
     assertEquals( "left", ((Value)logic.getLeft()).evaluate(_context) );
     assertTrue( logic.getRight() instanceof Value);
     assertEquals( "right", ((Value)logic.getRight()).evaluate(_context) );
-    assertEquals(Logic.AND, logic.getOperand());
+    assertEquals(LogicOperand.AND, logic.getOperand());
     
-    assertEquals(Logic.OR, new Logic("VALUE(0),OR,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Logic.XOR, new Logic("VALUE(0),XOR,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Logic.NOR, new Logic("VALUE(0),NOR,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Logic.NOT, new Logic("VALUE(0),NOT,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Logic.EQUAL, new Logic("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );    
+    assertEquals(LogicOperand.OR, new Logic("VALUE(0),OR,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(LogicOperand.XOR, new Logic("VALUE(0),XOR,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(LogicOperand.NOR, new Logic("VALUE(0),NOR,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(LogicOperand.NOT, new Logic("VALUE(0),NOT,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(LogicOperand.EQUAL, new Logic("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );    
     
     try {
       new Logic("",parser, tokeniser);
@@ -101,52 +102,52 @@ public class TestLogic {
   
   @Test
   public void testAnd() {
-    assertTrue( (Boolean)new Logic(new Value(true),Logic.AND,new Value(true)).evaluate(_context) );    
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.AND,new Value(false)).evaluate(_context) );   
-    assertFalse( (Boolean)new Logic(new Value(true),Logic.AND,new Value(false)).evaluate(_context) );
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.AND,new Value(true)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(true),LogicOperand.AND,new Value(true)).evaluate(_context) );    
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.AND,new Value(false)).evaluate(_context) );   
+    assertFalse( (Boolean)new Logic(new Value(true),LogicOperand.AND,new Value(false)).evaluate(_context) );
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.AND,new Value(true)).evaluate(_context) );
   }
   
   @Test
   public void testOr() {
-    assertTrue( (Boolean)new Logic(new Value(true),Logic.OR,new Value(true)).evaluate(_context) );
-    assertTrue( (Boolean)new Logic(new Value(true),Logic.OR,new Value(false)).evaluate(_context) );
-    assertTrue( (Boolean)new Logic(new Value(false),Logic.OR,new Value(true)).evaluate(_context) );    
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.OR,new Value(false)).evaluate(_context) ); 
+    assertTrue( (Boolean)new Logic(new Value(true),LogicOperand.OR,new Value(true)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(true),LogicOperand.OR,new Value(false)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(false),LogicOperand.OR,new Value(true)).evaluate(_context) );    
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.OR,new Value(false)).evaluate(_context) ); 
   }
   
   @Test
   public void testXor() {
-    assertFalse( (Boolean)new Logic(new Value(true),Logic.XOR,new Value(true)).evaluate(_context) );
-    assertTrue( (Boolean)new Logic(new Value(true),Logic.XOR,new Value(false)).evaluate(_context) );
-    assertTrue( (Boolean)new Logic(new Value(false),Logic.XOR,new Value(true)).evaluate(_context) );    
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.XOR,new Value(false)).evaluate(_context) ); 
+    assertFalse( (Boolean)new Logic(new Value(true),LogicOperand.XOR,new Value(true)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(true),LogicOperand.XOR,new Value(false)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(false),LogicOperand.XOR,new Value(true)).evaluate(_context) );    
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.XOR,new Value(false)).evaluate(_context) ); 
   }
   
   @Test
   public void testNor() {
-    assertFalse( (Boolean)new Logic(new Value(true),Logic.NOR,new Value(true)).evaluate(_context) );
-    assertFalse( (Boolean)new Logic(new Value(true),Logic.NOR,new Value(false)).evaluate(_context) );
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.NOR,new Value(true)).evaluate(_context) );    
-    assertTrue( (Boolean)new Logic(new Value(false),Logic.NOR,new Value(false)).evaluate(_context) ); 
+    assertFalse( (Boolean)new Logic(new Value(true),LogicOperand.NOR,new Value(true)).evaluate(_context) );
+    assertFalse( (Boolean)new Logic(new Value(true),LogicOperand.NOR,new Value(false)).evaluate(_context) );
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.NOR,new Value(true)).evaluate(_context) );    
+    assertTrue( (Boolean)new Logic(new Value(false),LogicOperand.NOR,new Value(false)).evaluate(_context) ); 
   }
   
   @Test
   public void testNot() {
     //nb: like the other operands, this one is working on boolean left and right values
-    assertFalse( (Boolean)new Logic(new Value(true),Logic.NOT,new Value(true)).evaluate(_context) );
-    assertTrue( (Boolean)new Logic(new Value(true),Logic.NOT,new Value(false)).evaluate(_context) );
-    assertTrue( (Boolean)new Logic(new Value(false),Logic.NOT,new Value(true)).evaluate(_context) );    
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.NOT,new Value(false)).evaluate(_context) ); 
+    assertFalse( (Boolean)new Logic(new Value(true),LogicOperand.NOT,new Value(true)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(true),LogicOperand.NOT,new Value(false)).evaluate(_context) );
+    assertTrue( (Boolean)new Logic(new Value(false),LogicOperand.NOT,new Value(true)).evaluate(_context) );    
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.NOT,new Value(false)).evaluate(_context) ); 
   }
   
   @Test
   public void testEqual() {
     //nb: like the other operands, this one is working on boolean left and right values
-    assertTrue( (Boolean)new Logic(new Value(true),Logic.EQUAL,new Value(true)).evaluate(_context) );
-    assertFalse( (Boolean)new Logic(new Value(true),Logic.EQUAL,new Value(false)).evaluate(_context) );
-    assertFalse( (Boolean)new Logic(new Value(false),Logic.EQUAL,new Value(true)).evaluate(_context) );    
-    assertTrue( (Boolean)new Logic(new Value(false),Logic.EQUAL,new Value(false)).evaluate(_context) ); 
+    assertTrue( (Boolean)new Logic(new Value(true),LogicOperand.EQUAL,new Value(true)).evaluate(_context) );
+    assertFalse( (Boolean)new Logic(new Value(true),LogicOperand.EQUAL,new Value(false)).evaluate(_context) );
+    assertFalse( (Boolean)new Logic(new Value(false),LogicOperand.EQUAL,new Value(true)).evaluate(_context) );    
+    assertTrue( (Boolean)new Logic(new Value(false),LogicOperand.EQUAL,new Value(false)).evaluate(_context) ); 
   }
   
   @Test

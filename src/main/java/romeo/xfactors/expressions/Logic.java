@@ -4,7 +4,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
-import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
@@ -16,52 +15,42 @@ import romeo.xfactors.api.IExpressionTokeniser;
  */
 public class Logic implements IExpression {
   
-  /**
-   * The AND operand. Tests that both values are true.
-   */
-  public static final int AND = 0;
-
-  /**
-   * The OR operand. Tests that one or both values are true.
-   */
-  public static final int OR = 1;
-
-  /**
-   * The Exclusive-OR operand. Tests that either one value or the other is true but not both.
-   */
-  public static final int XOR = 2;
-
-  /**
-   * The neither or operand. Tests that both values are false.
-   */
-  public static final int NOR = 3;
-
-  /**
-   * The NOT operand (short for not equals). Tests that the two values are not the same.
-   */
-  public static final int NOT = 4;
-
-  /**
-   * The EQUAL operand. Tests that the values are the same.
-   */
-  public static final int EQUAL = 5;
-
-  /**
-   * Array mapping operands to their constant int representation
-   */
-  public static final String[] OPERAND_TEXT = new String[6];
-  static {
-    OPERAND_TEXT[AND]   = "AND";
-    OPERAND_TEXT[OR]    = "OR";
-    OPERAND_TEXT[XOR]   = "XOR";
-    OPERAND_TEXT[NOR]   = "NOR";
-    OPERAND_TEXT[NOT]   = "NOT";
-    OPERAND_TEXT[EQUAL] = "EQUAL";
-  }
+  public enum LogicOperand {
+    /**
+     * The AND operand. Tests that both values are true.
+     */
+    AND,
   
-  public static int asOperand(String text) {
-    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
-    return Convert.toIndex(operandToken, OPERAND_TEXT);
+    /**
+     * The OR operand. Tests that one or both values are true.
+     */
+    OR,
+  
+    /**
+     * The Exclusive-OR operand. Tests that either one value or the other is true but not both.
+     */
+    XOR,
+  
+    /**
+     * The neither or operand. Tests that both values are false.
+     */
+    NOR,
+  
+    /**
+     * The NOT operand (short for not equals). Tests that the two values are not the same.
+     */
+    NOT,
+  
+    /**
+     * The EQUAL operand. Tests that the values are the same.
+     */
+    EQUAL;
+    
+    public static LogicOperand fromString(String text) {
+      String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+      return valueOf(LogicOperand.class, operandToken);
+    }
+    
   }
   
   /**
@@ -98,7 +87,7 @@ public class Logic implements IExpression {
 
   protected IExpression _left;
   protected IExpression _right;
-  protected int _operand;
+  protected LogicOperand _operand;
 
   /**
    * Constructor that parses the params
@@ -115,9 +104,8 @@ public class Logic implements IExpression {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
       _left = parser.getExpression(tokens[0]);
-      _operand = asOperand(tokens[1]);
+      _operand = LogicOperand.fromString(tokeniser.trimToken(tokens[1]));
       _right = parser.getExpression(tokens[2]);
-      validate();
     } catch(IllegalArgumentException illArgs) {
       throw illArgs;
     } catch(Exception e) {
@@ -133,21 +121,10 @@ public class Logic implements IExpression {
    * @param the
    *          right expression
    */
-  public Logic(IExpression left, int operand, IExpression right) {
+  public Logic(IExpression left, LogicOperand operand, IExpression right) {
     _left = Objects.requireNonNull(left, "left may not be null");
+    _operand = Objects.requireNonNull(operand, "operand may not be null");
     _right = Objects.requireNonNull(right, "right may not be null");
-    _operand = operand;
-    validate();
-  }
-
-  /**
-   * Validates that the operand is one of the valid constants
-   * @throws IllegalStateException
-   */
-  protected void validate() {
-    if(_operand < 0 || _operand > OPERAND_TEXT.length) {
-      throw new IllegalArgumentException("Bad operand:" + _operand);
-    }
   }
 
   /**
@@ -156,7 +133,7 @@ public class Logic implements IExpression {
    */
   @Override
   public String toString() {
-    return "LOGIC(" + _left + "," + OPERAND_TEXT[_operand] + "," + _right + ")";
+    return "LOGIC(" + _left + "," + _operand + "," + _right + ")";
   }
 
   /**
@@ -198,7 +175,7 @@ public class Logic implements IExpression {
     return _right;
   }
   
-  public int getOperand() {
+  public LogicOperand getOperand() {
     return _operand;
   }
 
