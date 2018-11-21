@@ -11,6 +11,7 @@ import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
+import romeo.xfactors.expressions.Context.ContextOperand;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestContext {
@@ -50,15 +51,15 @@ public class TestContext {
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
     IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-    assertEquals( Context.IS_DEFENDER, new Context("IS_DEFENDER",parser, tokeniser).getOperand() );
-    assertEquals( Context.IS_ATTACKER, new Context("IS_ATTACKER",parser, tokeniser).getOperand() );
-    assertEquals( Context.SOURCE, new Context("SOURCE",parser, tokeniser).getOperand() );
-    assertEquals( Context.ATTACKS, new Context("ATTACKS",parser, tokeniser).getOperand() );
-    assertEquals( Context.OFFENSE, new Context("OFFENSE",parser, tokeniser).getOperand() );
-    assertEquals( Context.DEFENSE, new Context("DEFENSE",parser, tokeniser).getOperand() );
-    assertEquals( Context.IS_BASE, new Context("IS_BASE",parser, tokeniser).getOperand() );
-    assertEquals( Context.IS_NOT_BASE, new Context("IS_NOT_BASE",parser, tokeniser).getOperand() );
-    assertEquals( Context.PD, new Context("PD",parser, tokeniser).getOperand() );    
+    assertEquals( ContextOperand.IS_DEFENDER, new Context("IS_DEFENDER",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.IS_ATTACKER, new Context("IS_ATTACKER",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.SOURCE, new Context("SOURCE",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.ATTACKS, new Context("ATTACKS",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.OFFENSE, new Context("OFFENSE",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.DEFENSE, new Context("DEFENSE",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.IS_BASE, new Context("IS_BASE",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.IS_NOT_BASE, new Context("IS_NOT_BASE",parser, tokeniser).getOperand() );
+    assertEquals( ContextOperand.PD, new Context("PD",parser, tokeniser).getOperand() );    
     
     try {
       new Context("NOSUCHOP", parser, tokeniser);
@@ -99,19 +100,19 @@ public class TestContext {
   
   @Test
   public void testRound() {
-    Context round = new Context(Context.ROUND);
+    Context round = new Context(ContextOperand.ROUND);
     assertEquals(42, round.evaluate(_context));
   }
   
   @Test
   public void testIsAttackerDefender() {
-    Context attacker = new Context(Context.IS_ATTACKER);
+    Context attacker = new Context(ContextOperand.IS_ATTACKER);
     _context.setThisPlayer("Mars");
     assertTrue( (Boolean)attacker.evaluate(_context) );
     _context.setThisPlayer("Earth");
     assertFalse( (Boolean)attacker.evaluate(_context) );
     
-    Context defender = new Context(Context.IS_DEFENDER);
+    Context defender = new Context(ContextOperand.IS_DEFENDER);
     _context.setThisPlayer("Mars");
     assertFalse( (Boolean)defender.evaluate(_context) );
     _context.setThisPlayer("Earth");
@@ -120,20 +121,20 @@ public class TestContext {
   
   @Test
   public void testSource() {
-    Context source = new Context(Context.SOURCE);
+    Context source = new Context(ContextOperand.SOURCE);
     assertEquals( new Integer(1), (Integer)source.evaluate(_context) );
   }
   
   @Test
   public void testStats() {
-    assertEquals( new Integer(2), (Integer)new Context(Context.ATTACKS).evaluate(_context) );
-    assertEquals( new Integer(30), (Integer)new Context(Context.OFFENSE).evaluate(_context) );
-    assertEquals( new Integer(25), (Integer)new Context(Context.DEFENSE).evaluate(_context) );
+    assertEquals( new Integer(2), (Integer)new Context(ContextOperand.ATTACKS).evaluate(_context) );
+    assertEquals( new Integer(30), (Integer)new Context(ContextOperand.OFFENSE).evaluate(_context) );
+    assertEquals( new Integer(25), (Integer)new Context(ContextOperand.DEFENSE).evaluate(_context) );
   }
   
   @Test
   public void testBase() {
-    Context base = new Context(Context.IS_BASE);
+    Context base = new Context(ContextOperand.IS_BASE);
     _context.setThisPlayer("Earth");
     _context.setFleetElement(_earthElementBase);
     assertTrue( (Boolean)base.evaluate(_context) );
@@ -146,7 +147,7 @@ public class TestContext {
   
   @Test
   public void testPd() {
-    Context pd = new Context(Context.PD);
+    Context pd = new Context(ContextOperand.PD);
     assertEquals(10, pd.evaluate(_context) );
   }
   
