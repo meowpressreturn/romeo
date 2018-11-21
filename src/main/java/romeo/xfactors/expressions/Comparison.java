@@ -6,8 +6,6 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.utils.BeanComparator;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the COMPARISON expression used to compare between values. See the
@@ -29,30 +27,6 @@ public class Comparison implements IExpression {
   protected IExpression _left;
   protected ComparisonOperand _operand;
   protected IExpression _right;
-
-  /**
-   * Constructor that parses the params string
-   * @param params
-   * @param parser
-   */
-  public Comparison(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 3) {
-        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
-      }
-      _left = parser.getExpression(tokens[0]);
-      _operand = ComparisonOperand.fromString(tokeniser.trimToken(tokens[1]));
-      _right = parser.getExpression(tokens[2]);
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise COMPARISON with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor

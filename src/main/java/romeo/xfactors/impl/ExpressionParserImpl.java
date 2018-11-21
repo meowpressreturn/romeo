@@ -13,6 +13,7 @@ import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
 import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.expressions.Comparison;
+import romeo.xfactors.expressions.Comparison.ComparisonOperand;
 import romeo.xfactors.expressions.Context;
 import romeo.xfactors.expressions.Fail;
 import romeo.xfactors.expressions.Flag;
@@ -75,11 +76,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       switch(exprType) {
         case "ADJUST" : return parseAdjust(params);
         case "ARITHMETIC" : return parseArithmetic(params);
+        case "COMPARISON" : return parseComparison(params);
        
         default: {
-          if("COMPARISON".equals(exprType)) {
-            return new Comparison(params, this, this);
-          } else if("CONTEXT".equals(exprType)) {
+          if("CONTEXT".equals(exprType)) {
             return new Context(params, this, this);
           } else if("IF".equals(exprType)) {
             return new If(params, this, this);
@@ -237,6 +237,24 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise ARITHMETIC with params:" + params, e);
+    }
+  }
+  
+  public Comparison parseComparison(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 3) {
+        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
+      }
+      IExpression left = getExpression(tokens[0]);
+      ComparisonOperand operand = ComparisonOperand.fromString(trimToken(tokens[1]));
+      IExpression right = getExpression(tokens[2]);
+      return new Comparison(left, operand, right);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise COMPARISON with params:" + params, e);
     }
   }
 }

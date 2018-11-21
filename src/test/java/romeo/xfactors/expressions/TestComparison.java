@@ -7,10 +7,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Comparison.ComparisonOperand;
-import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestComparison {
   
@@ -39,53 +36,6 @@ public class TestComparison {
       new Comparison(new Value(0), ComparisonOperand.EQUAL, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
-  }
-  
-  @Test
-  public void testParsingConstructor() {
-    IExpressionParser parser = new ExpressionParserImpl();
-    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-    
-    Comparison notEqual = new Comparison("VALUE(0),NOT_EQUAL,VALUE(0)", parser, tokeniser);
-    assertEquals( ComparisonOperand.NOT_EQUAL, notEqual.getOperand() );
-    assertTrue( notEqual.getLeft() instanceof Value);
-    assertTrue( notEqual.getRight() instanceof Value);
-    
-    assertEquals(ComparisonOperand.EQUAL, new Comparison("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(ComparisonOperand.GREATER_THAN, new Comparison("VALUE(0),GREATER_THAN,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(ComparisonOperand.GREATER_OR_EQUAL, new Comparison("VALUE(0),GREATER_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(ComparisonOperand.LESS_THAN, new Comparison("VALUE(0),LESS_THAN,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(ComparisonOperand.LESS_OR_EQUAL, new Comparison("VALUE(0),LESS_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
-    
-    try {
-      new Comparison(null, parser, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Comparison("VALUE(0)",null, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Comparison("VALUE(0)",parser, null);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Comparison(",,,,,", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Comparison("VALUE(0),NOT_EQUAL,VALUE(0),", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Comparison("VALUE(0),NOT_EQUAL,VALUE(0),VALUE(0)", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
   }
   
   @Test

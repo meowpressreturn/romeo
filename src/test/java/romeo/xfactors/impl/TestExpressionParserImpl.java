@@ -11,6 +11,7 @@ import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
 import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.expressions.Comparison;
+import romeo.xfactors.expressions.Comparison.ComparisonOperand;
 import romeo.xfactors.expressions.Context;
 import romeo.xfactors.expressions.Fail;
 import romeo.xfactors.expressions.Flag;
@@ -229,6 +230,41 @@ public class TestExpressionParserImpl {
       _p.parseArithmetic(null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
+  }
+  
+  @Test
+  public void testParseComparison() {
+    
+    Comparison notEqual = _p.parseComparison("VALUE(0),NOT_EQUAL,VALUE(0)");
+    assertEquals( ComparisonOperand.NOT_EQUAL, notEqual.getOperand() );
+    assertTrue( notEqual.getLeft() instanceof Value);
+    assertTrue( notEqual.getRight() instanceof Value);
+    
+    assertEquals(ComparisonOperand.EQUAL, _p.parseComparison("VALUE(0),EQUAL,VALUE(0)").getOperand() );
+    assertEquals(ComparisonOperand.GREATER_THAN, _p.parseComparison("VALUE(0),GREATER_THAN,VALUE(0)").getOperand() );
+    assertEquals(ComparisonOperand.GREATER_OR_EQUAL, _p.parseComparison("VALUE(0),GREATER_OR_EQUAL,VALUE(0)").getOperand() );
+    assertEquals(ComparisonOperand.LESS_THAN, _p.parseComparison("VALUE(0),LESS_THAN,VALUE(0)").getOperand() );
+    assertEquals(ComparisonOperand.LESS_OR_EQUAL, _p.parseComparison("VALUE(0),LESS_OR_EQUAL,VALUE(0)").getOperand() );
+    
+    try {
+      _p.parseComparison(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      _p.parseComparison(",,,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseComparison("VALUE(0),NOT_EQUAL,VALUE(0),");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseComparison("VALUE(0),NOT_EQUAL,VALUE(0),VALUE(0)");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
   }
 }
 
