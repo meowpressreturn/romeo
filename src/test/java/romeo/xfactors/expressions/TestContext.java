@@ -10,6 +10,7 @@ import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestContext {
@@ -48,43 +49,49 @@ public class TestContext {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
-    assertEquals( Context.IS_DEFENDER, new Context("IS_DEFENDER",parser).getOperand() );
-    assertEquals( Context.IS_ATTACKER, new Context("IS_ATTACKER",parser).getOperand() );
-    assertEquals( Context.SOURCE, new Context("SOURCE",parser).getOperand() );
-    assertEquals( Context.ATTACKS, new Context("ATTACKS",parser).getOperand() );
-    assertEquals( Context.OFFENSE, new Context("OFFENSE",parser).getOperand() );
-    assertEquals( Context.DEFENSE, new Context("DEFENSE",parser).getOperand() );
-    assertEquals( Context.IS_BASE, new Context("IS_BASE",parser).getOperand() );
-    assertEquals( Context.IS_NOT_BASE, new Context("IS_NOT_BASE",parser).getOperand() );
-    assertEquals( Context.PD, new Context("PD",parser).getOperand() );    
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
+    assertEquals( Context.IS_DEFENDER, new Context("IS_DEFENDER",parser, tokeniser).getOperand() );
+    assertEquals( Context.IS_ATTACKER, new Context("IS_ATTACKER",parser, tokeniser).getOperand() );
+    assertEquals( Context.SOURCE, new Context("SOURCE",parser, tokeniser).getOperand() );
+    assertEquals( Context.ATTACKS, new Context("ATTACKS",parser, tokeniser).getOperand() );
+    assertEquals( Context.OFFENSE, new Context("OFFENSE",parser, tokeniser).getOperand() );
+    assertEquals( Context.DEFENSE, new Context("DEFENSE",parser, tokeniser).getOperand() );
+    assertEquals( Context.IS_BASE, new Context("IS_BASE",parser, tokeniser).getOperand() );
+    assertEquals( Context.IS_NOT_BASE, new Context("IS_NOT_BASE",parser, tokeniser).getOperand() );
+    assertEquals( Context.PD, new Context("PD",parser, tokeniser).getOperand() );    
     
     try {
-      new Context("NOSUCHOP", parser);
+      new Context("NOSUCHOP", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     }catch(IllegalArgumentException expected) {}
     
     try {
-      new Context("", parser);
+      new Context("", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     }catch(IllegalArgumentException expected) {}
     
     try {
-      new Context(",,,,", parser);
+      new Context(",,,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     }catch(IllegalArgumentException expected) {}
     
     try {
-      new Context("SOURCE,OFFENSE", parser);
+      new Context("SOURCE,OFFENSE", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     }catch(IllegalArgumentException expected) {}
     
     try {
-      new Context(null, parser);
+      new Context(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Context("PD",null);
+      new Context("PD",null, tokeniser);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      new Context("PD",parser, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     

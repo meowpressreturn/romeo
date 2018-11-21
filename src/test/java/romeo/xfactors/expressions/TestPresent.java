@@ -10,6 +10,7 @@ import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestPresent {
@@ -68,60 +69,66 @@ public class TestPresent {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    assertEquals("VIP", new Present("VIP",parser).getAcronym() );
-    assertEquals("VIP", new Present("   VIP\n  ",parser).getAcronym() );
+    assertEquals("VIP", new Present("VIP",parser, tokeniser).getAcronym() );
+    assertEquals("VIP", new Present("   VIP\n  ",parser, tokeniser).getAcronym() );
     
     try {
-      new Present("foo,bar,baz", parser);
+      new Present("foo,bar,baz", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Present("", parser);
+      new Present("", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Present(",", parser);
+      new Present(",", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Present(",,,,,,,", parser);
+      new Present(",,,,,,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Present("VIP,BS", parser);
+      new Present("VIP,BS", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Present("    ", parser);
+      new Present("    ", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Present("\"\"", parser);
+      new Present("\"\"", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
-    new Present(" \"    \"   ", parser); //this is silly but allowed
+    new Present(" \"    \"   ", parser, tokeniser); //this is silly but allowed
     
     try {
-      new Present(null,parser);
+      new Present(null,parser, tokeniser);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
     
     try {
-      new Present("foo",null);
+      new Present("foo",null, tokeniser);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
     
-    assertEquals("VIP", new Present("\"VIP\"",parser).getAcronym() );
-    assertEquals("VIP", new Present("    \"VIP\" ",parser).getAcronym() );
-    assertEquals(" VIP ", new Present("\" VIP \"",parser).getAcronym() );
+    try {
+      new Present("foo",parser, null);
+      fail("Expected NullPointerException");
+    }catch(NullPointerException expected) {}
+    
+    assertEquals("VIP", new Present("\"VIP\"",parser, tokeniser).getAcronym() );
+    assertEquals("VIP", new Present("    \"VIP\" ",parser, tokeniser).getAcronym() );
+    assertEquals(" VIP ", new Present("\" VIP \"",parser, tokeniser).getAcronym() );
   }
   
   @Test

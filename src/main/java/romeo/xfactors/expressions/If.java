@@ -1,7 +1,3 @@
-/*
- * If.java
- * Created on Mar 13, 2006
- */
 package romeo.xfactors.expressions;
 
 import java.util.Objects;
@@ -9,6 +5,7 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the IF expression which will return different results depending on
@@ -26,11 +23,12 @@ public class If implements IExpression {
    * @param params
    * @param parser
    */
-  public If(String params, IExpressionParser parser) {
+  public If(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may not be null");      
+    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
     try {
-      String[] tokens = parser.tokenise(params);
+      String[] tokens = tokeniser.tokenise(params);
       if(tokens.length != 3) {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }

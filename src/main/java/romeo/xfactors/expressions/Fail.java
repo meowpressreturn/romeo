@@ -1,4 +1,3 @@
-//2008-12-09
 package romeo.xfactors.expressions;
 
 import java.util.Objects;
@@ -7,6 +6,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.ExpressionFailure;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Will cause an ExpressionFailure to be raised
@@ -23,11 +23,12 @@ public class Fail implements IExpression {
    * @param parser
    *          the XFEL parser
    */
-  public Fail(String params, IExpressionParser parser) {
+  public Fail(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may not be null");
+    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
     try {
-      String[] tokens = parser.tokenise(params);
+      String[] tokens = tokeniser.tokenise(params);
       if(tokens.length != 1) {
         throw new IllegalArgumentException("Expecting 1 parameter but found " + tokens.length);
       }

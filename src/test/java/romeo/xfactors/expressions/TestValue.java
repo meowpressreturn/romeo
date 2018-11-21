@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestValue {
@@ -56,6 +57,8 @@ public class TestValue {
   @Test
   public void testParsingConstructorAndEvaluate() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
+    
     RoundContext context = new RoundContext(new String[]{});
     
     Object[][] tests = new Object[][] {
@@ -86,7 +89,7 @@ public class TestValue {
       String params = (String)tests[t][0];
       Object expected = tests[t][1];
       try {
-        Value v = new Value(params, parser);
+        Value v = new Value(params, parser, tokeniser);
         assertEquals( "test[" + t + "] value", expected, v.getValue() );
         assertEquals( "test[" + t + "] evaluate", expected, v.evaluate(context) );  
       } catch(Exception e) {
@@ -95,37 +98,42 @@ public class TestValue {
     }
     
     try {
-      new Value(null, parser);
+      new Value(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Value("0", null);
+      new Value("0", null, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Value("", parser); //this is illegal - for an empty string would need to be quoted
+      new Value("0", parser, null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      new Value("", parser, tokeniser); //this is illegal - for an empty string would need to be quoted
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Value(",", parser);
+      new Value(",", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Value(",,,,,,,", parser);
+      new Value(",,,,,,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Value("1,2,3", parser);
+      new Value("1,2,3", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Value("foo", parser);
+      new Value("foo", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     

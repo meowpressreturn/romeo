@@ -1,7 +1,3 @@
-/*
- * Comparison.java
- * Created on Mar 12, 2006
- */
 package romeo.xfactors.expressions;
 
 import java.util.Locale;
@@ -12,6 +8,7 @@ import romeo.utils.BeanComparator;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the COMPARISON expression used to compare between values. See the
@@ -75,11 +72,12 @@ public class Comparison implements IExpression {
    * @param params
    * @param parser
    */
-  public Comparison(String params, IExpressionParser parser) {
+  public Comparison(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser mau not be null");
+    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
     try {
-      String[] tokens = parser.tokenise(params);
+      String[] tokens = tokeniser.tokenise(params);
       if(tokens.length != 3) {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }

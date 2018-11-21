@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Arithmetic;
 import romeo.xfactors.expressions.Comparison;
@@ -24,7 +25,7 @@ import romeo.xfactors.expressions.Value;
  * Parses a single xf expression into the appropriate IExpression objects. A
  * reference to the unit service is required.
  */
-public class ExpressionParserImpl implements IExpressionParser {
+public class ExpressionParserImpl implements IExpressionParser, IExpressionTokeniser {
   
   ////////////////////////////////////////////////////////////////////////////
   
@@ -73,29 +74,29 @@ public class ExpressionParserImpl implements IExpressionParser {
       //todo - pull these from so kind of expression registry to allow for easy extension
       //todo - can use a switch for strings nowadays!
       if("ADJUST".equals(exprType)) {
-        return new Adjust(params, this);
+        return new Adjust(params, this, this);
       } else if("ARITHMETIC".equals(exprType)) {
-        return new Arithmetic(params, this);
+        return new Arithmetic(params, this, this);
       } else if("COMPARISON".equals(exprType)) {
-        return new Comparison(params, this);
+        return new Comparison(params, this, this);
       } else if("CONTEXT".equals(exprType)) {
-        return new Context(params, this);
+        return new Context(params, this, this);
       } else if("IF".equals(exprType)) {
-        return new If(params, this);
+        return new If(params, this, this);
       } else if("LOGIC".equals(exprType)) {
-        return new Logic(params, this);
+        return new Logic(params, this, this);
       } else if("QUANTITY".equals(exprType)) {
-        return new Quantity(params, this);
+        return new Quantity(params, this, this);
       } else if("RND".equals(exprType)) {
-        return new Rnd(params, this);
+        return new Rnd(params, this, this);
       } else if("VALUE".equals(exprType)) {
-        return new Value(params, this);
+        return new Value(params, this, this);
       } else if("PRESENT".equals(exprType)) {
-        return new Present(params, this);
+        return new Present(params, this, this);
       } else if("FLAG".equals(exprType)) {
-        return new Flag(params, this);
+        return new Flag(params, this, this);
       } else if("FAIL".equals(exprType)) {
-        return new Fail(params, this);
+        return new Fail(params, this, this);
       } else {
         throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
       }

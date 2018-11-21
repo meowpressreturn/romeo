@@ -10,6 +10,7 @@ import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestFlag {
@@ -79,38 +80,44 @@ public class TestFlag {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    assertEquals( Flag.ANY_PLAYER, new Flag("ANY_PLAYER,VALUE(0)",parser).getOperand() );
-    assertEquals( Flag.THIS_PLAYER, new Flag("THIS_PLAYER,VALUE(0)",parser).getOperand() );
-    assertEquals( Flag.OPPOSING_PLAYERS, new Flag("OPPOSING_PLAYERS,VALUE(0)",parser).getOperand() );   
+    assertEquals( Flag.ANY_PLAYER, new Flag("ANY_PLAYER,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals( Flag.THIS_PLAYER, new Flag("THIS_PLAYER,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals( Flag.OPPOSING_PLAYERS, new Flag("OPPOSING_PLAYERS,VALUE(0)",parser, tokeniser).getOperand() );   
     
     try {
-      new Flag("",parser);
+      new Flag("",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Flag(",",parser);
+      new Flag(",",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Flag(",,,,",parser);
+      new Flag(",,,,",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Flag("ANY_PLAYER, VALUE(0), VALUE(1)",parser);
+      new Flag("ANY_PLAYER, VALUE(0), VALUE(1)",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Flag(null, parser);
+      new Flag(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Flag("OPPOSING_PLAYERS,VALUE(1)", null);
+      new Flag("OPPOSING_PLAYERS,VALUE(1)", null, tokeniser);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      new Flag("OPPOSING_PLAYERS,VALUE(1)", parser, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }

@@ -9,6 +9,7 @@ import romeo.fleet.model.FleetElement;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the QUANTITY expression that returns the live quantity of a
@@ -85,11 +86,12 @@ public class Quantity implements IExpression {
    *          params string
    * @param parser
    */
-  public Quantity(String params, IExpressionParser parser) {
+  public Quantity(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may not be null");
+    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
     try {
-      String[] tokens = parser.tokenise(params);
+      String[] tokens = tokeniser.tokenise(params);
       if(tokens.length != 3) {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }

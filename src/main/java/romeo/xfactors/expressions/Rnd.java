@@ -1,7 +1,3 @@
-/*
- * Rnd.java
- * Created on Mar 13, 2006
- */
 package romeo.xfactors.expressions;
 
 import java.util.Objects;
@@ -10,6 +6,7 @@ import java.util.Random;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the RND expression that generates random numbers. See the xfactor
@@ -26,11 +23,12 @@ public class Rnd implements IExpression {
    * @param params
    * @param parser
    */
-  public Rnd(String params, IExpressionParser parser) {
+  public Rnd(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may not be null");
+    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
     try {
-      String[] tokens = parser.tokenise(params);
+      String[] tokens = tokeniser.tokenise(params);
       if(tokens.length != 2) {
         throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
       }

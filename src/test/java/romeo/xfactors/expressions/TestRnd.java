@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestRnd {
@@ -38,67 +39,73 @@ public class TestRnd {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    Rnd r = new Rnd("1,100",parser);
+    Rnd r = new Rnd("1,100",parser, tokeniser);
     assertEquals(1, r.getMin());
     assertEquals(100, r.getMax());
     
     //these should all be legal
-    new Rnd("-100,-200",parser);
-    new Rnd("100,-12345",parser);
+    new Rnd("-100,-200",parser, tokeniser);
+    new Rnd("100,-12345",parser, tokeniser);
     
     try{
-      new Rnd("0,0",parser);
+      new Rnd("0,0",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}    
     
     try{
-      new Rnd("1,2,3",parser);
+      new Rnd("1,2,3",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Rnd("100",parser);
+      new Rnd("100",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Rnd("",parser);
+      new Rnd("",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Rnd(",",parser);
+      new Rnd(",",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Rnd(",,,,,,",parser);
+      new Rnd(",,,,,,",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Rnd("foo,10",parser);
+      new Rnd("foo,10",parser, tokeniser);
       fail("Expected an exception due to bad numbers");
     } catch(Exception expected) {}
     
     try{
-      new Rnd("10,bar",parser);
+      new Rnd("10,bar",parser, tokeniser);
       fail("Expected an exception due to bad numbers");
     } catch(Exception expected) {}
     
     try{
-      new Rnd("",parser);
+      new Rnd("",parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Rnd(null,parser);
+      new Rnd(null,parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try{
-      new Rnd("1,1000",null);
+      new Rnd("1,1000",null, tokeniser);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try{
+      new Rnd("1,1000",parser, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
@@ -106,6 +113,8 @@ public class TestRnd {
   @Test
   public void testEvaluate() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
+    
     RoundContext context = new RoundContext(new String[]{});    
     
     //lets empirically test it gives us about what we expect
@@ -121,10 +130,10 @@ public class TestRnd {
       { new Rnd(1,100), 1, 100, 50 },
       { new Rnd(-100,100), -100, 100, 0 },
       
-      { new Rnd("0,1",parser), 0,1,null },
-      { new Rnd("1,3",parser), 1,3,null },
-      { new Rnd("1,100",parser), 1,100,50 },
-      { new Rnd("-100,100",parser), -100, 100, 0 },    
+      { new Rnd("0,1",parser, tokeniser), 0,1,null },
+      { new Rnd("1,3",parser, tokeniser), 1,3,null },
+      { new Rnd("1,100",parser, tokeniser), 1,100,50 },
+      { new Rnd("-100,100",parser, tokeniser), -100, 100, 0 },    
       
     };
     

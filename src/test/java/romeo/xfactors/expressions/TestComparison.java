@@ -8,6 +8,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestComparison {
@@ -42,40 +43,46 @@ public class TestComparison {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    Comparison notEqual = new Comparison("VALUE(0),NOT_EQUAL,VALUE(0)", parser);
+    Comparison notEqual = new Comparison("VALUE(0),NOT_EQUAL,VALUE(0)", parser, tokeniser);
     assertEquals( Comparison.NOT_EQUAL, notEqual.getOperand() );
     assertTrue( notEqual.getLeft() instanceof Value);
     assertTrue( notEqual.getRight() instanceof Value);
     
-    assertEquals(Comparison.EQUAL, new Comparison("VALUE(0),EQUAL,VALUE(0)",parser).getOperand() );
-    assertEquals(Comparison.GREATER_THAN, new Comparison("VALUE(0),GREATER_THAN,VALUE(0)",parser).getOperand() );
-    assertEquals(Comparison.GREATER_OR_EQUAL, new Comparison("VALUE(0),GREATER_OR_EQUAL,VALUE(0)",parser).getOperand() );
-    assertEquals(Comparison.LESS_THAN, new Comparison("VALUE(0),LESS_THAN,VALUE(0)",parser).getOperand() );
-    assertEquals(Comparison.LESS_OR_EQUAL, new Comparison("VALUE(0),LESS_OR_EQUAL,VALUE(0)",parser).getOperand() );
+    assertEquals(Comparison.EQUAL, new Comparison("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(Comparison.GREATER_THAN, new Comparison("VALUE(0),GREATER_THAN,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(Comparison.GREATER_OR_EQUAL, new Comparison("VALUE(0),GREATER_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(Comparison.LESS_THAN, new Comparison("VALUE(0),LESS_THAN,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(Comparison.LESS_OR_EQUAL, new Comparison("VALUE(0),LESS_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
     
     try {
-      new Comparison(null, parser);
+      new Comparison(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Comparison("VALUE(0)",null);
+      new Comparison("VALUE(0)",null, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Comparison(",,,,,", parser);
+      new Comparison("VALUE(0)",parser, null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      new Comparison(",,,,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Comparison("VALUE(0),NOT_EQUAL,VALUE(0),", parser);
+      new Comparison("VALUE(0),NOT_EQUAL,VALUE(0),", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Comparison("VALUE(0),NOT_EQUAL,VALUE(0),VALUE(0)", parser);
+      new Comparison("VALUE(0),NOT_EQUAL,VALUE(0),VALUE(0)", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
   }

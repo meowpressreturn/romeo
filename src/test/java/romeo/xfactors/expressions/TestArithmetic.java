@@ -8,6 +8,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestArithmetic {
@@ -36,42 +37,48 @@ public class TestArithmetic {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    Arithmetic add = new Arithmetic("VALUE(0),ADD,VALUE(0)", parser);
+    Arithmetic add = new Arithmetic("VALUE(0),ADD,VALUE(0)", parser, tokeniser);
     assertEquals( Arithmetic.ADD, add.getOperand() );
     assertTrue( add.getLeft() instanceof Value );
     assertTrue( add.getRight() instanceof Value);
     
-    assertEquals( Arithmetic.SUBTRACT, new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)", parser).getOperand() );
-    assertEquals( Arithmetic.MULTIPLY, new Arithmetic("VALUE(0),MULTIPLY,VALUE(0)", parser).getOperand() );
-    assertEquals( Arithmetic.DIVIDE, new Arithmetic("VALUE(0),DIVIDE,VALUE(0)", parser).getOperand() );
-    assertEquals( Arithmetic.MIN, new Arithmetic("VALUE(0),MIN,VALUE(0)", parser).getOperand() );
-    assertEquals( Arithmetic.MAX, new Arithmetic("VALUE(0),MAX,VALUE(0)", parser).getOperand() );
-    assertEquals( Arithmetic.ROOT, new Arithmetic("VALUE(0),ROOT,VALUE(0)", parser).getOperand() );
-    assertEquals( Arithmetic.POWER, new Arithmetic("VALUE(0),POWER,VALUE(0)", parser).getOperand() );
+    assertEquals( Arithmetic.SUBTRACT, new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( Arithmetic.MULTIPLY, new Arithmetic("VALUE(0),MULTIPLY,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( Arithmetic.DIVIDE, new Arithmetic("VALUE(0),DIVIDE,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( Arithmetic.MIN, new Arithmetic("VALUE(0),MIN,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( Arithmetic.MAX, new Arithmetic("VALUE(0),MAX,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( Arithmetic.ROOT, new Arithmetic("VALUE(0),ROOT,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( Arithmetic.POWER, new Arithmetic("VALUE(0),POWER,VALUE(0)", parser, tokeniser).getOperand() );
     
     try{
-      new Arithmetic("VALUE(0),NOSUCHOP,VALUE(0)", parser);
+      new Arithmetic("VALUE(0),NOSUCHOP,VALUE(0)", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Arithmetic("", parser);
+      new Arithmetic("", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try{
-      new Arithmetic(",,,", parser);
+      new Arithmetic(",,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Arithmetic(null, parser);
+      new Arithmetic(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Arithmetic("VALUE(0)",null);
+      new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)",null, tokeniser);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)",parser, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }

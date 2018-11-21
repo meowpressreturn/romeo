@@ -7,6 +7,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.ExpressionFailure;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestFail {
@@ -14,31 +15,38 @@ public class TestFail {
   @Test
   public void testParsingInstantiation() {
     IExpressionParser parser = new ExpressionParserImpl();
-    Fail fail = new Fail("VALUE(0)",parser);
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
+    
+    Fail fail = new Fail("VALUE(0)",parser, tokeniser);
     assertTrue( fail.getExpression() instanceof Value );
     
     try {
-      new Fail(null, parser);
+      new Fail(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) { }
     
     try {
-      new Fail("VALUE(123)",null);
+      new Fail("VALUE(123)",null, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) { }
     
     try {
-      new Fail(",,,,", parser);
+      new Fail("VALUE(123)",parser,null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) { }
+    
+    try {
+      new Fail(",,,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) { }
     
     try {
-      new Fail("VALUE(0),VALUE(0)", parser);
+      new Fail("VALUE(0),VALUE(0)", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) { }
     
     try {
-      new Fail("", parser);
+      new Fail("", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) { }
   }

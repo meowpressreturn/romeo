@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestIf {
@@ -48,35 +49,42 @@ public class TestIf {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
-    new If("VALUE(false),VALUE(0),VALUE(1)", parser);
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
+      
+    new If("VALUE(false),VALUE(0),VALUE(1)", parser, tokeniser);
     
     try {
-      new If("VALUE(false),VALUE(0),VALUE(1),VALUE(2)", parser);
+      new If("VALUE(false),VALUE(0),VALUE(1),VALUE(2)", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new If("VALUE(false),VALUE(0)", parser);
+      new If("VALUE(false),VALUE(0)", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new If("", parser);
+      new If("", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new If(",,,,", parser);
+      new If(",,,,", parser, tokeniser);
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new If(null, parser);
+      new If(null, parser, tokeniser);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
     
     try {
-      new If("VALUE(false),VALUE(0),VALUE(1)", null);
+      new If("VALUE(false),VALUE(0),VALUE(1)", null, tokeniser);
+      fail("Expected NullPointerException");
+    }catch(NullPointerException expected) {}
+    
+    try {
+      new If("VALUE(false),VALUE(0),VALUE(1)", parser, null);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
   }

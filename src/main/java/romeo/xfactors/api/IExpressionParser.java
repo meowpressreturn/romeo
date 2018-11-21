@@ -1,12 +1,8 @@
-/*
- * IExpressionFactory.java
- * Created on Mar 13, 2006
- */
 package romeo.xfactors.api;
 
 /**
- * Expression Parser is used to construct an XFactor Expression from a String formatted as xfel, and provides
- * services for tokenising and trimming parts of such strings.
+ * Expression Parser is used to construct an XFactor Expression from a String formatted as xfel.
+ * nb:  Piublic methods for tokenising and trimming parts of such strings have been moved to {@link IExpressionTokeniser}.
  */
 public interface IExpressionParser {
   /**
@@ -24,17 +20,4 @@ public interface IExpressionParser {
    */
   public IExpression getExpression(String exprStr);
 
-  /**
-   * Parse the parameters portion of an XFEL string into its tokens
-   * @param params
-   * @return tokens
-   */
-  public String[] tokenise(String params);
-  
-  /**
-   * Cleanup unwanted whitespace from an xfel token
-   * @param token
-   * @return
-   */
-  public String trimToken(String token);
 }

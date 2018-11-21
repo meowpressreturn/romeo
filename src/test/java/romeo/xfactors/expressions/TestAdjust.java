@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestAdjust {
@@ -44,39 +45,45 @@ public class TestAdjust {
   @Test
   public void testParsingConstructor() {
     IExpressionParser parser = new ExpressionParserImpl();
+    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
-    Adjust round = new Adjust("VALUE(0),ROUND",parser);
+    Adjust round = new Adjust("VALUE(0),ROUND",parser, tokeniser);
     assertEquals( Adjust.ROUND, round.getOperand());
     assertTrue( round.getValue() instanceof Value);
     
-    Adjust floor = new Adjust("VALUE(0),FLOOR",parser);
+    Adjust floor = new Adjust("VALUE(0),FLOOR",parser, tokeniser);
     assertEquals( Adjust.FLOOR, floor.getOperand() );
     
-    Adjust ceiling = new Adjust("VALUE(0),CEILING",parser);
+    Adjust ceiling = new Adjust("VALUE(0),CEILING",parser, tokeniser);
     assertEquals( Adjust.CEILING, ceiling.getOperand() );
     
     try {
-      Adjust a = new Adjust("VALUE(0),BADOP",parser);
+      Adjust a = new Adjust("VALUE(0),BADOP",parser, tokeniser);
       fail("Expected IllegalArgumentException but found " + a);
     } catch(IllegalArgumentException expected) {}
     
     try {
-      Adjust a = new Adjust("",parser);
+      Adjust a = new Adjust("",parser, tokeniser);
       fail("Expected IllegalArgumentException but found " + a);
     } catch(IllegalArgumentException expected) {}
     
     try {
-      Adjust a = new Adjust(",,,,,",parser);
+      Adjust a = new Adjust(",,,,,",parser, tokeniser);
       fail("Expected IllegalArgumentException but found " + a);
     } catch(IllegalArgumentException expected) {}
     
     try {
-      new Adjust(null, parser);
+      new Adjust(null, parser, tokeniser);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Adjust("VALUE(0)", null);
+      new Adjust("VALUE(0)", null, tokeniser);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      new Adjust("VALUE(0)", parser, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }

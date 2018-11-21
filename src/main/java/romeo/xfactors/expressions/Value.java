@@ -1,7 +1,3 @@
-/*
- * Value.java
- * Created on Mar 12, 2006
- */
 package romeo.xfactors.expressions;
 
 import java.util.Objects;
@@ -10,6 +6,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the VALUE expression. This expression is how actual values are
@@ -72,15 +69,15 @@ public class Value implements IExpression {
    * @param parser
    *          
    */
-  public Value(String params, IExpressionParser parser) {
+  public Value(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may nto be null");
-    String[] tokens = parser.tokenise(params);
+    String[] tokens = tokeniser.tokenise(params);
     if(tokens.length != 1) {
      throw new IllegalArgumentException("VALUE requires one and only one parameter"); 
     }
-    String token = parser.trimToken(tokens[0]);
+    String token = tokeniser.trimToken(tokens[0]);
     _value = parseValue(token);
   }
 

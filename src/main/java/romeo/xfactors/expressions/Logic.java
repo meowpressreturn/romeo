@@ -1,7 +1,3 @@
-/*
- * Logic.java
- * Created on Mar 13, 2006
- */
 package romeo.xfactors.expressions;
 
 import java.util.Locale;
@@ -11,6 +7,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the LOGIC expression which allows one to perform various logic
@@ -108,11 +105,12 @@ public class Logic implements IExpression {
    * @param params
    * @param parser
    */
-  public Logic(String params, IExpressionParser parser) {
+  public Logic(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may not be null");
+    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
     try {
-      String[] tokens = parser.tokenise(params);
+      String[] tokens = tokeniser.tokenise(params);
       if(tokens.length != 3) {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }

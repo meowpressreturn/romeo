@@ -9,6 +9,7 @@ import romeo.fleet.model.FleetElement;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the PRESENT expression. This checks for the presence of one of
@@ -52,14 +53,14 @@ public class Present implements IExpression {
    * @param parser
    * 
    */
-  public Present(String params, IExpressionParser parser) {
+  public Present(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
     Objects.requireNonNull(params, "params may not be null");
     Objects.requireNonNull(parser, "parser may not be null");
-    String[] tokens = parser.tokenise(params);
+    String[] tokens = tokeniser.tokenise(params);
     if(tokens.length != 1) {
       throw new IllegalArgumentException("expected a single acronym");
     }
-    _acronym = parser.trimToken(tokens[0]);
+    _acronym = tokeniser.trimToken(tokens[0]);
     _acronym = Convert.toUnquotedString(_acronym);
     validate();
   }
