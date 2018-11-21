@@ -15,68 +15,31 @@ import romeo.xfactors.api.IExpressionTokeniser;
  * details.
  */
 public class Arithmetic implements IExpression {
+  
   /**
-   * Addition operand
+   * Converts the result of the expression to a primitive double
+   * @param expression
+   * @param context
+   * @return result
    */
-  public static final int ADD = 0;
-
-  /**
-   * Subtraction operand
-   */
-  public static final int SUBTRACT = 1;
-
-  /**
-   * Multiplication operand
-   */
-  public static final int MULTIPLY = 2;
-
-  /**
-   * Division operand
-   */
-  public static final int DIVIDE = 3;
-
-  /**
-   * Minimum (of the 2 expression results) operand
-   */
-  public static final int MIN = 4;
-
-  /**
-   * Maximum (of the 2 expressions) operand
-   */
-  public static final int MAX = 5;
-
-  /**
-   * Square root operand
-   */
-  public static final int ROOT = 6;
-
-  /**
-   * Exponential power operand
-   */
-  public static final int POWER = 7;
-
-  /**
-   * Array mapping operands textual representation to the appropriate constant
-   * (as the index)
-   */
-  public static final String[] OPERAND_TEXT = new String[8];
-  static {
-    OPERAND_TEXT[ADD] = "ADD";
-    OPERAND_TEXT[SUBTRACT] = "SUBTRACT";
-    OPERAND_TEXT[MULTIPLY] = "MULTIPLY";
-    OPERAND_TEXT[DIVIDE] = "DIVIDE";
-    OPERAND_TEXT[MIN] = "MIN";
-    OPERAND_TEXT[MAX] = "MAX";
-    OPERAND_TEXT[ROOT] = "ROOT";
-    OPERAND_TEXT[POWER] = "POWER";
+  public static double evalDouble(IExpression expression, RoundContext context) {
+    Objects.requireNonNull(expression, "expression may not be null");
+    Objects.requireNonNull(context, "context may not be null");
+    Object value = expression.evaluate(context);
+    return Convert.toDouble(value);
   }
   
-  public static int asOperand(String text) {
-    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
-    return Convert.toIndex(operandToken, OPERAND_TEXT);
+  public enum ArithmeticOperand {
+    ADD, SUBTRACT, MULTIPLY, DIVIDE, MIN, MAX, ROOT, POWER;
+    
+    public static ArithmeticOperand fromString(String text) {
+      String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+      return valueOf(ArithmeticOperand.class, operandToken);
+    }
+    
   }
 
-  protected int _operand;
+  protected ArithmeticOperand _operand;
   protected IExpression _left;
   protected IExpression _right;
 
@@ -96,9 +59,8 @@ public class Arithmetic implements IExpression {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
       _left = parser.getExpression(tokens[0]);
-      _operand = asOperand(tokens[1]);
+      _operand = ArithmeticOperand.fromString( tokeniser.trimToken(tokens[1]));
       _right = parser.getExpression(tokens[2]);
-      validate();
     } catch(IllegalArgumentException illArgs) {
       throw illArgs;
     } catch(Exception e) {
@@ -114,22 +76,10 @@ public class Arithmetic implements IExpression {
    * @param right
    *          the right expression
    */
-  public Arithmetic(IExpression left, int operand, IExpression right) {
+  public Arithmetic(IExpression left, ArithmeticOperand operand, IExpression right) {
     _left = Objects.requireNonNull(left, "left may not be null");
+    _operand = Objects.requireNonNull(operand, "operand may not be null");
     _right = Objects.requireNonNull(right, "right may not be null");
-    _operand = operand;
-    validate();
-  }
-
-  /**
-   * 
-   * Validates that the operand is one of the valid constants
-   * @throws IllegalStateException
-   */
-  protected void validate() {
-    if(_operand < 0 || _operand > OPERAND_TEXT.length) {
-      throw new IllegalArgumentException("Bad operand:" + _operand);
-    }
   }
 
   /**
@@ -138,7 +88,7 @@ public class Arithmetic implements IExpression {
    */
   @Override
   public String toString() {
-    return "ARITHMETIC(" + _left + "," + OPERAND_TEXT[_operand] + "," + _right + ")";
+    return "ARITHMETIC(" + _left + "," + _operand + "," + _right + ")";
   }
 
   /**
@@ -180,21 +130,8 @@ public class Arithmetic implements IExpression {
       throw new RuntimeException("Error evaluating " + toString(), e);
     }
   }
-
-  /**
-   * Converts the result of the expression to a primitive double
-   * @param expression
-   * @param context
-   * @return result
-   */
-  public static double evalDouble(IExpression expression, RoundContext context) {
-    Objects.requireNonNull(expression, "expression may not be null");
-    Objects.requireNonNull(context, "context may not be null");
-    Object value = expression.evaluate(context);
-    return Convert.toDouble(value);
-  }
   
-  public int getOperand() {
+  public ArithmeticOperand getOperand() {
     return _operand;
   }
   

@@ -185,7 +185,7 @@ public class TestExpressionParserImpl {
     } catch(NullPointerException expected) {}
     
     {
-    //Can it handle whitespace?
+      //Can it handle whitespace?
       Adjust round = _p.parseAdjust("VALUE(0), ROUND\n  ");
       assertEquals( AdjustOperand.ROUND, round.getOperand());
       assertTrue( round.getValue() instanceof Value);

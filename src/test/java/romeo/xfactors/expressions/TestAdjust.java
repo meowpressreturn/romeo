@@ -74,11 +74,18 @@ public class TestAdjust {
     
     try {
       AdjustOperand.fromString("blah");
+      fail("Expected IllegalArgumentExeption");
     } catch(IllegalArgumentException expected) {}
     
     try {
       AdjustOperand.fromString(" ROUND"); //whitespace is also not handled here
+      fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
+    
+    try {
+      AdjustOperand.fromString(null);
+      fail("Expected NullPointerExecption");
+    } catch(NullPointerException expected) {}
     
   }
   

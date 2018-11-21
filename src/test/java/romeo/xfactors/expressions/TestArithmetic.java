@@ -9,6 +9,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
+import romeo.xfactors.expressions.Arithmetic.ArithmeticOperand;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestArithmetic {
@@ -28,10 +29,47 @@ public class TestArithmetic {
   @Test
   public void testConstructor() {
     try {
-      new Arithmetic(null, Arithmetic.ADD, new Value(0));
+      new Arithmetic(null, ArithmeticOperand.ADD, new Value(0));
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
+  }
+  
+  @Test
+  public void testArithmeticOperandFromString() {
+    
+    assertEquals( ArithmeticOperand.ADD, ArithmeticOperand.fromString("ADD"));
+    assertEquals( ArithmeticOperand.DIVIDE, ArithmeticOperand.fromString("DIVIDE"));
+    assertEquals( ArithmeticOperand.MAX, ArithmeticOperand.fromString("MAX"));
+    assertEquals( ArithmeticOperand.MIN, ArithmeticOperand.fromString("MIN"));
+    assertEquals( ArithmeticOperand.MULTIPLY, ArithmeticOperand.fromString("MULTIPLY"));
+    assertEquals( ArithmeticOperand.POWER, ArithmeticOperand.fromString("POWER"));
+    assertEquals( ArithmeticOperand.ROOT, ArithmeticOperand.fromString("ROOT"));
+    assertEquals( ArithmeticOperand.SUBTRACT, ArithmeticOperand.fromString("SUBTRACT"));
+    
+    assertEquals( ArithmeticOperand.ADD, ArithmeticOperand.fromString("aDd"));
+    assertEquals( ArithmeticOperand.DIVIDE, ArithmeticOperand.fromString("diViDE"));
+    assertEquals( ArithmeticOperand.MAX, ArithmeticOperand.fromString("Max"));
+    assertEquals( ArithmeticOperand.MIN, ArithmeticOperand.fromString("miN"));
+    assertEquals( ArithmeticOperand.MULTIPLY, ArithmeticOperand.fromString("MulTIPLY"));
+    assertEquals( ArithmeticOperand.POWER, ArithmeticOperand.fromString("PoWeR"));
+    assertEquals( ArithmeticOperand.ROOT, ArithmeticOperand.fromString("rOOt"));
+    assertEquals( ArithmeticOperand.SUBTRACT, ArithmeticOperand.fromString("SUBtract"));
+    
+    try {
+      ArithmeticOperand.fromString("other");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      ArithmeticOperand.fromString(" ADD");
+      fail("Expected IllegalArgumentException"); //has whitespace which isnt handled here
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      ArithmeticOperand.fromString(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
   }
   
   @Test
@@ -40,17 +78,17 @@ public class TestArithmetic {
     IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
     Arithmetic add = new Arithmetic("VALUE(0),ADD,VALUE(0)", parser, tokeniser);
-    assertEquals( Arithmetic.ADD, add.getOperand() );
+    assertEquals( ArithmeticOperand.ADD, add.getOperand() );
     assertTrue( add.getLeft() instanceof Value );
     assertTrue( add.getRight() instanceof Value);
     
-    assertEquals( Arithmetic.SUBTRACT, new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( Arithmetic.MULTIPLY, new Arithmetic("VALUE(0),MULTIPLY,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( Arithmetic.DIVIDE, new Arithmetic("VALUE(0),DIVIDE,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( Arithmetic.MIN, new Arithmetic("VALUE(0),MIN,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( Arithmetic.MAX, new Arithmetic("VALUE(0),MAX,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( Arithmetic.ROOT, new Arithmetic("VALUE(0),ROOT,VALUE(0)", parser, tokeniser).getOperand() );
-    assertEquals( Arithmetic.POWER, new Arithmetic("VALUE(0),POWER,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.SUBTRACT, new Arithmetic("VALUE(0),SUBTRACT,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.MULTIPLY, new Arithmetic("VALUE(0),MULTIPLY,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.DIVIDE, new Arithmetic("VALUE(0),DIVIDE,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.MIN, new Arithmetic("VALUE(0),MIN,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.MAX, new Arithmetic("VALUE(0),MAX,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.ROOT, new Arithmetic("VALUE(0),ROOT,VALUE(0)", parser, tokeniser).getOperand() );
+    assertEquals( ArithmeticOperand.POWER, new Arithmetic("VALUE(0),POWER,VALUE(0)", parser, tokeniser).getOperand() );
     
     try{
       new Arithmetic("VALUE(0),NOSUCHOP,VALUE(0)", parser, tokeniser);
@@ -85,52 +123,52 @@ public class TestArithmetic {
   
   @Test
   public void testAdd() {
-    assertEquals( 4, (Double)new Arithmetic(TWO,Arithmetic.ADD,TWO).evaluate(_context), D);
-    assertEquals( 2.5d, (Double)new Arithmetic(TWO,Arithmetic.ADD,POINTFIVE).evaluate(_context), D);
+    assertEquals( 4, (Double)new Arithmetic(TWO,ArithmeticOperand.ADD,TWO).evaluate(_context), D);
+    assertEquals( 2.5d, (Double)new Arithmetic(TWO,ArithmeticOperand.ADD,POINTFIVE).evaluate(_context), D);
   }
   
   @Test
   public void testSubtract() {
-    assertEquals( 0, (Double)new Arithmetic(TWO,Arithmetic.SUBTRACT,TWO).evaluate(_context), D);
-    assertEquals( 1.5d, (Double)new Arithmetic(TWO,Arithmetic.SUBTRACT,POINTFIVE).evaluate(_context), D);
+    assertEquals( 0, (Double)new Arithmetic(TWO,ArithmeticOperand.SUBTRACT,TWO).evaluate(_context), D);
+    assertEquals( 1.5d, (Double)new Arithmetic(TWO,ArithmeticOperand.SUBTRACT,POINTFIVE).evaluate(_context), D);
   }
   
   @Test
   public void testMultiply() {
-    assertEquals( 8, (Double)new Arithmetic(TWO,Arithmetic.MULTIPLY,FOUR).evaluate(_context), D);
-    assertEquals( 1, (Double)new Arithmetic(TWO,Arithmetic.MULTIPLY,POINTFIVE).evaluate(_context), D);
+    assertEquals( 8, (Double)new Arithmetic(TWO,ArithmeticOperand.MULTIPLY,FOUR).evaluate(_context), D);
+    assertEquals( 1, (Double)new Arithmetic(TWO,ArithmeticOperand.MULTIPLY,POINTFIVE).evaluate(_context), D);
   }
   
   @Test
   public void testDivide() {
-    assertEquals( 8, (Double)new Arithmetic(FOUR, Arithmetic.DIVIDE, POINTFIVE).evaluate(_context), D);
-    assertEquals( 2, (Double)new Arithmetic(FOUR, Arithmetic.DIVIDE, TWO).evaluate(_context), D);
+    assertEquals( 8, (Double)new Arithmetic(FOUR, ArithmeticOperand.DIVIDE, POINTFIVE).evaluate(_context), D);
+    assertEquals( 2, (Double)new Arithmetic(FOUR, ArithmeticOperand.DIVIDE, TWO).evaluate(_context), D);
   } 
   
   @Test
   public void testMin() {
-    assertEquals( 2, (Double)new Arithmetic(FOUR, Arithmetic.MIN, TWO).evaluate(_context), D);
+    assertEquals( 2, (Double)new Arithmetic(FOUR, ArithmeticOperand.MIN, TWO).evaluate(_context), D);
   }
   
   @Test
   public void testMax() {
-    assertEquals( 4, (Double)new Arithmetic(FOUR, Arithmetic.MAX, TWO).evaluate(_context), D);
+    assertEquals( 4, (Double)new Arithmetic(FOUR, ArithmeticOperand.MAX, TWO).evaluate(_context), D);
   }
   
   @Test
   public void testRoot() {
-    assertEquals( 2, (Double)new Arithmetic(FOUR, Arithmetic.ROOT, TWO).evaluate(_context), D);
+    assertEquals( 2, (Double)new Arithmetic(FOUR, ArithmeticOperand.ROOT, TWO).evaluate(_context), D);
     
     //Only square root is currently supported - if right is anything else it will fail
     try{
-      double d = (Double)new Arithmetic(FOUR, Arithmetic.ROOT, FOUR).evaluate(_context);
+      double d = (Double)new Arithmetic(FOUR, ArithmeticOperand.ROOT, FOUR).evaluate(_context);
       fail("Expected UnsupportedOperationException but found " + d);
     } catch(UnsupportedOperationException expected) {}
   }
   
   @Test
   public void testPower() {
-    assertEquals( 16, (Double)new Arithmetic(FOUR, Arithmetic.POWER, TWO).evaluate(_context), D);
+    assertEquals( 16, (Double)new Arithmetic(FOUR, ArithmeticOperand.POWER, TWO).evaluate(_context), D);
   }
   
   @Test
