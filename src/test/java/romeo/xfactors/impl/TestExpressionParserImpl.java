@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.expressions.Adjust;
+import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
 import romeo.xfactors.expressions.Comparison;
 import romeo.xfactors.expressions.Context;
@@ -149,18 +150,18 @@ public class TestExpressionParserImpl {
   public void testParseAdjust() {
     {
       Adjust round = _p.parseAdjust("VALUE(0),ROUND");
-      assertEquals( Adjust.ROUND, round.getOperand());
+      assertEquals( AdjustOperand.ROUND, round.getOperand());
       assertTrue( round.getValue() instanceof Value);
     }
     
     {
       Adjust floor = _p.parseAdjust("VALUE(0),FLOOR");
-      assertEquals( Adjust.FLOOR, floor.getOperand() );
+      assertEquals( AdjustOperand.FLOOR, floor.getOperand() );
     }
     
     {
       Adjust ceiling = _p.parseAdjust("VALUE(0),CEILING");
-      assertEquals( Adjust.CEILING, ceiling.getOperand() );
+      assertEquals( AdjustOperand.CEILING, ceiling.getOperand() );
     }
     
     try {
@@ -186,7 +187,7 @@ public class TestExpressionParserImpl {
     {
     //Can it handle whitespace?
       Adjust round = _p.parseAdjust("VALUE(0), ROUND\n  ");
-      assertEquals( Adjust.ROUND, round.getOperand());
+      assertEquals( AdjustOperand.ROUND, round.getOperand());
       assertTrue( round.getValue() instanceof Value);
     }
     

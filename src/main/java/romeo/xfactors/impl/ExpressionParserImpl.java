@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Adjust;
+import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
 import romeo.xfactors.expressions.Comparison;
 import romeo.xfactors.expressions.Context;
@@ -204,11 +204,6 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
     }
     return builder.toString();
   }
-
-  public int parseAdjustOperand(String text) {
-    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
-    return Convert.toIndex(operandToken, Adjust.OPERAND_TEXT);
-  }
   
   public Adjust parseAdjust(String params) {
     Objects.requireNonNull(params, "params may not be null");
@@ -218,7 +213,7 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
       }
       IExpression value = getExpression(tokens[0]);
-      int operand = parseAdjustOperand( trimToken(tokens[1]) );
+      AdjustOperand operand = AdjustOperand.fromString( trimToken(tokens[1]) );
       return new Adjust(value, operand);
     } catch(IllegalArgumentException illArgs) {
       throw illArgs;

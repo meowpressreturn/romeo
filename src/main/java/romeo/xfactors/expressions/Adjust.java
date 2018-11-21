@@ -1,5 +1,6 @@
 package romeo.xfactors.expressions;
 
+import java.util.Locale;
 import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
@@ -10,34 +11,39 @@ import romeo.xfactors.api.IExpression;
  * xfactor reference help in the resources folder for details.
  */
 public class Adjust implements IExpression {
-  /**
-   * Operand specifying to round the value
-   */
-  public static final int ROUND = 0;
-
-  /**
-   * Operand specifying to round down to nearest integer
-   */
-  public static final int FLOOR = 1;
-
-  /**
-   * Operand specifying to round up to next integer
-   */
-  public static final int CEILING = 2;
-
-  /**
-   * Array of text strings that map to operand constants
-   * (This was done before we had enums in Java!)
-   */
-  public static final String[] OPERAND_TEXT = new String[3];
-  static {
-    OPERAND_TEXT[ROUND] = "ROUND";
-    OPERAND_TEXT[FLOOR] = "FLOOR";
-    OPERAND_TEXT[CEILING] = "CEILING";
+  
+  public enum AdjustOperand {
+    
+    /**
+     * Round the value to the nearest integer
+     */
+    ROUND, 
+    
+    /**
+     * Round down to the nearest integer less than the value
+     */
+    FLOOR, 
+    
+    /**
+     * Round up the value to the nearest integer greater than the value
+     */
+    CEILING;
+    
+    /**
+     * Create an {@link AdjustOperand} from the specified text in a case-insensitive manner.
+     * nb: does not perform trimming of whitespace
+     * @param text
+     * @return operand
+     */
+    public static AdjustOperand fromString(final String text) {
+      final String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+      return valueOf(AdjustOperand.class, operandToken);
+    }
+    
   }
 
   protected IExpression _value;
-  protected int _operand;
+  protected AdjustOperand _operand;
 
   /**
    * Constructor
@@ -47,20 +53,9 @@ public class Adjust implements IExpression {
    *          ajustment operation to be performed on the value to give return
    *          value
    */
-  public Adjust(IExpression valueExpression, int operand) {
+  public Adjust(IExpression valueExpression, AdjustOperand operand) {
     _value = Objects.requireNonNull(valueExpression, "valueExpression may not be null");
-    _operand = operand;
-    validate();
-  }
-
-  /**
-   * Throws an exception of the operarand is not one of the valid constants
-   * @throws IllegalStateException
-   */
-  protected void validate() {
-    if(_operand < 0 || _operand > OPERAND_TEXT.length) {
-      throw new IllegalArgumentException("Bad operand for Adjust:" + _operand);
-    }
+    _operand = Objects.requireNonNull(operand, "operand may not be null");
   }
 
   /**
@@ -69,7 +64,7 @@ public class Adjust implements IExpression {
    */
   @Override
   public String toString() {
-    return "ADJUST(" + _value + "," + OPERAND_TEXT[_operand] + ")";
+    return "ADJUST(" + _value + "," + _operand + ")";
   }
 
   /**
@@ -96,7 +91,7 @@ public class Adjust implements IExpression {
     }
   }
   
-  public int getOperand() {
+  public AdjustOperand getOperand() {
     return _operand;
   }
   
