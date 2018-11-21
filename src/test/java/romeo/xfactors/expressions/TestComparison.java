@@ -9,6 +9,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
+import romeo.xfactors.expressions.Comparison.ComparisonOperand;
 import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestComparison {
@@ -30,12 +31,12 @@ public class TestComparison {
   @Test
   public void testConstructor() {
     try {
-      new Comparison(null, Comparison.EQUAL, new Value(0));
+      new Comparison(null, ComparisonOperand.EQUAL, new Value(0));
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new Comparison(new Value(0), Comparison.EQUAL, null);
+      new Comparison(new Value(0), ComparisonOperand.EQUAL, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }
@@ -46,15 +47,15 @@ public class TestComparison {
     IExpressionTokeniser tokeniser = new ExpressionParserImpl();
     
     Comparison notEqual = new Comparison("VALUE(0),NOT_EQUAL,VALUE(0)", parser, tokeniser);
-    assertEquals( Comparison.NOT_EQUAL, notEqual.getOperand() );
+    assertEquals( ComparisonOperand.NOT_EQUAL, notEqual.getOperand() );
     assertTrue( notEqual.getLeft() instanceof Value);
     assertTrue( notEqual.getRight() instanceof Value);
     
-    assertEquals(Comparison.EQUAL, new Comparison("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Comparison.GREATER_THAN, new Comparison("VALUE(0),GREATER_THAN,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Comparison.GREATER_OR_EQUAL, new Comparison("VALUE(0),GREATER_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Comparison.LESS_THAN, new Comparison("VALUE(0),LESS_THAN,VALUE(0)",parser, tokeniser).getOperand() );
-    assertEquals(Comparison.LESS_OR_EQUAL, new Comparison("VALUE(0),LESS_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(ComparisonOperand.EQUAL, new Comparison("VALUE(0),EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(ComparisonOperand.GREATER_THAN, new Comparison("VALUE(0),GREATER_THAN,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(ComparisonOperand.GREATER_OR_EQUAL, new Comparison("VALUE(0),GREATER_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(ComparisonOperand.LESS_THAN, new Comparison("VALUE(0),LESS_THAN,VALUE(0)",parser, tokeniser).getOperand() );
+    assertEquals(ComparisonOperand.LESS_OR_EQUAL, new Comparison("VALUE(0),LESS_OR_EQUAL,VALUE(0)",parser, tokeniser).getOperand() );
     
     try {
       new Comparison(null, parser, tokeniser);
@@ -89,46 +90,46 @@ public class TestComparison {
   
   @Test
   public void testNotEqual() {
-    assertTrue( (Boolean)new Comparison(PI,Comparison.NOT_EQUAL,THREE).evaluate(_context) );    
-    assertTrue( (Boolean)new Comparison(HELLO,Comparison.NOT_EQUAL,WORLD).evaluate(_context) );    
-    assertFalse( (Boolean)new Comparison(PI,Comparison.NOT_EQUAL,PI).evaluate(_context) );
-    assertFalse( (Boolean)new Comparison(TRUE,Comparison.NOT_EQUAL,TRUE).evaluate(_context) );    
-    assertTrue( (Boolean)new Comparison(TRUE,Comparison.NOT_EQUAL,HELLO).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(PI,ComparisonOperand.NOT_EQUAL,THREE).evaluate(_context) );    
+    assertTrue( (Boolean)new Comparison(HELLO,ComparisonOperand.NOT_EQUAL,WORLD).evaluate(_context) );    
+    assertFalse( (Boolean)new Comparison(PI,ComparisonOperand.NOT_EQUAL,PI).evaluate(_context) );
+    assertFalse( (Boolean)new Comparison(TRUE,ComparisonOperand.NOT_EQUAL,TRUE).evaluate(_context) );    
+    assertTrue( (Boolean)new Comparison(TRUE,ComparisonOperand.NOT_EQUAL,HELLO).evaluate(_context) );
   }
   
   @Test
   public void testEqual() {
-    assertTrue( (Boolean)new Comparison(PI,Comparison.EQUAL,PI).evaluate(_context) );
-    assertTrue( (Boolean)new Comparison(THREE,Comparison.EQUAL,THREE).evaluate(_context) );
-    assertTrue( (Boolean)new Comparison(TRUE,Comparison.EQUAL,TRUE).evaluate(_context) );    
-    assertFalse( (Boolean)new Comparison(TRUE,Comparison.EQUAL,THREE).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(PI,ComparisonOperand.EQUAL,PI).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(THREE,ComparisonOperand.EQUAL,THREE).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(TRUE,ComparisonOperand.EQUAL,TRUE).evaluate(_context) );    
+    assertFalse( (Boolean)new Comparison(TRUE,ComparisonOperand.EQUAL,THREE).evaluate(_context) );
   }
   
   @Test
   public void testGreaterThan() {
-    assertTrue( (Boolean)new Comparison(PI,Comparison.GREATER_THAN,THREE).evaluate(_context) );
-    assertFalse( (Boolean)new Comparison(ONE,Comparison.GREATER_THAN,PI).evaluate(_context) );
-    assertFalse( (Boolean)new Comparison(ONE,Comparison.GREATER_THAN,ONE).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(PI,ComparisonOperand.GREATER_THAN,THREE).evaluate(_context) );
+    assertFalse( (Boolean)new Comparison(ONE,ComparisonOperand.GREATER_THAN,PI).evaluate(_context) );
+    assertFalse( (Boolean)new Comparison(ONE,ComparisonOperand.GREATER_THAN,ONE).evaluate(_context) );
   }
   
   @Test
   public void testGreaterOrEqual() {
-    assertTrue( (Boolean)new Comparison(PI,Comparison.GREATER_OR_EQUAL,THREE).evaluate(_context) );
-    assertFalse( (Boolean)new Comparison(ONE,Comparison.GREATER_OR_EQUAL,PI).evaluate(_context) );
-    assertTrue( (Boolean)new Comparison(ONE,Comparison.GREATER_OR_EQUAL,ONE).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(PI,ComparisonOperand.GREATER_OR_EQUAL,THREE).evaluate(_context) );
+    assertFalse( (Boolean)new Comparison(ONE,ComparisonOperand.GREATER_OR_EQUAL,PI).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(ONE,ComparisonOperand.GREATER_OR_EQUAL,ONE).evaluate(_context) );
   }
   
   @Test
   public void testLessThan() {
-    assertTrue( (Boolean)new Comparison(ONE,Comparison.LESS_THAN,THREE).evaluate(_context) );
-    assertFalse( (Boolean)new Comparison(PI,Comparison.LESS_THAN,PI).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(ONE,ComparisonOperand.LESS_THAN,THREE).evaluate(_context) );
+    assertFalse( (Boolean)new Comparison(PI,ComparisonOperand.LESS_THAN,PI).evaluate(_context) );
   }
   
   @Test
   public void testLessOrEqual() {
-    assertTrue( (Boolean)new Comparison(ONE,Comparison.LESS_OR_EQUAL,THREE).evaluate(_context) );
-    assertTrue( (Boolean)new Comparison(PI,Comparison.LESS_OR_EQUAL,PI).evaluate(_context) );
-    assertFalse( (Boolean)new Comparison(THREE,Comparison.LESS_OR_EQUAL,ONE).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(ONE,ComparisonOperand.LESS_OR_EQUAL,THREE).evaluate(_context) );
+    assertTrue( (Boolean)new Comparison(PI,ComparisonOperand.LESS_OR_EQUAL,PI).evaluate(_context) );
+    assertFalse( (Boolean)new Comparison(THREE,ComparisonOperand.LESS_OR_EQUAL,ONE).evaluate(_context) );
   }
   
   
