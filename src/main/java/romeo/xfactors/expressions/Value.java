@@ -15,49 +15,6 @@ import romeo.xfactors.api.IExpressionTokeniser;
  */
 public class Value implements IExpression {
   
-  /**
-   * Utility method to convert a value token used in a VALUE operation. Applies the following heuristics:
-   * if the text is "null" will return null,
-   * if "true" or "false" (case insensitive) will return a Boolean,
-   * if it starts with a '"' (double quote) will consider it a String and strip the leading and trailing quotes
-   * (nb: currently unescaped internal quotes are not detected (they should cause a failure, but don't yet))
-   * if it contains a '.' will try to return a Double (or fail if cannot parse as such),
-   * otherwise will try to convert to a Long.
-   * @param tokenText
-   * @return
-   */
-  public static Object parseValue(String tokenText) {
-    tokenText = Objects.requireNonNull(tokenText, "token may not be null").trim();
-    final Object value;
-    if("null".equalsIgnoreCase(tokenText)) {
-      value = null;
-    } else if("true".equalsIgnoreCase(tokenText)) {
-      value = Boolean.TRUE;
-    } else if("false".equalsIgnoreCase(tokenText)) {
-      value = Boolean.FALSE;
-    } else {
-      if(tokenText.startsWith("\"")) { 
-        value = Convert.toUnquotedString(tokenText);
-      } else {
-        //Assume its numeric
-        if(tokenText.indexOf('.') != -1) {
-          try {
-            value = new Double(Double.parseDouble(tokenText));
-          } catch(NumberFormatException nfe) {
-            throw new IllegalArgumentException("Invalid numeric (double float) value:" + tokenText);
-          }
-        } else {
-          try {
-            value = new Long(Long.parseLong(tokenText));
-          } catch(NumberFormatException nfe) {
-            throw new IllegalArgumentException("Invalid numeric (long int) value:" + tokenText);
-          }
-        }
-      }
-    }
-    return value;
-  }
-  
   protected Object _value;
 
   /**
@@ -78,7 +35,7 @@ public class Value implements IExpression {
      throw new IllegalArgumentException("VALUE requires one and only one parameter"); 
     }
     String token = tokeniser.trimToken(tokens[0]);
-    _value = parseValue(token);
+    _value = Convert.toObject(token);
   }
 
   /**
