@@ -5,8 +5,6 @@ import java.util.Random;
 
 import romeo.battle.impl.RoundContext;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the RND expression that generates random numbers. See the xfactor
@@ -17,38 +15,6 @@ public class Rnd implements IExpression {
   protected Random _rnd = new Random();
   private int _min;
   private int _range;
-
-  /**
-   * Constructor that parses the params string
-   * @param params
-   * @param parser
-   */
-  public Rnd(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 2) {
-        throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
-      }
-      _min = Integer.parseInt(tokens[0]);
-      int max = Integer.parseInt(tokens[1]);
-      if(max < _min) { //If round the wrong way swap them
-        int min = _min;
-        _min = max;
-        max = min;
-      }
-      _range = max+1 - _min;
-      if(_range<=1) {
-        throw new IllegalArgumentException("max and min may not be equal");
-      }
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise RND with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor

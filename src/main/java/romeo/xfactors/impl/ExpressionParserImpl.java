@@ -89,11 +89,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "LOGIC" : return parseLogic(params);
         case "PRESENT" : return parsePresent(params);
         case "QUANTITY" : return parseQuantity(params);
+        case "RND" : return parseRnd(params);
        
         default: {
-          if("RND".equals(exprType)) {
-            return new Rnd(params, this, this);
-          } else if("VALUE".equals(exprType)) {
+          if("VALUE".equals(exprType)) {
             return new Value(params, this, this);
           } else {
             throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
@@ -374,6 +373,23 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
       throw illArgs;
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise QUANTITY with params:" + params, e);
+    }
+  }
+
+  public Rnd parseRnd(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 2) {
+        throw new IllegalArgumentException("Expecting 2 parameters but found " + tokens.length);
+      }
+      int min = Integer.parseInt(tokens[0]);
+      int max = Integer.parseInt(tokens[1]);
+      return new Rnd(min, max);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise RND with params:" + params, e);
     }
   }
 }

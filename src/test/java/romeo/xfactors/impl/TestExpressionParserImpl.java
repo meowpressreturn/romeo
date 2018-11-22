@@ -546,6 +546,69 @@ public class TestExpressionParserImpl {
     } catch(IllegalArgumentException expected) {}
     
   }
+  
+  @Test
+  public void testParseRnd() {
+    
+    Rnd r = _p.parseRnd("1,100");
+    assertEquals(1, r.getMin());
+    assertEquals(100, r.getMax());
+    
+    //these should all be legal
+    _p.parseRnd("-100,-200");
+    _p.parseRnd("100,-12345");
+    
+    try{
+      _p.parseRnd("0,0");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}    
+    
+    try{
+      _p.parseRnd("1,2,3");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseRnd("100");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseRnd("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseRnd(",");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseRnd(",,,,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseRnd("foo,10");
+      fail("Expected an exception due to bad numbers");
+    } catch(Exception expected) {}
+    
+    try{
+      _p.parseRnd("10,bar");
+      fail("Expected an exception due to bad numbers");
+    } catch(Exception expected) {}
+    
+    try{
+      _p.parseRnd("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try{
+      _p.parseRnd(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+  }
 }
 
 
