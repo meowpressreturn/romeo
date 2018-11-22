@@ -8,7 +8,6 @@ import java.util.Objects;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Adjust.AdjustOperand;
 import romeo.xfactors.expressions.Arithmetic;
@@ -23,9 +22,9 @@ import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.expressions.If;
 import romeo.xfactors.expressions.Logic;
 import romeo.xfactors.expressions.Logic.LogicOperand;
-import romeo.xfactors.expressions.Quantity.QuantityOperand;
 import romeo.xfactors.expressions.Present;
 import romeo.xfactors.expressions.Quantity;
+import romeo.xfactors.expressions.Quantity.QuantityOperand;
 import romeo.xfactors.expressions.Rnd;
 import romeo.xfactors.expressions.Value;
 
@@ -33,7 +32,7 @@ import romeo.xfactors.expressions.Value;
  * Parses a single xf expression into the appropriate IExpression objects. A
  * reference to the unit service is required.
  */
-public class ExpressionParserImpl implements IExpressionParser, IExpressionTokeniser {
+public class ExpressionParserImpl implements IExpressionParser {
   
   ////////////////////////////////////////////////////////////////////////////
   
@@ -109,7 +108,6 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
    * @param params
    * @return tokens
    */
-  @Override
   public String[] tokenise(String params) {
     Objects.requireNonNull(params, "params may not be null");
     if(params.length() == 0) {
@@ -169,7 +167,6 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
    * @param token
    * @return token
    */
-  @Override
   public String trimToken(String token) {
     Objects.requireNonNull(token, "src may not be null");
     if(token.length() == 0) {
