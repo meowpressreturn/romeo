@@ -7,8 +7,6 @@ import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the QUANTITY expression that returns the live quantity of a
@@ -72,38 +70,6 @@ public class Quantity implements IExpression {
   protected QuantityOperand _operand;
   protected String _acronym;
   protected Integer _sourceId;
-
-  /**
-   * Constructor
-   * @param params
-   *          params string
-   * @param parser
-   */
-  public Quantity(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    Objects.requireNonNull(tokeniser, "tokeniser may not be null");
-    try {
-      String[] tokens = tokeniser.tokenise(params);
-      if(tokens.length != 3) {
-        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
-      }
-      _operand = QuantityOperand.fromString( tokeniser.trimToken(tokens[0]) );
-      _acronym = tokens[1];
-      String sourceIdToken = tokeniser.trimToken( tokens[2] );
-      //note: can be null (now case-insensive as of 0.6.3)
-      if(sourceIdToken.equalsIgnoreCase("null")) {
-        _sourceId = null;
-      } else {
-        _sourceId = new Integer(Integer.parseInt(sourceIdToken));
-      }
-      validate();
-    } catch(IllegalArgumentException illArgs) {
-      throw illArgs;
-    } catch(Exception e) {
-      throw new RuntimeException("Unable to initialise QUANTITY with params:" + params, e);
-    }
-  }
 
   /**
    * Constructor. The sourceId is optional. If specified only the subfleet

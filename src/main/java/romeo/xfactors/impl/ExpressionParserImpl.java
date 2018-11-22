@@ -23,6 +23,7 @@ import romeo.xfactors.expressions.Flag.FlagOperand;
 import romeo.xfactors.expressions.If;
 import romeo.xfactors.expressions.Logic;
 import romeo.xfactors.expressions.Logic.LogicOperand;
+import romeo.xfactors.expressions.Quantity.QuantityOperand;
 import romeo.xfactors.expressions.Present;
 import romeo.xfactors.expressions.Quantity;
 import romeo.xfactors.expressions.Rnd;
@@ -87,11 +88,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "IF" : return parseIf(params);
         case "LOGIC" : return parseLogic(params);
         case "PRESENT" : return parsePresent(params);
+        case "QUANTITY" : return parseQuantity(params);
        
         default: {
-          if("QUANTITY".equals(exprType)) {
-            return new Quantity(params, this, this);
-          } else if("RND".equals(exprType)) {
+          if("RND".equals(exprType)) {
             return new Rnd(params, this, this);
           } else if("VALUE".equals(exprType)) {
             return new Value(params, this, this);
@@ -350,5 +350,30 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
     String acronym = trimToken(tokens[0]);
     acronym = Convert.toUnquotedString(acronym);
     return new Present(acronym);
+  }
+  
+  public Quantity parseQuantity(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    try {
+      String[] tokens = tokenise(params);
+      if(tokens.length != 3) {
+        throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
+      }
+      QuantityOperand operand = QuantityOperand.fromString( trimToken(tokens[0]) );
+      String acronym = trimToken( tokens[1] );
+      String sourceIdToken = trimToken( tokens[2] );
+      //note: can be null (now case-insensive as of 0.6.3)
+      final Integer _sourceId;      
+      if(sourceIdToken.equalsIgnoreCase("null")) {
+        _sourceId = null;
+      } else {
+        _sourceId = new Integer(Integer.parseInt(sourceIdToken));
+      }
+      return new Quantity(operand, acronym, _sourceId);
+    } catch(IllegalArgumentException illArgs) {
+      throw illArgs;
+    } catch(Exception e) {
+      throw new RuntimeException("Unable to initialise QUANTITY with params:" + params, e);
+    }
   }
 }

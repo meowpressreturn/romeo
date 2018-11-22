@@ -23,6 +23,7 @@ import romeo.xfactors.expressions.Logic;
 import romeo.xfactors.expressions.Logic.LogicOperand;
 import romeo.xfactors.expressions.Present;
 import romeo.xfactors.expressions.Quantity;
+import romeo.xfactors.expressions.Quantity.QuantityOperand;
 import romeo.xfactors.expressions.Rnd;
 import romeo.xfactors.expressions.Value;
 
@@ -495,6 +496,55 @@ public class TestExpressionParserImpl {
     assertEquals("VIP", _p.parsePresent("\"VIP\"").getAcronym() );
     assertEquals("VIP", _p.parsePresent("    \"VIP\" ").getAcronym() );
     assertEquals(" VIP ", _p.parsePresent("\" VIP \"").getAcronym() );
+  }
+  
+  @Test
+  public void testParseQuantity() {
+
+    assertEquals( QuantityOperand.ANY_PLAYER, _p.parseQuantity("ANY_PLAYER,MED,0").getOperand() );
+    assertEquals( QuantityOperand.OPPOSING_PLAYERS, _p.parseQuantity("OPPOSING_PLAYERS,MED,0").getOperand() );
+    assertEquals( QuantityOperand.THIS_PLAYER, _p.parseQuantity("THIS_PLAYER,MED,0").getOperand() );
+    
+    assertEquals( new Integer(0), _p.parseQuantity("ANY_PLAYER,MED,0").getSourceId() );
+    assertEquals( new Integer(1), _p.parseQuantity("ANY_PLAYER,MED,1").getSourceId() );
+    assertEquals( new Integer(888), _p.parseQuantity("ANY_PLAYER,MED,888").getSourceId() ); //high sourceIds are fine
+    
+    assertNull( _p.parseQuantity("ANY_PLAYER,MED,NULL").getSourceId() );
+    assertNull( _p.parseQuantity("ANY_PLAYER,MED,null").getSourceId() );
+    
+    try {
+      Quantity q = _p.parseQuantity("ANY_PLAYER,MED,-1"); //negative sourceId isnt allowed
+      fail("Expected IllegalArgumentException but found " + q);
+      //in hindsight, using -1 for any source would have been better and could then use a primitive for it
+      //and avoid nullskullduggery
+    }catch(IllegalArgumentException expected) {}
+    
+    
+    try {
+      _p.parseQuantity(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      _p.parseQuantity("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseQuantity(",,,,,,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseQuantity(",,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseQuantity("ANY_PLAYER,MED,0,1");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
   }
 }
 

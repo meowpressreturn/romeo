@@ -10,10 +10,7 @@ import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.units.api.IUnit;
 import romeo.units.impl.TestUnitImpl;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 import romeo.xfactors.expressions.Quantity.QuantityOperand;
-import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestQuantity {
   
@@ -92,67 +89,6 @@ public class TestQuantity {
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
         
-  }
-  
-  @Test
-  public void testParsingConstructor() {
-    IExpressionParser parser = new ExpressionParserImpl();
-    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-
-    assertEquals( QuantityOperand.ANY_PLAYER, new Quantity("ANY_PLAYER,MED,0",parser, tokeniser).getOperand() );
-    assertEquals( QuantityOperand.OPPOSING_PLAYERS, new Quantity("OPPOSING_PLAYERS,MED,0",parser, tokeniser).getOperand() );
-    assertEquals( QuantityOperand.THIS_PLAYER, new Quantity("THIS_PLAYER,MED,0",parser, tokeniser).getOperand() );
-    
-    assertEquals( new Integer(0), new Quantity("ANY_PLAYER,MED,0",parser, tokeniser).getSourceId() );
-    assertEquals( new Integer(1), new Quantity("ANY_PLAYER,MED,1",parser, tokeniser).getSourceId() );
-    assertEquals( new Integer(888), new Quantity("ANY_PLAYER,MED,888",parser, tokeniser).getSourceId() ); //high sourceIds are fine
-    
-    assertNull( new Quantity("ANY_PLAYER,MED,NULL",parser, tokeniser).getSourceId() );
-    assertNull( new Quantity("ANY_PLAYER,MED,null",parser, tokeniser).getSourceId() );
-    
-    try {
-      Quantity q = new Quantity("ANY_PLAYER,MED,-1",parser, tokeniser); //negative sourceId isnt allowed
-      fail("Expected IllegalArgumentException but found " + q);
-      //in hindsight, using -1 for any source would have been better and could then use a primitive for it
-      //and avoid nullskullduggery
-    }catch(IllegalArgumentException expected) {}
-    
-    
-    try {
-      new Quantity(null, parser, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Quantity("ANY_PLAYER,MED,0", null, tokeniser);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Quantity("ANY_PLAYER,MED,0", parser, null);
-      fail("Expected NullPointerException");
-    } catch(NullPointerException expected) {}
-    
-    try {
-      new Quantity("",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Quantity(",,,,,,,,",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Quantity(",,,",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Quantity("ANY_PLAYER,MED,0,1",parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
   }
   
   @Test
