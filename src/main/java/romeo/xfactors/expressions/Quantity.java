@@ -6,7 +6,6 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
-import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
@@ -18,36 +17,30 @@ import romeo.xfactors.api.IExpressionTokeniser;
  */
 public class Quantity implements IExpression {
   
-  /**
-   * Operand specifying to count the quantity in any fleet
-   */
-  public static final int ANY_PLAYER = 0;
-
-  /**
-   * Operand specifying to count the number owned by the player that owns the
-   * xfactored unit.
-   */
-  public static final int THIS_PLAYER = 1;
-
-  /**
-   * Operand specifying to count the number owned by the player(s) that dont own
-   * the xfactored unit.
-   */
-  public static final int OPPOSING_PLAYERS = 2;
-
-  /**
-   * Array that maps operand text to its int constant
-   */
-  private static final String[] OPERAND_TEXT = new String[3];
-  static {
-    OPERAND_TEXT[ANY_PLAYER] = "ANY_PLAYER";
-    OPERAND_TEXT[THIS_PLAYER] = "THIS_PLAYER";
-    OPERAND_TEXT[OPPOSING_PLAYERS] = "OPPOSING_PLAYERS";
-  }
+  public enum QuantityOperand {
   
-  public static int asOperand(String text) {
-    String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
-    return Convert.toIndex(operandToken, OPERAND_TEXT);
+    /**
+     * Operand specifying to count the quantity in any fleet
+     */
+    ANY_PLAYER,
+  
+    /**
+     * Operand specifying to count the number owned by the player that owns the
+     * xfactored unit.
+     */
+    THIS_PLAYER,
+  
+    /**
+     * Operand specifying to count the number owned by the player(s) that dont own
+     * the xfactored unit.
+     */
+    OPPOSING_PLAYERS;
+    
+    public static QuantityOperand fromString(String text) {
+      String operandToken = Objects.requireNonNull(text,"operand text may not be null").toUpperCase(Locale.US);
+      return valueOf(QuantityOperand.class, operandToken);
+    }
+  
   }
   
   /**
@@ -76,7 +69,7 @@ public class Quantity implements IExpression {
   
   ////////////////////////////////////////////////////////////////////////////
 
-  protected int _operand;
+  protected QuantityOperand _operand;
   protected String _acronym;
   protected Integer _sourceId;
 
@@ -95,13 +88,14 @@ public class Quantity implements IExpression {
       if(tokens.length != 3) {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
-      _operand = asOperand(tokens[0]);
+      _operand = QuantityOperand.fromString( tokeniser.trimToken(tokens[0]) );
       _acronym = tokens[1];
+      String sourceIdToken = tokeniser.trimToken( tokens[2] );
       //note: can be null (now case-insensive as of 0.6.3)
-      if(tokens[2].equalsIgnoreCase("null")) {
+      if(sourceIdToken.equalsIgnoreCase("null")) {
         _sourceId = null;
       } else {
-        _sourceId = new Integer(Integer.parseInt(tokens[2]));
+        _sourceId = new Integer(Integer.parseInt(sourceIdToken));
       }
       validate();
     } catch(IllegalArgumentException illArgs) {
@@ -114,15 +108,15 @@ public class Quantity implements IExpression {
   /**
    * Constructor. The sourceId is optional. If specified only the subfleet
    * specified will be counted.
-   * @param player
+   * @param operand
    *          the index of this player
    * @param acronym
    *          the unit to count
    * @param sourceId
    *          this units source fleet among this players fleets
    */
-  public Quantity(int player, String acronym, Integer sourceId) {
-    _operand = player;
+  public Quantity(QuantityOperand operand, String acronym, Integer sourceId) {
+    _operand = Objects.requireNonNull(operand, "operand may not be null");
     _acronym = Objects.requireNonNull(acronym, "acronym may not be null");
     _sourceId = sourceId;
     validate();
@@ -133,9 +127,6 @@ public class Quantity implements IExpression {
    * @throws IllegalStateException
    */
   protected void validate() {
-    if(_operand < 0 || _operand > OPERAND_TEXT.length) {
-      throw new IllegalArgumentException("Bad player id:" + _operand);
-    }
     if(_sourceId != null && _sourceId < 0) {
       throw new IllegalArgumentException("sourceId may not be negative");
     }
@@ -147,7 +138,7 @@ public class Quantity implements IExpression {
    */
   @Override
   public String toString() {
-    return "QUANTITY(" + OPERAND_TEXT[_operand] + "," + _acronym + "," + _sourceId + ")";
+    return "QUANTITY(" + _operand + "," + _acronym + "," + _sourceId + ")";
   }
 
   /**
@@ -192,7 +183,7 @@ public class Quantity implements IExpression {
     }
   }
 
-  public int getOperand() {
+  public QuantityOperand getOperand() {
     return _operand;
   }
   
