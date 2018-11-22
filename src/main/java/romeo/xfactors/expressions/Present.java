@@ -6,10 +6,7 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
-import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the PRESENT expression. This checks for the presence of one of
@@ -47,43 +44,15 @@ public class Present implements IExpression {
   protected String _acronym;
 
   /**
-   * Constructor that takes the acronym as a params string. This is de-tokenised
-   * and trimmed. The value may be quoted.
-   * @param params 
-   * @param parser
-   * 
-   */
-  public Present(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may not be null");
-    String[] tokens = tokeniser.tokenise(params);
-    if(tokens.length != 1) {
-      throw new IllegalArgumentException("expected a single acronym");
-    }
-    _acronym = tokeniser.trimToken(tokens[0]);
-    _acronym = Convert.toUnquotedString(_acronym);
-    validate();
-  }
-
-  /**
-   * Constructor. nb: the string supplied will not be trimmed.
+   * Constructor. nb: the string supplied will not be trimmed here.
    * @param acronym 
    */
   public Present(String acronym) {
-    _acronym = acronym;
-    validate();
-  }
-
-  /**
-   * Validates that acronym is not null or an empty string
-   * @throws IllegalStateException
-   *           if it is
-   */
-  protected void validate() {
-    Objects.requireNonNull(_acronym,"acronym may not be null");
+    _acronym = Objects.requireNonNull(acronym);
     if(_acronym.isEmpty()) {
       throw new IllegalArgumentException("acronym not specified");
     }
+    //TODO - verify there are no illegal chars in the acronym
   }
 
   /**

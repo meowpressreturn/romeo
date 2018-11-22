@@ -443,6 +443,59 @@ public class TestExpressionParserImpl {
     } catch(NullPointerException expected) {}
     
   }
+  
+  @Test
+  public void testParsePresent() {
+    
+    assertEquals("VIP", _p.parsePresent("VIP").getAcronym() );
+    assertEquals("VIP", _p.parsePresent("   VIP\n  ").getAcronym() );
+    
+    try {
+      _p.parsePresent("foo,bar,baz");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parsePresent("");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parsePresent(",");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parsePresent(",,,,,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parsePresent("VIP,BS");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parsePresent("    ");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parsePresent("\"\"");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    new Present(" \"    \"   "); //this is silly but allowed
+    
+    try {
+      _p.parsePresent(null);
+      fail("Expected NullPointerException");
+    }catch(NullPointerException expected) {}
+    
+    assertEquals("VIP", _p.parsePresent("\"VIP\"").getAcronym() );
+    assertEquals("VIP", _p.parsePresent("    \"VIP\" ").getAcronym() );
+    assertEquals(" VIP ", _p.parsePresent("\" VIP \"").getAcronym() );
+  }
 }
 
 

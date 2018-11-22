@@ -9,9 +9,6 @@ import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.units.impl.UnitImpl;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
-import romeo.xfactors.impl.ExpressionParserImpl;
 
 public class TestPresent {
 
@@ -64,71 +61,6 @@ public class TestPresent {
     }catch(IllegalArgumentException expected) {}
     
     new Present("any text here should be ok");
-  }
-  
-  @Test
-  public void testParsingConstructor() {
-    IExpressionParser parser = new ExpressionParserImpl();
-    IExpressionTokeniser tokeniser = new ExpressionParserImpl();
-    
-    assertEquals("VIP", new Present("VIP",parser, tokeniser).getAcronym() );
-    assertEquals("VIP", new Present("   VIP\n  ",parser, tokeniser).getAcronym() );
-    
-    try {
-      new Present("foo,bar,baz", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Present("", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Present(",", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Present(",,,,,,,", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Present("VIP,BS", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Present("    ", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    try {
-      new Present("\"\"", parser, tokeniser);
-      fail("Expected IllegalArgumentException");
-    } catch(IllegalArgumentException expected) {}
-    
-    new Present(" \"    \"   ", parser, tokeniser); //this is silly but allowed
-    
-    try {
-      new Present(null,parser, tokeniser);
-      fail("Expected NullPointerException");
-    }catch(NullPointerException expected) {}
-    
-    try {
-      new Present("foo",null, tokeniser);
-      fail("Expected NullPointerException");
-    }catch(NullPointerException expected) {}
-    
-    try {
-      new Present("foo",parser, null);
-      fail("Expected NullPointerException");
-    }catch(NullPointerException expected) {}
-    
-    assertEquals("VIP", new Present("\"VIP\"",parser, tokeniser).getAcronym() );
-    assertEquals("VIP", new Present("    \"VIP\" ",parser, tokeniser).getAcronym() );
-    assertEquals(" VIP ", new Present("\" VIP \"",parser, tokeniser).getAcronym() );
   }
   
   @Test

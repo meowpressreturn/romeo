@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IExpressionTokeniser;
@@ -85,6 +86,7 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "FLAG" : return parseFlag(params);
         case "IF" : return parseIf(params);
         case "LOGIC" : return parseLogic(params);
+        case "PRESENT" : return parsePresent(params);
        
         default: {
           if("QUANTITY".equals(exprType)) {
@@ -93,8 +95,6 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
             return new Rnd(params, this, this);
           } else if("VALUE".equals(exprType)) {
             return new Value(params, this, this);
-          } else if("PRESENT".equals(exprType)) {
-            return new Present(params, this, this);
           } else {
             throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
           }          
@@ -339,5 +339,16 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise LOGIC with params:" + params, e);
     }
+  }
+  
+  public Present parsePresent(String params) {
+    Objects.requireNonNull(params, "params may not be null");
+    String[] tokens = tokenise(params);
+    if(tokens.length != 1) {
+      throw new IllegalArgumentException("expected a single acronym");
+    }
+    String acronym = trimToken(tokens[0]);
+    acronym = Convert.toUnquotedString(acronym);
+    return new Present(acronym);
   }
 }
