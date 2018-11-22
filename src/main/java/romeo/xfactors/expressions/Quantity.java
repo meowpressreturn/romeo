@@ -85,14 +85,6 @@ public class Quantity implements IExpression {
     _operand = Objects.requireNonNull(operand, "operand may not be null");
     _acronym = Objects.requireNonNull(acronym, "acronym may not be null");
     _sourceId = sourceId;
-    validate();
-  }
-
-  /**
-   * Validates the operand
-   * @throws IllegalStateException
-   */
-  protected void validate() {
     if(_sourceId != null && _sourceId < 0) {
       throw new IllegalArgumentException("sourceId may not be negative");
     }
