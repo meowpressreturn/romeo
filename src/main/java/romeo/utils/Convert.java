@@ -31,7 +31,7 @@ public class Convert {
   /**
    * Convert text into an 'appropriate' Object. This was originally created to parse the text in an XFEL Value
    * expression. It applies the following heuristics:
-   * if the text is "null" will return null,
+   * if the text is "null" will return null (nb: text may *not* be a null reference), 
    * if "true" or "false" (case insensitive) will return a Boolean,
    * if it starts with a '"' (double quote) will consider it a String and strip the leading and trailing quotes
    * (nb: currently unescaped internal quotes are not detected (they should cause a failure, but don't yet))
@@ -42,7 +42,7 @@ public class Convert {
    * @throws IllegalArgumentException if it can't figure out what type to use or fails to convert to it
    */
   public static Object toObject(String text) {
-    text = Objects.requireNonNull(text, "token may not be null").trim();
+    text = Objects.requireNonNull(text, "text may not be null").trim();
     if("null".equalsIgnoreCase(text)) {
       return null;
     } else if("true".equalsIgnoreCase(text)) {

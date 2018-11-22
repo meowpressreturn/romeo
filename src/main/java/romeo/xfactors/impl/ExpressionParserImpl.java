@@ -90,14 +90,10 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
         case "PRESENT" : return parsePresent(params);
         case "QUANTITY" : return parseQuantity(params);
         case "RND" : return parseRnd(params);
+        case "VALUE" : return parseValue(params);
        
-        default: {
-          if("VALUE".equals(exprType)) {
-            return new Value(params, this, this);
-          } else {
-            throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
-          }          
-        }
+        default:
+          throw new IllegalArgumentException("Unrecognised expression type:" + exprType + " in expression " + xfel);
       } //end switch exprType
       
     } catch(IllegalArgumentException badExpr) {
@@ -391,5 +387,17 @@ public class ExpressionParserImpl implements IExpressionParser, IExpressionToken
     } catch(Exception e) {
       throw new RuntimeException("Unable to initialise RND with params:" + params, e);
     }
+  }
+
+  public Value parseValue(String params) {
+    
+    Objects.requireNonNull(params, "params may not be null");
+    String[] tokens = tokenise(params);
+    if(tokens.length != 1) {
+     throw new IllegalArgumentException("VALUE requires one and only one parameter"); 
+    }
+    String token = trimToken(tokens[0]);
+    Object value = Convert.toObject(token);
+    return new Value(value);
   }
 }

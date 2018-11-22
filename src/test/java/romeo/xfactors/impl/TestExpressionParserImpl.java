@@ -609,6 +609,78 @@ public class TestExpressionParserImpl {
     } catch(NullPointerException expected) {}
     
   }
+  
+  @Test
+  public void testParseValue() {
+    RoundContext context = new RoundContext(new String[]{});
+    
+    Object[][] tests = new Object[][] {
+      { "1", new Long(1)  }, //[0]
+      { "0", new Long(0)  },
+      { "1.0", new Double(1) },
+      { "\"hello\"", "hello" },
+      { "   \"foo\"  ", "foo" }, //[4]
+      
+      { "\"   foo   \"", "   foo   " },
+      { "-1234", new Long(-1234) },
+      { "null", null },
+      { "NULL", null },
+      { "\"NULL\"", "NULL" }, //[9]
+      
+      { "true", true },
+      { "false", false },
+      { "trUE", true },
+      { "fALSe", false }, //[13]      
+      { "\"1,2,3\"", "1,2,3" }, //[14]
+      { "\"(FOO)\"", "(FOO)" },
+      
+      { "\"\"", "" },
+      
+    };
+    
+    for(int t=0; t<tests.length;t++) {
+      String params = (String)tests[t][0];
+      Object expected = tests[t][1];
+      try {
+        Value v = _p.parseValue(params);
+        assertEquals( "test[" + t + "] value", expected, v.getValue() );
+        assertEquals( "test[" + t + "] evaluate", expected, v.evaluate(context) );  
+      } catch(Exception e) {
+        throw new RuntimeException("tests[" + t + "] caused an exception!",e);
+      }
+    }
+    
+    try {
+      _p.parseValue(null);
+      fail("Expected NullPointerException");
+    } catch(NullPointerException expected) {}
+    
+    try {
+      _p.parseValue(""); //this is illegal - for an empty string it would need to be quoted
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseValue(",");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseValue(",,,,,,,");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseValue("1,2,3");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+    try {
+      _p.parseValue("foo");
+      fail("Expected IllegalArgumentException");
+    } catch(IllegalArgumentException expected) {}
+    
+  }
 }
 
 

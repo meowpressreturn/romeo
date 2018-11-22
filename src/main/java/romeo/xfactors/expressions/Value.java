@@ -1,12 +1,7 @@
 package romeo.xfactors.expressions;
 
-import java.util.Objects;
-
 import romeo.battle.impl.RoundContext;
-import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
-import romeo.xfactors.api.IExpressionParser;
-import romeo.xfactors.api.IExpressionTokeniser;
 
 /**
  * Implements the VALUE expression. This expression is how actual values are
@@ -16,27 +11,6 @@ import romeo.xfactors.api.IExpressionTokeniser;
 public class Value implements IExpression {
   
   protected Object _value;
-
-  /**
-   * Constructor. This takes a value string. The strings null, true, and false
-   * evaluate to null, boolean true or boolean false. Values that are quoted
-   * with " are treated as strings, and other values are assumed to be numeric.
-   * @param token
-   *          the value to return
-   * @param parser
-   *          
-   */
-  public Value(String params, IExpressionParser parser, IExpressionTokeniser tokeniser) {
-    
-    Objects.requireNonNull(params, "params may not be null");
-    Objects.requireNonNull(parser, "parser may nto be null");
-    String[] tokens = tokeniser.tokenise(params);
-    if(tokens.length != 1) {
-     throw new IllegalArgumentException("VALUE requires one and only one parameter"); 
-    }
-    String token = tokeniser.trimToken(tokens[0]);
-    _value = Convert.toObject(token);
-  }
 
   /**
    * Constructor
