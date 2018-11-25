@@ -525,4 +525,28 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
   public List<FleetElement> getElements() {
     return _elements;
   }
+  
+  /**
+   * Utility method that counts the number of the specified unit within the
+   * fleet (and optional subfleet as specified by sourceId). This doesn't
+   * take casualties into account (so use it at the start of a round when
+   * these have been removed if that is important).
+   * @param acronym
+   * @param sourceId may be null, in which case it is ignored and any element can be source
+   * @return quantity
+   */
+  public double getQuantity(String acronym, Integer sourceId) {
+    //nb: this method was moved from a static utility method on the Quantity expression
+    acronym = acronym.toUpperCase(Locale.US);
+    double quantity = 0;
+    for(FleetElement element : this) {
+      String elementAcronym = element.getUnit().getAcronym();
+      if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase(Locale.US))) {
+        if(sourceId == null || element.getSource() == sourceId.intValue()) {
+          quantity += element.getQuantity();
+        }
+      }
+    }
+    return quantity;
+  }
 }

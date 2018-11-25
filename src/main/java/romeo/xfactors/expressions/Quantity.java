@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
-import romeo.fleet.model.FleetElement;
 import romeo.xfactors.api.IExpression;
 
 /**
@@ -39,30 +38,6 @@ public class Quantity implements IExpression {
       return valueOf(QuantityOperand.class, operandToken);
     }
   
-  }
-  
-  /**
-   * Utility method that counts the number of the specified unit within the
-   * specified fleet and option subfleet as specified by sourceId. This doesnt
-   * take casualties into account as it assumes this is the start of a round and
-   * these have been removed.
-   * @param fleet
-   * @param acronym
-   * @param sourceId may be null, in which case it is ignored and any element can be source
-   * @return quantity
-   */
-  public static double getQuantity(FleetContents fleet, String acronym, Integer sourceId) {
-    acronym = acronym.toUpperCase(Locale.US);
-    double quantity = 0;
-    for(FleetElement element : fleet) {
-      String elementAcronym = element.getUnit().getAcronym();
-      if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase(Locale.US))) {
-        if(sourceId == null || element.getSource() == sourceId.intValue()) {
-          quantity += element.getQuantity();
-        }
-      }
-    }
-    return quantity;
   }
   
   ////////////////////////////////////////////////////////////////////////////
@@ -112,15 +87,15 @@ public class Quantity implements IExpression {
           FleetContents[] fleets = context.getOpposingFleets();
           double quantity = 0;
           for(int i = 0; i < fleets.length; i++) {
-            quantity += getQuantity(fleets[i], _acronym, _sourceId);
+            quantity += fleets[i].getQuantity(_acronym, _sourceId);
           }
-          quantity += getQuantity(context.getThisFleet(), _acronym, _sourceId);
+          quantity += context.getThisFleet().getQuantity(_acronym, _sourceId);
           return new Double(quantity);
         }
 
         case THIS_PLAYER: {
           FleetContents fleet = context.getThisFleet();
-          double quantity = getQuantity(fleet, _acronym, _sourceId);
+          double quantity = fleet.getQuantity(_acronym, _sourceId);
           return new Double(quantity);
         }
 
@@ -128,7 +103,7 @@ public class Quantity implements IExpression {
           FleetContents[] fleets = context.getOpposingFleets();
           double quantity = 0;
           for(int i = 0; i < fleets.length; i++) {
-            quantity += getQuantity(fleets[i], _acronym, _sourceId);
+            quantity += fleets[i].getQuantity(_acronym, _sourceId);
           }
           return new Double(quantity);
         }

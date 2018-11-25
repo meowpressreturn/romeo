@@ -14,8 +14,6 @@ import romeo.xfactors.expressions.Quantity.QuantityOperand;
 
 public class TestQuantity {
   
-  private static final Double D = 0.000000001;
-  
   private FleetContents _earthFleet;
   private FleetContents _marsFleet;
   private FleetContents _venusFleet;
@@ -116,26 +114,7 @@ public class TestQuantity {
     assertEquals( new Double(1), new Quantity(QuantityOperand.THIS_PLAYER, "BS", null).evaluate(_context) );
   }
   
-  @Test
-  public void testGetQuantity() {
-    
-    assertEquals( 0, Quantity.getQuantity(_venusFleet, "MED", null ), D );
-    assertEquals( 1, Quantity.getQuantity(_venusFleet, "BS", null ), D );
-    assertEquals( 1, Quantity.getQuantity(_venusFleet, "BS", 888 ), D );
-    assertEquals( 0, Quantity.getQuantity(_venusFleet, "BS", 0 ), D );
-    assertEquals( 0, Quantity.getQuantity(_venusFleet, "BS", 1 ), D );    
-    
-    assertEquals( 80, Quantity.getQuantity(_earthFleet, "VIP", null ), D );
-    assertEquals( 50, Quantity.getQuantity(_earthFleet, "VIP", 0 ), D );
-    assertEquals( 25, Quantity.getQuantity(_earthFleet, "VIP", 1 ), D );
-    assertEquals( 5, Quantity.getQuantity(_earthFleet, "VIP", 2 ), D );
-    assertEquals( 0, Quantity.getQuantity(_earthFleet, "VIP", 3 ), D );
-    
-    assertEquals( 100, Quantity.getQuantity(_marsFleet, "VIP", null ), D );
-    assertEquals( 0, Quantity.getQuantity(_earthFleet, "MED", null ), D );
-    assertEquals( 0, Quantity.getQuantity(_earthFleet, "MED", 1 ), D );
-    
-  }
+
   
 }
 
