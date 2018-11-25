@@ -81,27 +81,7 @@ public class TestPresent {
     assertFalse( (Boolean)new Present("XWNG").evaluate(_context) );
   }
   
-  @Test
-  public void testUnitPresent() {    
-    assertTrue( Present.unitPresent(_earthFleet, "VIP") );
-    assertTrue( Present.unitPresent(_earthFleet, "vip") );
-    assertTrue( Present.unitPresent(_earthFleet, "vIP") );    
-    assertFalse( Present.unitPresent(_earthFleet, "BS") );
-    assertTrue( Present.unitPresent(_marsFleet, "VIP") );
-    assertTrue( Present.unitPresent(_marsFleet, "BS") );
-    
-    try {
-      Present.unitPresent(null, "med");
-      fail("Expected NullPointerException");
-    }catch(NullPointerException expected) {}
-    
-    try {
-      Present.unitPresent(_earthFleet, null);
-      fail("Expected NullPointerException");
-    }catch(NullPointerException expected) {}
-    
-    Present.unitPresent(_earthFleet, ""); //probably useless but allowed
-  }
+  
   
   
 }

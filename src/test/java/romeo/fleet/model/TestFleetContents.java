@@ -81,6 +81,23 @@ public class TestFleetContents {
     
   }
   
+  @Test
+  public void testUnitPresent() {    
+    assertTrue( _earthFleet.unitPresent("VIP") );
+    assertTrue( _earthFleet.unitPresent("vip") );
+    assertTrue( _earthFleet.unitPresent("vIP") );    
+    assertFalse( _earthFleet.unitPresent("BS") );
+    assertTrue( _marsFleet.unitPresent("VIP") );
+    assertTrue( _marsFleet.unitPresent("BS") );
+
+    try {
+      _marsFleet.unitPresent(null);
+      fail("Expected NullPointerException");
+    }catch(NullPointerException expected) {}
+    
+    _marsFleet.unitPresent(""); //probably useless but allowed (for now)
+  }
+  
 }
 
 

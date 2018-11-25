@@ -1,11 +1,8 @@
 package romeo.xfactors.expressions;
 
-import java.util.Locale;
 import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
-import romeo.fleet.model.FleetContents;
-import romeo.fleet.model.FleetElement;
 import romeo.xfactors.api.IExpression;
 
 /**
@@ -15,31 +12,6 @@ import romeo.xfactors.api.IExpression;
  * for details.
  */
 public class Present implements IExpression {
-  
-  /**
-   * Utility method that will search the specified fleet for live units with the
-   * specified acronym
-   * @param fleet
-   * @param acronym
-   * @return present
-   */
-  public static boolean unitPresent(FleetContents fleet, String acronym) {
-    Objects.requireNonNull(fleet, "fleet may not be null");
-    Objects.requireNonNull(acronym, "acronym may not be null");
-    acronym = acronym.toUpperCase(Locale.US);
-    for(FleetElement element : fleet) {
-      String elementAcronym = element.getUnit().getAcronym();
-      if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase())) {
-        if(element.getQuantity() > 0) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-  
-  ////////////////////////////////////////////////////////////////////////////
-  
   
   protected String _acronym;
 
@@ -73,7 +45,7 @@ public class Present implements IExpression {
   @Override
   public Object evaluate(RoundContext context) {
     try {
-      boolean present = unitPresent(context.getThisFleet(), _acronym);
+      boolean present = context.getThisFleet().unitPresent(_acronym);
       return present ? Boolean.TRUE : Boolean.FALSE;
     } catch(Exception e) {
       throw new RuntimeException("Error evaluating unit presence for " + _acronym, e);

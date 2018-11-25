@@ -537,6 +537,7 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    */
   public double getQuantity(String acronym, Integer sourceId) {
     //nb: this method was moved from a static utility method on the Quantity expression
+    Objects.requireNonNull(acronym, "acronym may not be null");
     acronym = acronym.toUpperCase(Locale.US);
     double quantity = 0;
     for(FleetElement element : this) {
@@ -548,5 +549,27 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
       }
     }
     return quantity;
+  }
+  
+  /**
+   * Returns true if there are any units with the specified acronym in the fleet
+   * (nb: doesn't take casualties into account, so call at the beginning of a round
+   * if you are only interested in live units (eg for x-factor calculations)
+   * @param acronym
+   * @return present
+   */
+  public boolean unitPresent(String acronym) {
+  //nb: this method was moved from a static utility method on the Present expression
+    Objects.requireNonNull(acronym, "acronym may not be null");
+    acronym = acronym.toUpperCase(Locale.US);
+    for(FleetElement element : this) {
+      String elementAcronym = element.getUnit().getAcronym();
+      if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase())) {
+        if(element.getQuantity() > 0) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }
