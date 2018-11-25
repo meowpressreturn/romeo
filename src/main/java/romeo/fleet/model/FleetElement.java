@@ -1,5 +1,6 @@
 package romeo.fleet.model;
 
+import java.util.Objects;
 import java.util.Random;
 
 import romeo.battle.impl.RoundContext;
@@ -16,6 +17,8 @@ import romeo.xfactors.expressions.Logic;
  * Mutable structure used within a {@link FleetContents} to maintain information about
  * quantities of a particular type of unit and its stats after any xFactors have
  * been applied.
+ * Note: elements have a fleet reference that gets set when you add them to a fleet, so they
+ * may not be added to multiple fleets.
  */
 public class FleetElement implements Cloneable, Comparable<FleetElement> {
   private Random _rnd = new Random();
@@ -23,7 +26,7 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
   private IUnit _unit;
   private double _quantity;
   private int _casualties;
-  private int _source;
+  private SourceId _source;
   private FleetContents _fleet;
 
   private CompiledXFactor _xFactor;
@@ -43,7 +46,7 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
    * @param source
    *          The origin fleet identifier
    */
-  public FleetElement(IUnit unit, double qty, int source) {
+  public FleetElement(IUnit unit, double qty, SourceId source) {
     setUnit(unit);
     setQuantity(qty);
     setSource(source);
@@ -191,25 +194,27 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
    * Add contents of the specified element to this one - if it is a
    * FleetElement. If not it will be refused. This impl will convert the result
    * to zero if it is negative. Subclass that override can allow a diparate
-   * class addition
+   * class addition.
+   * Since 0.3.1 the addition is refused if sourceId differs. 
    * @param element
    *          Element whose contents are to be added to this
    * @return allowed False if this is not a legal addition
    */
   public boolean add(FleetElement element) {
-    if(element.getClass() != this.getClass()) { //Different subclasses presumed to store extra info we dont
-                                                  //want to lose so would need to stay in own element in a fleets
-                                                //contents.
+    if(element.getClass() != this.getClass()) {
+      //Different subclasses presumed to store extra info we dont
+      //want to lose so would need to stay in own element in a fleets
+      //contents.
       return false;
     }
     //yeah, okay so weve never used the subclass stuff, but the following
     //we do use now in 0.3.1
-    if(element.getSource() != this.getSource()) {
+    if(!element.getSource().equals(getSource())) {
       return false; //Reject it as it belongs to a different fleet under this player
     }
     double currentQty = getQuantity(); //May be negative in an element
     currentQty += element.getQuantity(); //add to fleet qty
-    currentQty = currentQty < 0 ? 0 : currentQty; //but prohibit negatives in fleet
+    currentQty = (currentQty) < 0 ? 0 : currentQty; //but prohibit negatives in fleet (resulting from overkill in sim?)
     setQuantity(currentQty);
     return true;
   }
@@ -294,16 +299,20 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
    * and are used to differentiate elements that originated from different
    * fleets. This is important for the calculation of various x factors.
    */
-  public int getSource() {
+  public SourceId getSource() {
     return _source;
   }
 
   /**
    * Set the originating fleet id for the units in this element.
+   * This must specify a particular subfleet, you can't pass it "any".
    * @param fleetId
    */
-  public void setSource(int i) {
-    _source = i;
+  public void setSource(SourceId source) {
+    _source = Objects.requireNonNull(source, "source may not be null");
+    if(source.isAny()) {
+      throw new IllegalArgumentException("source must specify a specific subfleet here, and not 'any'");
+    }
   }
 
   /**
@@ -504,7 +513,8 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
 
   /**
    * Compares the FleetElement with another FleetElement to see if they are
-   * equal. (If the other object isnt a FleetElement or is null then an exception is thrown)
+   * 'equal' for sorting purposes (its based on the sourceId). (If the other
+   * object isnt a FleetElement or is null then an exception is thrown)
    * @param o
    *          The other element
    * @return 0 if equal
@@ -518,7 +528,8 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
     }
     FleetElement comparee = (FleetElement) o;
 
-    int srcDif = getSource() - comparee.getSource();
+    int srcDif = getSource().compareTo(comparee.getSource()); 
+    //nb: when sourceId was an int, the above the previously used: getSource() - comparee.getSource();
     if(srcDif == 0) {
       int unitDif = 0;
       IUnit thisUnit = getUnit();

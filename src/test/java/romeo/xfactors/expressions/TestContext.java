@@ -8,6 +8,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
+import romeo.fleet.model.SourceId;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.expressions.Context.ContextOperand;
 
@@ -27,17 +28,17 @@ public class TestContext {
     _context.setRound(42);
     
     FleetContents marsFleet = new FleetContents();
-    _marsElement0 = new FleetElement(viper, 100, 0);
+    _marsElement0 = new FleetElement(viper, 100, SourceId.forBaseOrDefault());
     marsFleet.addElement(_marsElement0);
     _context.setFleet("Mars", marsFleet);
     
     FleetContents earthFleet = new FleetContents();
-    _earthElementBase = new FleetElement(viper, 50, 0);
+    _earthElementBase = new FleetElement(viper, 50, SourceId.forBaseOrDefault());
     earthFleet.addElement( _earthElementBase );
     
-    _earthElement1 = new FleetElement(viper, 25, 1);;
+    _earthElement1 = new FleetElement(viper, 25, SourceId.fromInt(1));;
     earthFleet.addElement( _earthElement1 );
-    earthFleet.addElement( new FleetElement(viper, 5, 2) );
+    earthFleet.addElement( new FleetElement(viper, 5, SourceId.fromInt(2)) );
     _context.setFleet("Earth", earthFleet);
     
     _context.setThisPlayer("Earth");
@@ -68,7 +69,8 @@ public class TestContext {
   @Test
   public void testSource() {
     Context source = new Context(ContextOperand.SOURCE);
-    assertEquals( new Integer(1), (Integer)source.evaluate(_context) );
+    //assertEquals( new Integer(1), (Integer)source.evaluate(_context) );
+    assertEquals( SourceId.fromInt(1), source.evaluate(_context) );
   }
   
   @Test

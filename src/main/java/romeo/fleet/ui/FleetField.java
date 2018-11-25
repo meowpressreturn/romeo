@@ -39,6 +39,7 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
 import romeo.fleet.model.FleetElement;
+import romeo.fleet.model.SourceId;
 import romeo.fleet.ui.FleetFieldModel.FleetModelElement;
 import romeo.model.api.IServiceListener;
 import romeo.settings.api.ISettings;
@@ -206,7 +207,7 @@ public class FleetField extends JPanel implements IServiceListener {
       @Override
       public void actionPerformed(ActionEvent e) {
         String text = _model.makeNormalisedText();
-        _fleetText.setText(""); //Hack
+        _fleetText.setText(""); //Hack to workaround stupid Swing issue
         _fleetText.setText(text);
       }
     });
@@ -241,7 +242,7 @@ public class FleetField extends JPanel implements IServiceListener {
         IUnit unit = (IUnit) _unitCombo.getSelectedItem();
         if(unit != null) {
           int addSource = getSelectedSource();
-          FleetElement addOne = new FleetElement(unit, 1, addSource);
+          FleetElement addOne = new FleetElement(unit, 1, SourceId.fromInt(addSource));
           _model.getFleetContents().addElement(addOne);
 
           String text = _model.makeNormalisedText();
@@ -256,7 +257,7 @@ public class FleetField extends JPanel implements IServiceListener {
         IUnit unit = (IUnit) _unitCombo.getSelectedItem();
         if(unit != null) {
           int subtractSource = getSelectedSource();
-          FleetElement subtractOne = new FleetElement(unit, -1, subtractSource);
+          FleetElement subtractOne = new FleetElement(unit, -1, SourceId.fromInt(subtractSource));
           _model.getFleetContents().addElement(subtractOne);
           String text = _model.makeNormalisedText();
           _fleetText.setText(" "); //hacky workaround for Document issue
@@ -271,7 +272,7 @@ public class FleetField extends JPanel implements IServiceListener {
         IUnit unit = (IUnit) _unitCombo.getSelectedItem();
         if(unit != null) {
           int removeSource = getSelectedSource();
-          FleetElement profile = new FleetElement(unit, 0, removeSource);
+          FleetElement profile = new FleetElement(unit, 0, SourceId.fromInt(removeSource));
           _model.getFleetContents().removeElement(profile);
           String text = _model.makeNormalisedText();
           _fleetText.setText(" "); //hacky workaround for Document issue

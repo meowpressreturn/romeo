@@ -104,25 +104,25 @@ public class Context implements IExpression {
     try {
       switch (_operand){
         case ROUND:
-          return new Integer(context.getRound());
+          return context.getRound();
         case IS_ATTACKER:
-          return context.isAttacker() ? Boolean.TRUE : Boolean.FALSE;
+          return context.isAttacker();
         case IS_DEFENDER:
-          return context.isDefender() ? Boolean.TRUE : Boolean.FALSE;
+          return context.isDefender();
         case SOURCE:
-          return new Integer(context.getFleetElement().getSource());
+          return context.getFleetElement().getSource(); //nb: this is now a SourceId and not an Integer
         case ATTACKS:
-          return new Integer(context.getFleetElement().getUnit().getAttacks());
+          return context.getFleetElement().getUnit().getAttacks();
         case OFFENSE:
-          return new Integer(context.getFleetElement().getUnit().getOffense());
+          return context.getFleetElement().getUnit().getOffense();
         case DEFENSE:
-          return new Integer(context.getFleetElement().getUnit().getDefense());
+          return context.getFleetElement().getUnit().getDefense();
         case IS_BASE:
-          return context.isDefender() && context.getFleetElement().getSource() == 0 ? Boolean.TRUE : Boolean.FALSE;
+          return (context.isDefender() && context.getFleetElement().getSource().isBaseOrDefault());
         case IS_NOT_BASE:
-          return context.isDefender() && context.getFleetElement().getSource() == 0 ? Boolean.FALSE : Boolean.TRUE;
+          return !(context.isDefender() && context.getFleetElement().getSource().isBaseOrDefault());
         case PD:
-          return new Integer(context.getFleetElement().getUnit().getPd());
+          return context.getFleetElement().getUnit().getPd();
         default:
           throw new IllegalArgumentException("Illegal operand:" + _operand);
       }

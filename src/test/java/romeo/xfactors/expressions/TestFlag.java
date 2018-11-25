@@ -8,6 +8,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
+import romeo.fleet.model.SourceId;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.expressions.Flag.FlagOperand;
 
@@ -28,21 +29,21 @@ public class TestFlag {
     _context.setRound(42);
     
     _venusFleet = new FleetContents();
-    _venusFleet.addElement(new FleetElement(viper,10,0) );
+    _venusFleet.addElement(new FleetElement(viper,10,SourceId.forBaseOrDefault()) );
     _context.setFleet("Venus", _venusFleet);
     
     FleetContents marsFleet = new FleetContents();
-    _marsElement0 = new FleetElement(viper, 100, 0);
+    _marsElement0 = new FleetElement(viper, 100, SourceId.forBaseOrDefault());
     marsFleet.addElement(_marsElement0);
     _context.setFleet("Mars", marsFleet);
     
     FleetContents earthFleet = new FleetContents();
-    _earthElementBase = new FleetElement(viper, 50, 0);
+    _earthElementBase = new FleetElement(viper, 50, SourceId.forBaseOrDefault());
     earthFleet.addElement( _earthElementBase );
     
-    _earthElement1 = new FleetElement(viper, 25, 1);;
+    _earthElement1 = new FleetElement(viper, 25, SourceId.fromInt(1));;
     earthFleet.addElement( _earthElement1 );
-    earthFleet.addElement( new FleetElement(viper, 5, 2) );
+    earthFleet.addElement( new FleetElement(viper, 5, SourceId.fromInt(2)) );
     _context.setFleet("Earth", earthFleet);
     
     _context.setThisPlayer("Earth");

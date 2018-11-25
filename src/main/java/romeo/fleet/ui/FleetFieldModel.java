@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableModel;
@@ -19,6 +20,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.battle.ui.BattleFleetsManager;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
+import romeo.fleet.model.SourceId;
 import romeo.ui.BeanTableModel;
 import romeo.ui.forms.IFieldChangeListener;
 import romeo.units.api.IUnit;
@@ -40,7 +42,7 @@ public class FleetFieldModel {
     private int _length;
     private IUnit _unit;
     private int _quantity;
-    private int _sourceId;
+    private SourceId _sourceId;
     private String _flag;
     private boolean _valid = false;
 
@@ -81,12 +83,15 @@ public class FleetFieldModel {
       _unit = unit;
     }
 
-    public int getSourceId() {
+    public SourceId getSourceId() {
       return _sourceId;
     }
 
-    public void setSourceId(int i) {
-      _sourceId = i;
+    public void setSourceId(SourceId sourceId) {
+      _sourceId = Objects.requireNonNull(sourceId, "sourceId may not be null");
+      if(sourceId.isAny()) {
+        throw new IllegalArgumentException("sourceId is required to be specific here, 'any' is not allowed");
+      }
     }
 
     public String getFlag() {
@@ -339,8 +344,13 @@ public class FleetFieldModel {
     _fleetContents = contents;
   }
 
+  /**
+   * Normalises order and format of the text in the fleet field. 
+   * @return fleet text
+   */
   protected String makeNormalisedText() {
     boolean needComma = false;
+    _fleetContents.normalise(false); //Added 0.6.4, probably not necessary though?
     _fleetContents.sort();
     StringBuffer buffer = new StringBuffer();
     Iterator<String> flagIterator = _fleetContents.getFlags();
@@ -361,8 +371,8 @@ public class FleetFieldModel {
         if(needComma) {
           buffer.append(", ");
         }
-        int sourceId = element.getSource();
-        if(sourceId != 0) {
+        SourceId sourceId = element.getSource();
+        if(!sourceId.isBaseOrDefault()) {
           buffer.append(sourceId);
           buffer.append(':');
         }
@@ -408,20 +418,16 @@ public class FleetFieldModel {
           String qtyStr = token.substring(0, star).trim(); //on the left
 
           //Here to parse sourceId
-          int sourceId = 0;
+          SourceId sourceId = SourceId.forBaseOrDefault();
           String sourceStr = null;
           int colonIndex = qtyStr.indexOf(':');
-          if(colonIndex != -1) {
+          if(colonIndex != -1) { //If there is a ':' then a source id was specified
             sourceStr = qtyStr.substring(0, colonIndex);
             if(qtyStr.length() - 1 == colonIndex) {
               throw new RuntimeException("Missing quantity in " + token);
             }
             qtyStr = qtyStr.substring(colonIndex + 1, qtyStr.length());
-            try {
-              sourceId = Integer.parseInt(sourceStr);
-            } catch(Exception e) {
-              throw new NumberFormatException("Bad sourceId:" + sourceStr);
-            }
+            sourceId = SourceId.fromString(sourceStr);
           }
 
           int qtyInt = 0;

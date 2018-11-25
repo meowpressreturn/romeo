@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import romeo.fleet.model.SourceId;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
@@ -354,13 +355,8 @@ public class ExpressionParserImpl implements IExpressionParser {
       QuantityOperand operand = QuantityOperand.fromString( trimToken(tokens[0]) );
       String acronym = trimToken( tokens[1] );
       String sourceIdToken = trimToken( tokens[2] );
-      //note: can be null (now case-insensive as of 0.6.3)
-      final Integer _sourceId;      
-      if(sourceIdToken.equalsIgnoreCase("null")) {
-        _sourceId = null;
-      } else {
-        _sourceId = new Integer(Integer.parseInt(sourceIdToken));
-      }
+      //note: can be "null" (now case-insensive as of 0.6.3), or from 0.6.4 onwards we use "any"
+      final SourceId _sourceId = SourceId.fromString( sourceIdToken );      
       return new Quantity(operand, acronym, _sourceId);
     } catch(IllegalArgumentException illArgs) {
       throw illArgs;

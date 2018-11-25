@@ -29,6 +29,7 @@ import romeo.xfactors.api.NoSuchXFactorException;
  * to have multiple fleet elements of the same unit type and source.
  */
 public class FleetContents implements Cloneable, Iterable<FleetElement> {
+  
   protected static Random _rnd = new Random();
   protected List<FleetElement> _elements = new LinkedList<FleetElement>();
   protected Set<String> _flags = new HashSet<String>(); //Set of String
@@ -291,11 +292,10 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * @param element
    */
   public void addElement(FleetElement element) {
-    if(element == null) {
-      throw new NullPointerException("null element");
-    }
+    Objects.requireNonNull(element, "element may not be null");
     for(FleetElement slot : this) {
-      if(slot.getClass() == element.getClass() && slot.getUnit() == element.getUnit()) { //Must be same type of class, unit and source to reuse element
+      if(slot.getClass().equals(element.getClass()) && slot.getUnit().equals(element.getUnit())) { 
+        //Must be same type of class, unit and source to reuse element
         if(slot.add(element)) {
           return; //Short circuit return - important or we would add twice!
         }
@@ -452,20 +452,20 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * Adds the contents of the specified FleetContents to this one. (This is done
    * by simply creating a new {@link FleetElement} in this fleet with the copied
    * quantity). The 'flat' flag indicates that all units are to be assigned a
-   * sourceId or 0 instead of retaining their sourceId in the source
-   * FleetContents.
+   * sourceId of 0 (baseOrDefault) instead of retaining their original sourceId
+   * from the source FleetContents.
    * @param source
    * @param flat
    */
   public void addFleet(FleetContents source, boolean flat) {
     for(FleetElement srcElement : source.getElements()) {
       double quantity = srcElement.getQuantity();
-      int sourceId = flat ? 0 : srcElement.getSource();
+      SourceId sourceId = flat ? SourceId.forBaseOrDefault() : srcElement.getSource();
       FleetElement element = new FleetElement(srcElement.getUnit(), quantity, sourceId);
-      this.getElements().add(element);
+      this.getElements().add(element); //presumably this could denormalise it?
     }
   }
-
+ 
   /**
    * Will flatten multiple {@link FleetElement} having the same unit and source
    * into a single FleetElement. Does not sort. If the flat flag is set to true
@@ -475,26 +475,29 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * @param flat
    */
   public void normalise(boolean flat) {
-    Map<String, FleetElement> index = new HashMap<String, FleetElement>();
+    Map<String, FleetElement> elementsByKey = new HashMap<>();
     for(FleetElement element : this) {
       IUnit unit = element.getUnit();
       double qty = element.getQuantity();
       if(qty > 0) {
-        int sourceId = flat ? 0 : element.getSource();
-        String key = flat ? unit.getName() : unit.getName() + "::" + sourceId;
-        FleetElement normalisedElement = (FleetElement) index.get(key);
-        if(normalisedElement == null) { //If we havent got a single element to use for this source and unit yet then
-                                          //we obtain one either by reusing the first we find (to preserve xfactors) or
-                                        //if we are flattening we create a new one (discarding any xfactor in the process)
+        final SourceId sourceId = flat ? SourceId.forBaseOrDefault() : element.getSource();
+        final String key = flat ? unit.getName() : unit.getName() + "::" + sourceId;
+        FleetElement normalisedElement = elementsByKey.get(key);
+        if(normalisedElement == null) {
+          //If we haven't got a single element to use for this source and unit yet then
+          //we obtain one either by reusing the first we find (to preserve xfactors) or
+          //if we are flattening we create a new one (discarding any xfactor in the process)
           normalisedElement = flat ? new FleetElement(unit, qty, sourceId) : element;
-          index.put(key, normalisedElement);
-        } else {
-          normalisedElement.setQuantity(normalisedElement.getQuantity() + qty);
+          elementsByKey.put(key, normalisedElement);
+        }
+        else {
+          final double newQuantity = normalisedElement.getQuantity() + qty;
+          normalisedElement.setQuantity(newQuantity);
         }
       }
     }
     _elements.clear();
-    _elements.addAll(index.values());
+    _elements.addAll(elementsByKey.values());
   }
 
   /**
@@ -532,18 +535,19 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * take casualties into account (so use it at the start of a round when
    * these have been removed if that is important).
    * @param acronym
-   * @param sourceId may be null, in which case it is ignored and any element can be source
+   * @param sourceId 
    * @return quantity
    */
-  public double getQuantity(String acronym, Integer sourceId) {
+  public double getQuantity(String acronym, SourceId sourceId) {
     //nb: this method was moved from a static utility method on the Quantity expression
     Objects.requireNonNull(acronym, "acronym may not be null");
+    Objects.requireNonNull(sourceId, "sourceId may not be null");
     acronym = acronym.toUpperCase(Locale.US);
     double quantity = 0;
     for(FleetElement element : this) {
       String elementAcronym = element.getUnit().getAcronym();
       if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase(Locale.US))) {
-        if(sourceId == null || element.getSource() == sourceId.intValue()) {
+        if(sourceId.isAny() || sourceId.equals( element.getSource() )) {
           quantity += element.getQuantity();
         }
       }
@@ -559,7 +563,7 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * @return present
    */
   public boolean unitPresent(String acronym) {
-  //nb: this method was moved from a static utility method on the Present expression
+    //nb: this method was moved from a static utility method on the Present expression
     Objects.requireNonNull(acronym, "acronym may not be null");
     acronym = acronym.toUpperCase(Locale.US);
     for(FleetElement element : this) {

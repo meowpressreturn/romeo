@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
+import romeo.fleet.model.SourceId;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Adjust.AdjustOperand;
@@ -505,18 +506,24 @@ public class TestExpressionParserImpl {
     assertEquals( QuantityOperand.OPPOSING_PLAYERS, _p.parseQuantity("OPPOSING_PLAYERS,MED,0").getOperand() );
     assertEquals( QuantityOperand.THIS_PLAYER, _p.parseQuantity("THIS_PLAYER,MED,0").getOperand() );
     
-    assertEquals( new Integer(0), _p.parseQuantity("ANY_PLAYER,MED,0").getSourceId() );
-    assertEquals( new Integer(1), _p.parseQuantity("ANY_PLAYER,MED,1").getSourceId() );
-    assertEquals( new Integer(888), _p.parseQuantity("ANY_PLAYER,MED,888").getSourceId() ); //high sourceIds are fine
+    assertEquals( SourceId.forBaseOrDefault(), _p.parseQuantity("ANY_PLAYER,MED,0").getSourceId() );
+    assertEquals( SourceId.fromInt(1), _p.parseQuantity("ANY_PLAYER,MED,1").getSourceId() );
+    assertEquals( SourceId.fromInt(888), _p.parseQuantity("ANY_PLAYER,MED,888").getSourceId() ); //high sourceIds are fine
     
-    assertNull( _p.parseQuantity("ANY_PLAYER,MED,NULL").getSourceId() );
-    assertNull( _p.parseQuantity("ANY_PLAYER,MED,null").getSourceId() );
+//    assertNull( _p.parseQuantity("ANY_PLAYER,MED,NULL").getSourceId() );
+//    assertNull( _p.parseQuantity("ANY_PLAYER,MED,null").getSourceId() );
+    
+    //The word 'NULL' here is now legacy, and we now use 'ANY' instead
+    assertEquals( SourceId.forAnySource(), _p.parseQuantity("ANY_PLAYER,MED,NULL").getSourceId() );
+    assertEquals( SourceId.forAnySource(), _p.parseQuantity("ANY_PLAYER,MED,null").getSourceId() );
+    
+    assertEquals( SourceId.forAnySource(), _p.parseQuantity("ANY_PLAYER,MED,ANY").getSourceId() );
+    assertEquals( SourceId.forAnySource(), _p.parseQuantity("ANY_PLAYER,MED,any").getSourceId() );
+    assertEquals( SourceId.forAnySource(), _p.parseQuantity("ANY_PLAYER,MED,Any").getSourceId() );
     
     try {
       Quantity q = _p.parseQuantity("ANY_PLAYER,MED,-1"); //negative sourceId isnt allowed
       fail("Expected IllegalArgumentException but found " + q);
-      //in hindsight, using -1 for any source would have been better and could then use a primitive for it
-      //and avoid nullskullduggery
     }catch(IllegalArgumentException expected) {}
     
     

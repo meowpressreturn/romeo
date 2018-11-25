@@ -8,6 +8,7 @@ import org.junit.Test;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
+import romeo.fleet.model.SourceId;
 import romeo.units.impl.UnitImpl;
 
 public class TestPresent {
@@ -27,18 +28,18 @@ public class TestPresent {
     _context.setRound(42);
     
     _marsFleet = new FleetContents();
-    FleetElement marsElement0 = new FleetElement(viper, 100, 0);
+    FleetElement marsElement0 = new FleetElement(viper, 100, SourceId.forBaseOrDefault());
     _marsFleet.addElement(marsElement0);
-    _marsFleet.addElement(new FleetElement(bstar, 2, 1));
+    _marsFleet.addElement(new FleetElement(bstar, 2, SourceId.fromInt(1)));
     _context.setFleet("Mars", _marsFleet);
     
     _earthFleet = new FleetContents();
-    FleetElement earthElementBase = new FleetElement(viper, 50, 0);
+    FleetElement earthElementBase = new FleetElement(viper, 50, SourceId.forBaseOrDefault());
     _earthFleet.addElement( earthElementBase );
     
-    FleetElement earthElement1 = new FleetElement(viper, 25, 1);;
+    FleetElement earthElement1 = new FleetElement(viper, 25, SourceId.fromInt(1));;
     _earthFleet.addElement( earthElement1 );
-    _earthFleet.addElement( new FleetElement(viper, 5, 2) );
+    _earthFleet.addElement( new FleetElement(viper, 5, SourceId.fromInt(2)) );
     _context.setFleet("Earth", _earthFleet);
     
     _context.setThisPlayer("Earth");
