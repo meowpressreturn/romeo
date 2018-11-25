@@ -12,7 +12,7 @@ import romeo.xfactors.api.IExpression;
  * for details.
  * This operation is rather a case of syntactic sugar as it could be replaced with
  * a Logic and Quantity subtree to check whether the quantity is >0, but as one of
- * the most commonly xfactor evaluations it merits its own more succint operation.
+ * the most common xfactor evaluations it merits its own more succint operation.
  * This is also more efficient in that it avoids adding up the total quantity when
  * we need only determine if there are any or none. 
  */
