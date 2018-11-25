@@ -7,10 +7,12 @@ import romeo.xfactors.api.IExpression;
  * Implements the VALUE expression. This expression is how actual values are
  * specified in XFEL. See the xfactor reference help in the resources folder for
  * details.
+ * Value members are immutable, but can make no guarantee about the value object's content itself.
+ * Users should not permit the contents of the value object to be modified.
  */
 public class Value implements IExpression {
   
-  protected Object _value;
+  private final Object _value;
 
   /**
    * Constructor

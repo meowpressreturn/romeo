@@ -9,12 +9,13 @@ import romeo.xfactors.api.IExpression;
 /**
  * Implements the RND expression that generates random numbers. See the xfactor
  * reference help in the resources folder for details.
+ * Immutable.
  */
 public class Rnd implements IExpression {
   
-  protected Random _rnd = new Random();
-  private int _min;
-  private int _range;
+  private final Random _rnd = new Random();
+  private final int _min;
+  private final int _range;
 
   /**
    * Constructor
@@ -23,13 +24,16 @@ public class Rnd implements IExpression {
    * @param max
    *          max value
    */
-  public Rnd(int min, int max) {
-    _min = min;
-    if(max < min) { //If round the wrong way swap them
+  public Rnd(final int min, final int max) {
+    final int _max;
+    if(max < min) { //terbalik
       _min = max;
-      max = min;
+      _max = min;
+    } else {
+      _min = min;
+      _max = max;
     }
-    _range = max+1 - _min;    
+    _range = _max + 1 - _min;    
     if(_range<=1) {
       throw new IllegalArgumentException("max and min may not be equal");
     }
@@ -65,5 +69,9 @@ public class Rnd implements IExpression {
   
   public int getMax() {
     return _min+_range-1;
+  }
+  
+  public int getRange() {
+    return _range;
   }
 }

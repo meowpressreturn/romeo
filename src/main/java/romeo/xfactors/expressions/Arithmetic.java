@@ -11,6 +11,7 @@ import romeo.xfactors.api.IExpression;
  * Implements the ARITHMETIC expression. This is used to perform various simple
  * maths operations. See the xfactor reference help in the resources folder for
  * details.
+ * Immutable.
  */
 public class Arithmetic implements IExpression {
   
@@ -37,9 +38,9 @@ public class Arithmetic implements IExpression {
     
   }
 
-  protected ArithmeticOperand _operand;
-  protected IExpression _left;
-  protected IExpression _right;
+  private final ArithmeticOperand _operand;
+  private final IExpression _left;
+  private final IExpression _right;
 
   /**
    * Constructor

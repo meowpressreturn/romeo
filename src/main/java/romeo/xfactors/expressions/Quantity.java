@@ -11,6 +11,7 @@ import romeo.xfactors.api.IExpression;
  * Implements the QUANTITY expression that returns the live quantity of a
  * specified unit. See the xfactor reference help in the resources folder for
  * details.
+ * Immutable.
  */
 public class Quantity implements IExpression {
   
@@ -42,9 +43,9 @@ public class Quantity implements IExpression {
   
   ////////////////////////////////////////////////////////////////////////////
 
-  protected QuantityOperand _operand;
-  protected String _acronym;
-  protected Integer _sourceId;
+  private final QuantityOperand _operand;
+  private final String _acronym;
+  private final Integer _sourceId;
 
   /**
    * Constructor. The sourceId is optional. If specified only the subfleet

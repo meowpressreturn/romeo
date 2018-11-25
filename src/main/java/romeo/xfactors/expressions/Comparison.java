@@ -10,6 +10,7 @@ import romeo.xfactors.api.IExpression;
 /**
  * Implements the COMPARISON expression used to compare between values. See the
  * xfactor reference help in the resources folder for details.
+ * Immutable.
  */
 public class Comparison implements IExpression {
   
@@ -24,9 +25,9 @@ public class Comparison implements IExpression {
     
   }
 
-  protected IExpression _left;
-  protected ComparisonOperand _operand;
-  protected IExpression _right;
+  private final IExpression _left;
+  private final ComparisonOperand _operand;
+  private final IExpression _right;
 
   /**
    * Constructor

@@ -12,6 +12,7 @@ import romeo.xfactors.api.IExpression;
  * the player to be checked is specified and the name of the flag to find. If
  * the flag is found then true is returned but if not then false will be
  * returned. (ie: FLAG(THIS_PLAYER,"O").
+ * Immutable.
  */
 public class Flag implements IExpression {
   
@@ -40,8 +41,8 @@ public class Flag implements IExpression {
     }
   }
 
-  protected FlagOperand _operand;
-  protected IExpression _flag;
+  private final FlagOperand _operand;
+  private final IExpression _flag;
 
   /**
    * Constructor.

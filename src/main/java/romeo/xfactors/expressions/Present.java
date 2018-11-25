@@ -15,10 +15,11 @@ import romeo.xfactors.api.IExpression;
  * the most common xfactor evaluations it merits its own more succint operation.
  * This is also more efficient in that it avoids adding up the total quantity when
  * we need only determine if there are any or none. 
+ * Immutable.
  */
 public class Present implements IExpression {
   
-  protected String _acronym;
+  private final String _acronym;
 
   /**
    * Constructor. nb: the string supplied will not be trimmed here.

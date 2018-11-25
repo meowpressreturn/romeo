@@ -9,6 +9,7 @@ import romeo.xfactors.api.IExpression;
 /**
  * Implements the ADJUST expression. This is used to round values. See the
  * xfactor reference help in the resources folder for details.
+ * Immutable.
  */
 public class Adjust implements IExpression {
   
@@ -42,8 +43,8 @@ public class Adjust implements IExpression {
     
   }
 
-  protected IExpression _value;
-  protected AdjustOperand _operand;
+  private final IExpression _value;
+  private final AdjustOperand _operand;
 
   /**
    * Constructor

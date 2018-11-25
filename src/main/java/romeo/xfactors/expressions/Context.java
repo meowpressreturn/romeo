@@ -10,6 +10,7 @@ import romeo.xfactors.api.IExpression;
  * Implements the CONTEXT expression. This evaluates to one of a number of
  * contextual values. See the xfactor reference help in the resources folder for
  * details.
+ * Immutable.
  */
 public class Context implements IExpression {
   
@@ -74,7 +75,7 @@ public class Context implements IExpression {
     
   }
 
-  protected ContextOperand _operand;
+  private final ContextOperand _operand;
 
   /**
    * Constructor

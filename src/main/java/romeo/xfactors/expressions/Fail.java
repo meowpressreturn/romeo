@@ -7,11 +7,12 @@ import romeo.xfactors.api.ExpressionFailure;
 import romeo.xfactors.api.IExpression;
 
 /**
- * Will cause an ExpressionFailure to be raised
+ * Will cause an ExpressionFailure to be raised whose message comes from the value expression.
+ * Immutable.
  */
 public class Fail implements IExpression {
   
-  protected IExpression _value;
+  private final IExpression _value;
 
   /**
    * Constructor

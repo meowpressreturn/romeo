@@ -10,6 +10,7 @@ import romeo.xfactors.api.IExpression;
  * Implements the LOGIC expression which allows one to perform various logic
  * acts on the results of subexpressions. See the xfactor reference help in the
  * resources folder for details.
+ * Immutable.
  */
 public class Logic implements IExpression {
   
@@ -83,9 +84,9 @@ public class Logic implements IExpression {
   
   ////////////////////////////////////////////////////////////////////////////
 
-  protected IExpression _left;
-  protected IExpression _right;
-  protected LogicOperand _operand;
+  private final IExpression _left;
+  private final IExpression _right;
+  private final LogicOperand _operand;
 
   /**
    * Constructor

@@ -9,12 +9,13 @@ import romeo.xfactors.api.IExpression;
  * Implements the IF expression which will return different results depending on
  * how the condition expression evaluates. See the xfactor reference help in the
  * resources folder for details.
+ * Immutable.
  */
 public class If implements IExpression {
   
-  protected IExpression _condition;
-  protected IExpression _trueResult;
-  protected IExpression _falseResult;
+  private final IExpression _condition;
+  private final IExpression _trueResult;
+  private final IExpression _falseResult;
 
   /**
    * Constructor
