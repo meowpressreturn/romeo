@@ -27,6 +27,16 @@ import romeo.xfactors.api.IXFactorService;
 import romeo.xfactors.api.XFactorId;
 
 public class UnitFormLogic implements IFormLogic, IServiceListener {
+  
+  /**
+   * Placeholder acronym value that the unit form knows to clear. (ie: when loadWith() sees this
+   * acronym it will just blank the field instead).
+   * (The placeholder value is just some uuid that we hope probably won't get used as a real acronym very often...
+   * ..should you see this in the db then something has gone terribly wrong)
+   */
+  public static final Acronym NEW_UNIT_ACRONYM_TO_CLEAR_WHEN_LOADING_IN_FORM
+    = Acronym.fromString("hello07afed5c7ba04582b24492ece05d0ad5world"); 
+  
   private RomeoForm _form;
   private IUnit _unit;
   private IUnitService _unitService;
@@ -82,7 +92,12 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
       ((JTextField) _form.getEntryFields().get("complexity")).setText(unit.getComplexity() + "");
       ((JTextField) _form.getEntryFields().get("scanner")).setText(unit.getScanner() + "");
       ((JTextField) _form.getEntryFields().get("license")).setText(unit.getLicense() + "");
-      ((JTextField) _form.getEntryFields().get("acronym")).setText(unit.getAcronym().toString());
+      Acronym acronym = unit.getAcronym();
+      if(NEW_UNIT_ACRONYM_TO_CLEAR_WHEN_LOADING_IN_FORM.equals(acronym)) {
+        ((JTextField) _form.getEntryFields().get("acronym")).setText("");
+      } else {
+        ((JTextField) _form.getEntryFields().get("acronym")).setText(acronym.toString());
+      }
       ((XFactorCombo) _form.getEntryFields().get("xfactor")).setXFactor(unit.getXFactor());
 
       //_form.setDirty(false);
@@ -163,7 +178,9 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
       //Only load fresh data if user hadnt started an edit operation
       IUnit reloaded = _unitService.getUnit(_unit.getId());
       if(reloaded == null) { //It was deleted 
-        loadWith(new UnitImpl(null, "DELETED", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("DELETED"), null));
+        //TODO - is this ever used now?
+        loadWith(new UnitImpl(null, "DELETED", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+            NEW_UNIT_ACRONYM_TO_CLEAR_WHEN_LOADING_IN_FORM, null));
         _form.setDirty(true);
       } else { //Load fresh data into the form
         loadWith(reloaded);
