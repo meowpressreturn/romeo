@@ -19,6 +19,7 @@ import org.junit.Test;
 import romeo.persistence.DuplicateRecordException;
 import romeo.test.ServiceListenerChecker;
 import romeo.test.TestUtils;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
@@ -76,7 +77,7 @@ public class TestUnitServiceImpl {
             unit.getComplexity(), 
             unit.getScanner(), 
             unit.getLicense(),
-            unit.getAcronym(), 
+            unit.getAcronym().toString(),
             unit.getXFactor()==null ? "" : unit.getXFactor().toString(),
             } , connection);
   }
@@ -155,11 +156,11 @@ public class TestUnitServiceImpl {
     
     for(int t=0; t<N; t++) {
 
-      IUnit vip = _unitService.getByAcronym("VIP");
+      IUnit vip = _unitService.getByAcronym(Acronym.fromString("VIP"));
       TestUnitImpl.assertVipCorrect(VIP_ID, vip);      
-      IUnit bs = _unitService.getByAcronym("BS");
+      IUnit bs = _unitService.getByAcronym(Acronym.fromString("BS"));
       TestUnitImpl.assertBsCorrect(BS_ID, bs);
-      assertNull( _unitService.getByAcronym("NSU") );
+      assertNull( _unitService.getByAcronym(Acronym.fromString("NSU")) );
     }
     
     try {
@@ -243,7 +244,7 @@ public class TestUnitServiceImpl {
         unitNumber++;
         Map<String,Object> u = UnitImpl.asMap(TestUnitImpl.newRap(null));
         u.put("name","testRap"+unitNumber);
-        u.put("acronym","TR"+unitNumber);
+        u.put("acronym", Acronym.fromString("TR"+unitNumber) );
         IUnit unit = UnitImpl.createFromMap(u);         
         units.add(unit);
       }
@@ -269,11 +270,11 @@ public class TestUnitServiceImpl {
     
     { //check that it spots a dupe name
       List<IUnit> list = new ArrayList<>();
-      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "A", null) );
-      list.add( new UnitImpl(null, "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "B", null) );
-      list.add( new UnitImpl(null, "C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "C", null) );
-      list.add( new UnitImpl(null, "D", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "D", null) );
-      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "E", null) ); //dupe name
+      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("A"), null) );
+      list.add( new UnitImpl(null, "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("B"), null) );
+      list.add( new UnitImpl(null, "C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("C"), null) );
+      list.add( new UnitImpl(null, "D", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("D"), null) );
+      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("E"), null) ); //dupe name
       
       try {
         _unitService.saveUnits(list);
@@ -282,7 +283,7 @@ public class TestUnitServiceImpl {
       
       //It  should also spot one that already exists in the db
       list.clear();
-      list.add( new UnitImpl(null, "fighter", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "A", null) );
+      list.add( new UnitImpl(null, "fighter", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("A"), null) );
       
       try {
         _unitService.saveUnits(list);
@@ -292,10 +293,10 @@ public class TestUnitServiceImpl {
     
     { //check that it spots a dupe acronym
       List<IUnit> list = new ArrayList<>();
-      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "A", null) );
-      list.add( new UnitImpl(null, "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "B", null) );
-      list.add( new UnitImpl(null, "C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "C", null) );
-      list.add( new UnitImpl(null, "D", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "A", null) ); //duped acronym
+      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("A"), null) );
+      list.add( new UnitImpl(null, "B", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("B"), null) );
+      list.add( new UnitImpl(null, "C", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("C"), null) );
+      list.add( new UnitImpl(null, "D", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("A"), null) ); //duped acronym
       
       try {
         _unitService.saveUnits(list);
@@ -304,7 +305,7 @@ public class TestUnitServiceImpl {
       
       //It  should also spot one that already exists in the db (regardless of case)
       list.clear();
-      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "ViP", null) );
+      list.add( new UnitImpl(null, "A", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("ViP"), null) );
       
       try {
         _unitService.saveUnits(list);
@@ -381,13 +382,13 @@ public class TestUnitServiceImpl {
   @Test
   public void testGetScanners() {    
     //Add something without a scanner to be sure
-    IUnit foo = new UnitImpl(null, "Foo", 0, 0, 0, 0, 50, 100, 25, 14, 0, 50, "FOO", null);
+    IUnit foo = new UnitImpl(null, "Foo", 0, 0, 0, 0, 50, 100, 25, 14, 0, 50, Acronym.fromString("FOO"), null);
     _unitService.saveUnit(foo);    
     for(int t=0; t<N; t++) {      
       List<IUnit> scanners = _unitService.getScanners();
       assertEquals(2, scanners.size() );
-      assertEquals( "vip", scanners.get(0).getAcronym() );
-      assertEquals("BS", scanners.get(1).getAcronym() );
+      assertEquals( Acronym.fromString("VIP"), scanners.get(0).getAcronym() );
+      assertEquals( Acronym.fromString("BS"), scanners.get(1).getAcronym() );
     }    
     //Test if no units it returns an empty list and not null
     deleteAllUnits();
@@ -401,10 +402,10 @@ public class TestUnitServiceImpl {
   
   @Test
   public void testUnlinkXFactors() {    
-    assertNotNull( _unitService.getByAcronym("VIP").getXFactor() );
+    assertNotNull( _unitService.getByAcronym(Acronym.fromString("VIP")).getXFactor() );
     _unitService.unlinkUnitsWithXFactor(new XFactorId("XF1"));
     assertEquals(1, _listener.getDataChangedCount());
-    assertNull( _unitService.getByAcronym("VIP").getXFactor() ); //VIP xf should be cleared
+    assertNull( _unitService.getByAcronym(Acronym.fromString("VIP")).getXFactor() ); //VIP xf should be cleared
     
     //It should be safe to call for xFactors that dont exist
     _unitService.unlinkUnitsWithXFactor(new XFactorId("nosuchxf"));
@@ -435,7 +436,7 @@ public class TestUnitServiceImpl {
       String[] badNames = new String[] { "fighter","FIGHTER","Fighter","fIgHtEr", " fighter    ", "Fighter " };
       for(String name : badNames) {
         vipMap.put("name", name);
-        vipMap.put("acronym","ACRONYM"+i++);
+        vipMap.put("acronym",Acronym.fromString("ACRONYM"+i++));
         IUnit unit = UnitImpl.createFromMap(vipMap);
         try {
           _unitService.saveUnit(unit);
@@ -449,7 +450,7 @@ public class TestUnitServiceImpl {
       Map<String,Object> vipMap = UnitImpl.asMap( TestUnitImpl.newVip() );
       //A unique name & acronym should work fine though
       vipMap.put("name", "Fighter2");
-      vipMap.put("acronym", "VIP2");
+      vipMap.put("acronym", Acronym.fromString("VIP2"));
       IUnit unit = UnitImpl.createFromMap(vipMap);
       _unitService.saveUnit(unit);
     }
@@ -462,7 +463,7 @@ public class TestUnitServiceImpl {
       String[] badAcronyms = new String[] { "VIP"," vip","Vip   ","vIp", " vip    ", "VIP " };
       for(String acronym : badAcronyms) {
         vipMap.put("name", "Fighter"+i++);
-        vipMap.put("acronym",acronym);
+        vipMap.put("acronym",Acronym.fromString(acronym));
         IUnit unit = UnitImpl.createFromMap(vipMap);
         try {
           _unitService.saveUnit(unit);

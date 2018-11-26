@@ -6,6 +6,7 @@ import java.util.Objects;
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.SourceId;
+import romeo.units.api.Acronym;
 import romeo.xfactors.api.IExpression;
 
 /**
@@ -45,7 +46,7 @@ public class Quantity implements IExpression {
   ////////////////////////////////////////////////////////////////////////////
 
   private final QuantityOperand _operand;
-  private final String _acronym;
+  private final Acronym _acronym;
   private final SourceId _sourceId;
 
   /**
@@ -58,7 +59,7 @@ public class Quantity implements IExpression {
    * @param sourceId
    *          this unit's source fleet among this players fleets (for a defending player 0 is the base fleet)
    */
-  public Quantity(QuantityOperand operand, String acronym, SourceId sourceId) {
+  public Quantity(QuantityOperand operand, Acronym acronym, SourceId sourceId) {
     _operand = Objects.requireNonNull(operand, "operand may not be null");
     _acronym = Objects.requireNonNull(acronym, "acronym may not be null");
     _sourceId = Objects.requireNonNull(sourceId, "sourceId may not be null");
@@ -123,7 +124,7 @@ public class Quantity implements IExpression {
     return _sourceId;
   }
   
-  public String getAcronym() {
+  public Acronym getAcronym() {
     return _acronym;
   }
   

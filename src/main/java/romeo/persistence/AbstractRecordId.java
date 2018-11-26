@@ -3,7 +3,7 @@ package romeo.persistence;
 import java.util.Objects;
 
 /**
- * Represents the id value of a record. Intended to be subclasses with specific implementations for
+ * Represents the id value of a record. Intended to be subclassed with specific implementations for
  * different types of record.
  * Allows for better type checking and validation than just using a String.
  */

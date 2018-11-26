@@ -51,7 +51,7 @@ public class GenInitCode {
       buffer.append("speed,carry,cost,complexity,scanner,license)");
       buffer.append("VALUES ('\"\n\t\t\t+ keyGen.createIdKey() +\"',");
       buffer.append(prepString(unit.getName()) + ",");
-      buffer.append(prepString(unit.getAcronym()) + ",");
+      buffer.append(prepString(unit.getAcronym().toString()) + ",");
       buffer.append(unit.getAttacks() + ",");
       buffer.append(unit.getOffense() + ",");
       buffer.append(unit.getDefense() + ",");

@@ -48,7 +48,7 @@ public interface IUnitService extends IService, IExternalDataChangeListener {
    * Return a single unit's information given its acronymn
    * @param acronym
    */
-  public IUnit getByAcronym(String acronym);
+  public IUnit getByAcronym(Acronym acronym);
 
   /**
    * Return a single unit given its name

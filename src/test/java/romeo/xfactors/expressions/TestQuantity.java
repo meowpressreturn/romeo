@@ -9,11 +9,17 @@ import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.fleet.model.SourceId;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.impl.TestUnitImpl;
 import romeo.xfactors.expressions.Quantity.QuantityOperand;
 
 public class TestQuantity {
+  
+  private static final Acronym VIP = Acronym.fromString("VIP");
+  private static final Acronym BS = Acronym.fromString("BS");
+  private static final Acronym MED = Acronym.fromString("MED");
+  private static final Acronym FOO = Acronym.fromString("FOO");
   
   private FleetContents _earthFleet;
   private FleetContents _marsFleet;
@@ -65,16 +71,16 @@ public class TestQuantity {
   @Test
   public void testConstructor() {
     
-    Quantity q = new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.forBaseOrDefault());
+    Quantity q = new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.forBaseOrDefault());
     assertEquals( QuantityOperand.THIS_PLAYER, q.getOperand() );
     assertEquals( 0, q.getSourceId().asInteger().intValue());
-    assertEquals("VIP", q.getAcronym());
+    assertEquals(VIP, q.getAcronym());
     
-    new Quantity(QuantityOperand.ANY_PLAYER, "VIP", SourceId.forBaseOrDefault());
-    new Quantity(QuantityOperand.OPPOSING_PLAYERS, "VIP", SourceId.forBaseOrDefault());
-    new Quantity(QuantityOperand.ANY_PLAYER, "VIP", SourceId.forAnySource()); 
+    new Quantity(QuantityOperand.ANY_PLAYER, VIP, SourceId.forBaseOrDefault());
+    new Quantity(QuantityOperand.OPPOSING_PLAYERS, VIP, SourceId.forBaseOrDefault());
+    new Quantity(QuantityOperand.ANY_PLAYER, VIP, SourceId.forAnySource()); 
     
-    Quantity q2 = new Quantity(QuantityOperand.OPPOSING_PLAYERS, "VIP", SourceId.forAnySource());
+    Quantity q2 = new Quantity(QuantityOperand.OPPOSING_PLAYERS, VIP, SourceId.forAnySource());
     assertEquals( SourceId.forAnySource(), q2.getSourceId() );
     
     try {
@@ -83,13 +89,13 @@ public class TestQuantity {
     } catch(NullPointerException expected) {}
     
     try {
-      new Quantity(null, "foo", SourceId.forBaseOrDefault());
+      new Quantity(null, FOO, SourceId.forBaseOrDefault());
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
       //Now that SourceId has be reified it may not be null
-      new Quantity(QuantityOperand.THIS_PLAYER, "foo", null);
+      new Quantity(QuantityOperand.THIS_PLAYER, FOO, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
         
@@ -98,29 +104,27 @@ public class TestQuantity {
   @Test
   public void testEvaluate() {
     _context.setThisPlayer("Mars");
-    assertEquals( new Double(100), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.forAnySource()).evaluate(_context) );
-    assertEquals( new Double(100), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.forBaseOrDefault()).evaluate(_context) );
-    assertEquals( new Double(0), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.fromInt(1)).evaluate(_context) );
-    assertEquals( new Double(80), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "VIP", SourceId.forAnySource()).evaluate(_context) );
-    assertEquals( new Double(5), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "VIP", SourceId.fromInt(2)).evaluate(_context) );
-    assertEquals( new Double(0), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "VIP", SourceId.fromInt(888)).evaluate(_context) );
+    assertEquals( new Double(100), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(100), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.forBaseOrDefault()).evaluate(_context) );
+    assertEquals( new Double(0), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.fromInt(1)).evaluate(_context) );
+    assertEquals( new Double(80), new Quantity(QuantityOperand.OPPOSING_PLAYERS, VIP, SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(5), new Quantity(QuantityOperand.OPPOSING_PLAYERS, VIP, SourceId.fromInt(2)).evaluate(_context) );
+    assertEquals( new Double(0), new Quantity(QuantityOperand.OPPOSING_PLAYERS, VIP, SourceId.fromInt(888)).evaluate(_context) );
     
     _context.setThisPlayer("Earth");
-    assertEquals( new Double(80), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.forAnySource()).evaluate(_context) );
-    assertEquals( new Double(50), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.forBaseOrDefault()).evaluate(_context) );
-    assertEquals( new Double(25), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.fromInt(1)).evaluate(_context) );
-    assertEquals( new Double(3), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "BS", SourceId.forAnySource()).evaluate(_context) );
-    assertEquals( new Double(0), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "BS", SourceId.forBaseOrDefault()).evaluate(_context) );
-    assertEquals( new Double(2), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "BS", SourceId.fromInt(1)).evaluate(_context) ); //martian bs
-    assertEquals( new Double(1), new Quantity(QuantityOperand.OPPOSING_PLAYERS, "BS", SourceId.fromInt(888)).evaluate(_context) ); //venusian lucky bs
+    assertEquals( new Double(80), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(50), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.forBaseOrDefault()).evaluate(_context) );
+    assertEquals( new Double(25), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.fromInt(1)).evaluate(_context) );
+    assertEquals( new Double(3), new Quantity(QuantityOperand.OPPOSING_PLAYERS, BS, SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(0), new Quantity(QuantityOperand.OPPOSING_PLAYERS, BS, SourceId.forBaseOrDefault()).evaluate(_context) );
+    assertEquals( new Double(2), new Quantity(QuantityOperand.OPPOSING_PLAYERS, BS, SourceId.fromInt(1)).evaluate(_context) ); //martian bs
+    assertEquals( new Double(1), new Quantity(QuantityOperand.OPPOSING_PLAYERS, BS, SourceId.fromInt(888)).evaluate(_context) ); //venusian lucky bs
     
     _context.setThisPlayer("Venus");
-    assertEquals( new Double(0), new Quantity(QuantityOperand.THIS_PLAYER, "VIP", SourceId.forAnySource()).evaluate(_context) );
-    assertEquals( new Double(0), new Quantity(QuantityOperand.THIS_PLAYER, "MED", SourceId.forAnySource()).evaluate(_context) );
-    assertEquals( new Double(1), new Quantity(QuantityOperand.THIS_PLAYER, "BS", SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(0), new Quantity(QuantityOperand.THIS_PLAYER, VIP, SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(0), new Quantity(QuantityOperand.THIS_PLAYER, MED, SourceId.forAnySource()).evaluate(_context) );
+    assertEquals( new Double(1), new Quantity(QuantityOperand.THIS_PLAYER, BS, SourceId.forAnySource()).evaluate(_context) );
   }
-  
-
   
 }
 

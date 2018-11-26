@@ -9,6 +9,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.fleet.model.SourceId;
+import romeo.units.api.Acronym;
 import romeo.units.impl.UnitImpl;
 
 public class TestPresent {
@@ -19,9 +20,9 @@ public class TestPresent {
   
   @Before
   public void setup() {
-    UnitImpl viper = new UnitImpl(null, "Viper", 2, 30, 25, 10, 120, 1, 100, 30, 25, 200, "VIP", null);
+    UnitImpl viper = new UnitImpl(null, "Viper", 2, 30, 25, 10, 120, 1, 100, 30, 25, 200, Acronym.fromString("VIP"), null);
     
-    UnitImpl bstar = new UnitImpl(null, "B.Star", 20, 90, 98, 10, 80, 500, 100, 30, 200, 200, "BS", null);
+    UnitImpl bstar = new UnitImpl(null, "B.Star", 20, 90, 98, 10, 80, 500, 100, 30, 200, 200, Acronym.fromString("BS"), null);
     
     _context = new RoundContext(new String[] { "Mars", "Earth" } );
     _context.setDefendingPlayer("Earth");
@@ -48,20 +49,14 @@ public class TestPresent {
   
   @Test
   public void testConstructor() {
-    Present present = new Present("VIP");
-    assertEquals( "VIP", present.getAcronym() );
+    Present present = new Present( Acronym.fromString("VIP") );
+    assertEquals( Acronym.fromString("VIP"), present.getAcronym() );
     
     try {
       new Present(null);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
     
-    try {
-      new Present("");
-      fail("Expected IllegalArgumentsException");
-    }catch(IllegalArgumentException expected) {}
-    
-    new Present("any text here should be ok");
   }
   
   @Test
@@ -69,17 +64,18 @@ public class TestPresent {
     
     _context.setThisPlayer("Mars");
     
-    assertTrue( (Boolean)new Present("VIP").evaluate(_context) );
-    assertTrue( (Boolean)new Present("BS").evaluate(_context) );
-    assertFalse( (Boolean)new Present("XWNG").evaluate(_context) );
-    //the evaluation should be case-insenstive
-    assertTrue( (Boolean)new Present("vip").evaluate(_context) );
-    assertTrue( (Boolean)new Present("Vip").evaluate(_context) );
+    Acronym vip = Acronym.fromString("VIP");
+    Acronym bs = Acronym.fromString("BS");
+    Acronym xwng = Acronym.fromString("XWNG");
+    
+    assertTrue( (Boolean)new Present(vip).evaluate(_context) );
+    assertTrue( (Boolean)new Present(bs).evaluate(_context) );
+    assertFalse( (Boolean)new Present(xwng).evaluate(_context) );
     
     _context.setThisPlayer("Earth");
-    assertTrue( (Boolean)new Present("VIP").evaluate(_context) );
-    assertFalse( (Boolean)new Present("BS").evaluate(_context) );
-    assertFalse( (Boolean)new Present("XWNG").evaluate(_context) );
+    assertTrue( (Boolean)new Present(vip).evaluate(_context) );
+    assertFalse( (Boolean)new Present(bs).evaluate(_context) );
+    assertFalse( (Boolean)new Present(xwng).evaluate(_context) );
   }
   
   

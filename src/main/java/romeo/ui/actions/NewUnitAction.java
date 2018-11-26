@@ -3,6 +3,7 @@ package romeo.ui.actions;
 import romeo.Romeo;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
+import romeo.units.api.Acronym;
 import romeo.units.impl.UnitImpl;
 
 public class NewUnitAction extends AbstractNewRecordAction {
@@ -20,6 +21,6 @@ public class NewUnitAction extends AbstractNewRecordAction {
 
   @Override
   protected Object newRecord() {
-    return new UnitImpl(null, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", null);
+    return new UnitImpl(null, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("NEW"), null);
   }
 }

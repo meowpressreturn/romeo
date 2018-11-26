@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.SourceId;
+import romeo.units.api.Acronym;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.expressions.Adjust;
 import romeo.xfactors.expressions.Adjust.AdjustOperand;
@@ -449,8 +450,10 @@ public class TestExpressionParserImpl {
   @Test
   public void testParsePresent() {
     
-    assertEquals("VIP", _p.parsePresent("VIP").getAcronym() );
-    assertEquals("VIP", _p.parsePresent("   VIP\n  ").getAcronym() );
+    Acronym vip = Acronym.fromString("VIP");
+    
+    assertEquals(vip, _p.parsePresent("VIP").getAcronym() );
+    assertEquals(vip, _p.parsePresent("   VIP\n  ").getAcronym() );
     
     try {
       _p.parsePresent("foo,bar,baz");
@@ -487,16 +490,14 @@ public class TestExpressionParserImpl {
       fail("Expected IllegalArgumentException");
     } catch(IllegalArgumentException expected) {}
     
-    new Present(" \"    \"   "); //this is silly but allowed
-    
     try {
       _p.parsePresent(null);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
     
-    assertEquals("VIP", _p.parsePresent("\"VIP\"").getAcronym() );
-    assertEquals("VIP", _p.parsePresent("    \"VIP\" ").getAcronym() );
-    assertEquals(" VIP ", _p.parsePresent("\" VIP \"").getAcronym() );
+    assertEquals(vip, _p.parsePresent("\"VIP\"").getAcronym() );
+    assertEquals(vip, _p.parsePresent("    \"VIP\" ").getAcronym() );
+    assertEquals(vip, _p.parsePresent("\" VIP \"").getAcronym() );
   }
   
   @Test

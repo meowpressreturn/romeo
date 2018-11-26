@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.Set;
 
 import romeo.battle.impl.RoundContext;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.utils.Accumulator;
 import romeo.xfactors.api.IXFactorCompiler;
@@ -538,15 +539,14 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * @param sourceId 
    * @return quantity
    */
-  public double getQuantity(String acronym, SourceId sourceId) {
+  public double getQuantity(Acronym acronym, SourceId sourceId) {
     //nb: this method was moved from a static utility method on the Quantity expression
     Objects.requireNonNull(acronym, "acronym may not be null");
     Objects.requireNonNull(sourceId, "sourceId may not be null");
-    acronym = acronym.toUpperCase(Locale.US);
     double quantity = 0;
     for(FleetElement element : this) {
-      String elementAcronym = element.getUnit().getAcronym();
-      if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase(Locale.US))) {
+      Acronym elementAcronym = element.getUnit().getAcronym();
+      if(elementAcronym != null && acronym.equals(elementAcronym)) {
         if(sourceId.isAny() || sourceId.equals( element.getSource() )) {
           quantity += element.getQuantity();
         }
@@ -562,13 +562,12 @@ public class FleetContents implements Cloneable, Iterable<FleetElement> {
    * @param acronym
    * @return present
    */
-  public boolean unitPresent(String acronym) {
+  public boolean unitPresent(Acronym acronym) {
     //nb: this method was moved from a static utility method on the Present expression
     Objects.requireNonNull(acronym, "acronym may not be null");
-    acronym = acronym.toUpperCase(Locale.US);
     for(FleetElement element : this) {
-      String elementAcronym = element.getUnit().getAcronym();
-      if(elementAcronym != null && acronym.equals(elementAcronym.toUpperCase())) {
+      Acronym elementAcronym = element.getUnit().getAcronym();
+      if(elementAcronym != null && acronym.equals(elementAcronym)) {
         if(element.getQuantity() > 0) {
           return true;
         }

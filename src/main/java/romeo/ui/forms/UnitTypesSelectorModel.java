@@ -14,6 +14,7 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import romeo.ui.BeanTableModel;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.utils.Convert;
@@ -139,9 +140,11 @@ public class UnitTypesSelectorModel {
       token = Convert.replace(token, "\n", "");
 
       try {
-        IUnit unit = _unitService.getByAcronym(token);
-        if(unit == null)
-          throw new IllegalArgumentException("Bad acronym:" + token);
+        Acronym acronym = Acronym.fromString(token);
+        IUnit unit = _unitService.getByAcronym(acronym);
+        if(unit == null) {
+          throw new IllegalArgumentException("Bad acronym:" + acronym);
+        }
         element._unit = unit;
       } catch(Exception e) {
         //Ignore. 

@@ -35,7 +35,7 @@ public interface IUnit extends ICanGetId<UnitId>, Comparable<Object>, INamed {
 
   public int getLicense();
 
-  public String getAcronym();
+  public Acronym getAcronym();
 
   public XFactorId getXFactor();
 }

@@ -1,11 +1,11 @@
 package romeo.units.impl;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
 import romeo.persistence.IdBean;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.UnitId;
 import romeo.xfactors.api.XFactorId;
@@ -37,8 +37,14 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
     return Math.sqrt(offensive * defensive);
   }
   
+  /**
+   * Create a Unit from data supplied in a map. The map must use the correct types and have keys that
+   * correspond to the unit proprty names.
+   * @param data
+   * @return map
+   */
   public static UnitImpl createFromMap(Map<String, Object> data) {
-    //TODO - use sensible defaults for missing values (currently will throw NPE)
+    //TODO - use sensible defaults for missing values (currently will throw NPE etc)
     UnitId id = (UnitId)data.get("id");
     String name = (String)data.get("name");
     Integer attacks = (Integer)data.get("attacks");
@@ -51,7 +57,7 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
     Integer complexity = (Integer)data.get("complexity");
     Integer scanner = (Integer)data.get("scanner");
     Integer license = (Integer)data.get("license");
-    String acronym = (String)data.get("acronym");
+    Acronym acronym = (Acronym)data.get("acronym");
     XFactorId xFactor = (XFactorId)data.get("xFactor");
     UnitImpl unit = new UnitImpl(id, name, attacks, offense, defense, pd, speed, carry, cost, complexity, scanner,
         license, acronym, xFactor);
@@ -85,11 +91,10 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
     return map;
   }
   
-  public static String generatePlaceholderAcronym(String name) {
+  public static Acronym generatePlaceholderAcronym(String name) {
     if(name==null || name.trim().isEmpty()) {
-      return "UNTITLED";
+      return Acronym.fromString("UNTITLED");
     } else {
-      //String acronym = name.trim().toUpperCase(Locale.US);
       StringBuilder b = new StringBuilder();
       int l = name.length();
       for(int i=0; i<l; i++) {
@@ -98,8 +103,7 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
           b.append(c);
         }
       }
-      String acronym = b.toString().toUpperCase(Locale.US);
-      return acronym;
+      return Acronym.fromString( b.toString() );
     }
   }
   
@@ -117,7 +121,7 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
   private int _complexity;
   private int _scanner;
   private int _license;
-  private String _acronym;
+  private Acronym _acronym;
   private XFactorId _xfactor;
   
   /**
@@ -160,7 +164,7 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
                   int complexity,
                   int scanner,
                   int license,
-                  String acronym,
+                  Acronym acronym,
                   XFactorId xFactor) {
     setId(id);
     _name = Objects.requireNonNull(name, "name may not be null").trim();
@@ -183,7 +187,7 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
     _complexity = complexity;
     _scanner = scanner;
     _license = license;
-    _acronym = Objects.requireNonNull(acronym, "acronym may not be null").trim();
+    _acronym = Objects.requireNonNull(acronym, "acronym may not be null");
     _xfactor = xFactor;
   }
 
@@ -267,17 +271,18 @@ public class UnitImpl extends IdBean<UnitId> implements IUnit {
   }
 
   /**
-   * Returns the units acronymn. If this is null an empty string is returned.
+   * Returns the unit's acronym
    * Never null.
    * @return acronym
    */
   @Override
-  public String getAcronym() {
-    return _acronym == null ? "" : _acronym;
+  public Acronym getAcronym() {
+    return _acronym;
   }
 
   /**
    * Compares units to other units based on their name
+   * (Intended for sorting)
    * @param o
    * @return equals 0 if not equals
    */

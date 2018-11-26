@@ -6,11 +6,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import romeo.battle.impl.RoundContext;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.UnitId;
 import romeo.units.impl.TestUnitImpl;
 
 public class TestFleetContents {
+  
+  private static final Acronym VIP = Acronym.fromString("VIP");
+  private static final Acronym BS = Acronym.fromString("BS");
+  private static final Acronym MED = Acronym.fromString("MED");
+  private static final Acronym RAP = Acronym.fromString("RAP");
 
   private static final Double D = 0.000000001;
   
@@ -75,39 +81,36 @@ public class TestFleetContents {
   @Test
   public void testGetQuantity() {
     
-    assertEquals( 0, _venusFleet.getQuantity("MED", SourceId.forAnySource() ), D );
-    assertEquals( 1, _venusFleet.getQuantity("BS", SourceId.forAnySource() ), D );
-    assertEquals( 1, _venusFleet.getQuantity( "BS", SourceId.fromInt(888) ), D );
-    assertEquals( 0, _venusFleet.getQuantity("BS", SourceId.forBaseOrDefault() ), D );
-    assertEquals( 0, _venusFleet.getQuantity("BS", SourceId.fromInt(1) ), D );    
+    assertEquals( 0, _venusFleet.getQuantity(MED, SourceId.forAnySource() ), D );
+    assertEquals( 1, _venusFleet.getQuantity(BS, SourceId.forAnySource() ), D );
+    assertEquals( 1, _venusFleet.getQuantity(BS, SourceId.fromInt(888) ), D );
+    assertEquals( 0, _venusFleet.getQuantity(BS, SourceId.forBaseOrDefault() ), D );
+    assertEquals( 0, _venusFleet.getQuantity(BS, SourceId.fromInt(1) ), D );    
     
-    assertEquals( 80, _earthFleet.getQuantity("VIP", SourceId.forAnySource() ), D );
-    assertEquals( 50, _earthFleet.getQuantity("VIP", SourceId.forBaseOrDefault() ), D );
-    assertEquals( 25, _earthFleet.getQuantity("VIP", SourceId.fromInt(1) ), D );
-    assertEquals( 5, _earthFleet.getQuantity("VIP", SourceId.fromInt(2) ), D );
-    assertEquals( 0, _earthFleet.getQuantity("VIP", SourceId.fromInt(3) ), D );
+    assertEquals( 80, _earthFleet.getQuantity(VIP, SourceId.forAnySource() ), D );
+    assertEquals( 50, _earthFleet.getQuantity(VIP, SourceId.forBaseOrDefault() ), D );
+    assertEquals( 25, _earthFleet.getQuantity(VIP, SourceId.fromInt(1) ), D );
+    assertEquals( 5, _earthFleet.getQuantity(VIP, SourceId.fromInt(2) ), D );
+    assertEquals( 0, _earthFleet.getQuantity(VIP, SourceId.fromInt(3) ), D );
     
-    assertEquals( 100, _marsFleet.getQuantity("VIP", SourceId.forAnySource() ), D );
-    assertEquals( 0, _marsFleet.getQuantity("MED", SourceId.forAnySource() ), D );
-    assertEquals( 0, _marsFleet.getQuantity("MED", SourceId.fromInt(1) ), D );
+    assertEquals( 100, _marsFleet.getQuantity(VIP, SourceId.forAnySource() ), D );
+    assertEquals( 0, _marsFleet.getQuantity(MED, SourceId.forAnySource() ), D );
+    assertEquals( 0, _marsFleet.getQuantity(MED, SourceId.fromInt(1) ), D );
     
   }
   
   @Test
   public void testUnitPresent() {    
-    assertTrue( _earthFleet.unitPresent("VIP") );
-    assertTrue( _earthFleet.unitPresent("vip") );
-    assertTrue( _earthFleet.unitPresent("vIP") );    
-    assertFalse( _earthFleet.unitPresent("BS") );
-    assertTrue( _marsFleet.unitPresent("VIP") );
-    assertTrue( _marsFleet.unitPresent("BS") );
+    assertTrue( _earthFleet.unitPresent(VIP) );  
+    assertFalse( _earthFleet.unitPresent(BS) );
+    assertTrue( _marsFleet.unitPresent(VIP) );
+    assertTrue( _marsFleet.unitPresent(BS) );
 
     try {
       _marsFleet.unitPresent(null);
       fail("Expected NullPointerException");
     }catch(NullPointerException expected) {}
     
-    _marsFleet.unitPresent(""); //probably useless but allowed (for now)
   }
   
   
@@ -117,9 +120,9 @@ public class TestFleetContents {
     FleetContents fleet = _testFleet;
     
     assertEquals( "Element count before normalisation", 4, fleet.getElements().size() ); //ALREADY normalised!
-    assertEquals( 350, fleet.getQuantity("VIP", SourceId.forAnySource()), D );
-    assertEquals( 4, fleet.getQuantity("BS", SourceId.forAnySource()), D );
-    assertEquals( 6, fleet.getQuantity("RAP", SourceId.forAnySource()), D );
+    assertEquals( 350, fleet.getQuantity(VIP, SourceId.forAnySource()), D );
+    assertEquals( 4, fleet.getQuantity(BS, SourceId.forAnySource()), D );
+    assertEquals( 6, fleet.getQuantity(RAP, SourceId.forAnySource()), D );
     
     FleetContents b = new FleetContents();
     b.addElement( new FleetElement(TestUnitImpl.newBStar(), 4, SourceId.fromInt(0))  );
@@ -127,16 +130,16 @@ public class TestFleetContents {
     fleet.addFleet(b, false);
     
     assertEquals( "Element count before normalisation after adding b", 6, fleet.getElements().size() );
-    assertEquals( 8, fleet.getQuantity("BS", SourceId.forAnySource()), D );
-    assertEquals( 450, fleet.getQuantity("VIP", SourceId.forAnySource()), D );
+    assertEquals( 8, fleet.getQuantity(BS, SourceId.forAnySource()), D );
+    assertEquals( 450, fleet.getQuantity(VIP, SourceId.forAnySource()), D );
     
     //can we denormalise it here somehow?
     
     fleet.normalise(false);
     assertEquals( "Element count after normalisation", 4, fleet.getElements().size() );
-    assertEquals( 450, fleet.getQuantity("VIP", SourceId.forAnySource()), D );
-    assertEquals( 8, fleet.getQuantity("BS", SourceId.forAnySource()), D );
-    assertEquals( 6, fleet.getQuantity("RAP", SourceId.forAnySource()), D );
+    assertEquals( 450, fleet.getQuantity(VIP, SourceId.forAnySource()), D );
+    assertEquals( 8, fleet.getQuantity(BS, SourceId.forAnySource()), D );
+    assertEquals( 6, fleet.getQuantity(RAP, SourceId.forAnySource()), D );
     
   }
   

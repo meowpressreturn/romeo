@@ -9,7 +9,7 @@
     
     <trigger><![CDATA[
       COMPARISON(
-    		QUANTITY(THIS_PLAYER,NZF,null),
+    		QUANTITY(THIS_PLAYER,NZF,ANY),
     		GREATER_OR_EQUAL,
     		VALUE(100))
       ]]>
@@ -22,7 +22,7 @@
       	ARITHMETIC(
       		ADJUST(
       			ARITHMETIC(
-      				QUANTITY(THIS_PLAYER,NZF,null),
+      				QUANTITY(THIS_PLAYER,NZF,ANY),
       				DIVIDE,
       				VALUE(100.0)),
       			FLOOR),

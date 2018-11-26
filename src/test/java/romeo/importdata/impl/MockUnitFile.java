@@ -44,6 +44,9 @@ public class MockUnitFile implements IUnitFile {
     return map;
   }
   
+  //nb: acronyms are a romeo thing, so you won't see them in the unit.csv
+  //foo and bar represent extra columns that might be present for stuff that doesnt have properties in romeo Unit objects
+  
   private static final String[] COLUMNS = new String[] {
       "name","attacks","offense","defense","pd","carry","complexity","cost","license","scanner","foo","bar","speed"
   } ;
@@ -63,9 +66,11 @@ public class MockUnitFile implements IUnitFile {
     Set<String> columns = new HashSet<>(Arrays.asList(COLUMNS));
     
     Map<String,String> vipMap = toStringValues( UnitImpl.asMap( TestUnitImpl.newVip() ) );
-    vipMap.put("foo","my dog is inside the piano");
+    vipMap.put("foo","my dog is inside the piano"); //extra junk that might be in there we care naught about
     vipMap.put("bar","xyz");
-    Convert.constrainToKeys(vipMap, columns); //we dont want the acronym etc in this map
+    //vipMap was built from a real unit object so has stuff like acronyms we wouldnt see in a unit.csv
+    //we dont want these for our test, so remove them
+    Convert.constrainToKeys(vipMap, columns); 
     _data.put( vipMap.get(NAME_COLUMN), vipMap );
     
     Map<String,String> bsMap = toStringValues( UnitImpl.asMap( TestUnitImpl.newBStar() ) );

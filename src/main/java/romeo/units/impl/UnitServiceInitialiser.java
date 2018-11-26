@@ -21,6 +21,7 @@ import romeo.importdata.IUnitImporter;
 import romeo.importdata.impl.AdjustmentsFileReader;
 import romeo.importdata.impl.CsvUnitFile;
 import romeo.model.api.IServiceInitialiser;
+import romeo.units.api.Acronym;
 import romeo.units.api.UnitId;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
@@ -328,8 +329,8 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
       while(rs.next()) {
         Object id = rs.getObject(1);
         String name = rs.getString(2);
-        String acronym = UnitImpl.generatePlaceholderAcronym(name);
-        ps.setString(1,acronym);
+        Acronym acronym = UnitImpl.generatePlaceholderAcronym(name);
+        ps.setString(1,acronym.toString());
         ps.setObject(2,id);
         ps.execute();
         if(ps.getUpdateCount()>0) {

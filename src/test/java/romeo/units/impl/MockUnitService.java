@@ -11,6 +11,7 @@ import java.util.Objects;
 
 import romeo.importdata.impl.UnitImporterImpl;
 import romeo.model.impl.AbstractService;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
@@ -89,11 +90,11 @@ public class MockUnitService extends AbstractService implements IUnitService {
   }
 
   @Override
-  public IUnit getByAcronym(String acronym) {
-    acronym = Objects.requireNonNull(acronym).toUpperCase(Locale.US);
-    for(IUnit unit : getUnits() ) {
-      String candidate = unit.getAcronym();
-      if(candidate != null && candidate.toUpperCase(Locale.US).equals(acronym)) {
+  public IUnit getByAcronym(Acronym acronym) {
+    acronym = Objects.requireNonNull(acronym);
+    for(IUnit unit : getUnits() ) { //no fancy quick lookup tables here, indeed not
+      Acronym candidate = unit.getAcronym();
+      if(candidate != null && candidate.equals(acronym)) {
         return unit;
       }
     }

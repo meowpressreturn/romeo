@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import romeo.persistence.AbstractPersistenceService;
 import romeo.persistence.DuplicateRecordException;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
@@ -44,7 +45,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
   private List<IUnit> _unitsCache;
   private Map<UnitId, IUnit> _unitsById;
   private Map<String, IUnit> _unitsByName;
-  private Map<String, IUnit> _unitsByAcronym;
+  private Map<Acronym, IUnit> _unitsByAcronym;
   private int[] _speeds;
   private Map<String, double[]> _ranges; //no, not scanner, but min max of stats
 
@@ -175,7 +176,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
     
     //Check that within the list of units being saved, none have the same name as another
     Set<String> names = new HashSet<>();
-    Set<String> acronyms = new HashSet<>();
+    Set<Acronym> acronyms = new HashSet<>();
     for(IUnit unit : units) {
       Objects.requireNonNull( unit.getName(), "unit.name may not be null" );
       Objects.requireNonNull( unit.getAcronym(), "unit.acronym may not be null" );
@@ -183,7 +184,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
       if(names.contains(name)) {
         throw new DuplicateRecordException("Duplicated unit name in the save list: " + name);
       }
-      String acronym = unit.getAcronym().trim().toUpperCase(Locale.US);
+      Acronym acronym = unit.getAcronym();
       if(acronyms.contains(acronym)) {
         throw new DuplicateRecordException("Duplicated unit acronym in the save list:" + acronym);
       }
@@ -270,13 +271,10 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
    * @return unit
    */
   @Override
-  public synchronized IUnit getByAcronym(String acronym) {
-    acronym = Objects.requireNonNull(acronym, "acronym may not be null").toUpperCase(Locale.US);
-    if(acronym.isEmpty()) {
-      throw new IllegalArgumentException("acronym may not be empty");
-    }
+  public synchronized IUnit getByAcronym(Acronym acronym) {
+    acronym = Objects.requireNonNull(acronym, "acronym may not be null");
     //nb : we no longer pull individual units from db, but rather just refer to the cache
-    //initialising it if rqd (0.6.3)
+    //initialising it first if required (0.6.3)
     if(!unitCacheInitialised()) {
       initUnitCache();
     }
@@ -362,7 +360,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
               rs.getInt("complexity"),
               rs.getInt("scanner"), 
               rs.getInt("license"),
-              rs.getString("acronym"), 
+              Acronym.fromString( rs.getString("acronym") ), 
               xfId);      
       return unit;
     } catch(Exception e) {
@@ -384,9 +382,6 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
     if(unit.getName().isEmpty()) {
       throw new IllegalArgumentException("unit.name may not be empty");
     }
-    if(unit.getAcronym().isEmpty()) {
-      throw new IllegalArgumentException("unit.acronym may not be empty");
-    }
     UnitId id = null;
     boolean isNew = unit.getId() == null;
     if(isNew) {
@@ -395,7 +390,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
           + "cost,complexity,scanner,license,acronym,xfactor)" + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       Object[] parameters_insert = new Object[] { id, unit.getName(), unit.getAttacks(), unit.getOffense(),
           unit.getDefense(), unit.getPd(), unit.getSpeed(), unit.getCarry(), unit.getCost(), unit.getComplexity(),
-          unit.getScanner(), unit.getLicense(), unit.getAcronym(), unit.getXFactor(), };
+          unit.getScanner(), unit.getLicense(), unit.getAcronym().toString(), unit.getXFactor(), };
       DbUtils.writeQuery(sql, parameters_insert, connection);
     } else {
       String sql = "UPDATE UNITS SET " + "name=?," + "attacks=?," + "offense=?," + "defense=?," + "pd=?," + "speed=?,"
@@ -403,7 +398,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
           + " WHERE id=?;";
       Object[] parameters_update = new Object[] { unit.getName(), unit.getAttacks(), unit.getOffense(),
           unit.getDefense(), unit.getPd(), unit.getSpeed(), unit.getCarry(), unit.getCost(), unit.getComplexity(),
-          unit.getScanner(), unit.getLicense(), unit.getAcronym(), unit.getXFactor(), unit.getId() };
+          unit.getScanner(), unit.getLicense(), unit.getAcronym().toString(), unit.getXFactor(), unit.getId() };
       DbUtils.writeQuery(sql, parameters_update, connection);
       id = unit.getId();
     }
@@ -461,16 +456,16 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
     _unitsCache = units;
     _unitsById = new HashMap<UnitId, IUnit>();
     _unitsByName = new HashMap<String, IUnit>();
-    _unitsByAcronym = new HashMap<String, IUnit>();
+    _unitsByAcronym = new HashMap<Acronym, IUnit>();
     for(IUnit unit : units) {
       _unitsById.put(unit.getId(), unit);
       String name = unit.getName();
       if(name!=null && !name.isEmpty()) {
         _unitsByName.put(name.toUpperCase(Locale.US), unit);
       }
-      String acronym = unit.getAcronym();
-      if(acronym!=null && !acronym.isEmpty()) {
-        _unitsByAcronym.put(acronym.toUpperCase(Locale.US), unit);
+      Acronym acronym = unit.getAcronym();
+      if(acronym!=null) { //nb: it should no longer be possible for it to be null?
+        _unitsByAcronym.put(acronym, unit);
       }
     }
   }

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import romeo.importdata.IUnitImportReport;
 import romeo.test.ServiceListenerChecker;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.UnitId;
 import romeo.units.impl.MockUnitService;
@@ -61,18 +62,18 @@ public class TestUnitImporterImpl {
     //yet (even though it was in the map its not a column in the csv).
     assertNull( vip.getXFactor() );
     //Adding in the acronym and xfactor so we can use the convenience test method in TestUnitImpl
-    vip = TestUnitImpl.mutate(vip, "acronym", "vip");
+    vip = TestUnitImpl.mutate(vip, "acronym", Acronym.fromString("vip"));
     vip = TestUnitImpl.mutate(vip, "xFactor", new XFactorId("XF1"));
     TestUnitImpl.assertVipCorrect(vip.getId(), vip); //and now we can check all the other stuff got imported.
     //nb: we can't guarantee what order the unit service got called in, so can't presume to check ids
     //and anyway, ids belong to the service so mostly out of scope for this test anyway
     
     IUnit bs = _mockUnitService.getByName("Carrier");
-    bs = TestUnitImpl.mutate(bs, "acronym", "BS");
+    bs = TestUnitImpl.mutate(bs, "acronym", Acronym.fromString("BS") );
     TestUnitImpl.assertBsCorrect(bs.getId(), bs);
     
     IUnit rap = _mockUnitService.getByName("Recon");
-    rap = TestUnitImpl.mutate(rap, "acronym","RAP");
+    rap = TestUnitImpl.mutate(rap, "acronym",Acronym.fromString("RAP") );
     TestUnitImpl.assertRapCorrect(rap.getId(), rap);
     
     //check the report
@@ -125,21 +126,21 @@ public class TestUnitImporterImpl {
     
     assertEquals(1, _listener.getDataChangedCount() ); //Should be only one notification for the entire import
     
-    IUnit vip = _mockUnitService.getByAcronym("VIP");
+    IUnit vip = _mockUnitService.getByAcronym( Acronym.fromString("VIP") );
     assertNotNull(vip);
-    assertEquals("vip",vip.getAcronym());
+    assertEquals(Acronym.fromString("vip"),vip.getAcronym());
     vip = TestUnitImpl.mutate(vip, "xFactor", new XFactorId("XF1")); //needed to pass below check
     TestUnitImpl.assertVipCorrect(vip.getId(), vip);
     
-    assertNotNull(_mockUnitService.getByAcronym("BS") );
-    assertNotNull(_mockUnitService.getByAcronym("BS") );
+    assertNotNull(_mockUnitService.getByAcronym( Acronym.fromString("BS")) );
+    assertNotNull(_mockUnitService.getByAcronym( Acronym.fromString("BS")) );
     
     //we didnt provide an adjustment for rap
-    assertNull( _mockUnitService.getByAcronym("RAP") );
+    assertNull( _mockUnitService.getByAcronym( Acronym.fromString("RAP") ) );
     assertNotNull( _mockUnitService.getByName("Recon") );
     
     //and having an entry for a non-existent unit wont conjure it from thin air
-    assertNull( _mockUnitService.getByAcronym("NSU") );
+    assertNull( _mockUnitService.getByAcronym( Acronym.fromString("NSU") ) );
     
     //check the report
     assertEquals( 0, report.getUpdatedUnitsCount() );
@@ -149,22 +150,27 @@ public class TestUnitImporterImpl {
   @Test
   public void testUpdates() {
 
+    //We preload a RAP unit in the service, and give it a speed of 300
     IUnit rap = TestUnitImpl.newRap(null);
-    assertEquals("RAP", rap.getAcronym()); 
-    rap = TestUnitImpl.mutate(rap, "speed", 300); //in the mock file
+    assertEquals( Acronym.fromString("RAP"), rap.getAcronym()); //not a test, more an assertion before we test
+    rap = TestUnitImpl.mutate(rap, "speed", 300); 
     UnitId rapId = _mockUnitService.saveUnit(rap);
     
+    //Now we will try importing from the mock unit file. We expect that 3 units will be imported and the RAP will
+    //be updated. 
     _listener.reset();
-    UnitImporterImpl unitImporter = new UnitImporterImpl(_mockUnitService);
-    IUnitImportReport report = unitImporter.importData(_mockUnitFile, null, true);
+    UnitImporterImpl unitImporter = new UnitImporterImpl(_mockUnitService); //Mock file of csv unit data (as strings)
+    Map<String, Map<String, String>> adjustments = null; //No adjustments to values in the file
+    boolean enableUpdate = true; //Update existing units with data from the file
+    IUnitImportReport report = unitImporter.importData(_mockUnitFile, adjustments, enableUpdate);
     
-    assertEquals(1, _listener.getDataChangedCount() ); //Should be only one notification for the entire import
-    
-    assertEquals( 1, report.getUpdatedUnitsCount() );
+    assertNull( report.getException() );
     assertEquals( 3, report.getImportedUnitsCount() );
+    assertEquals( 1, report.getUpdatedUnitsCount() ); //The RAP would have been updated    
+    assertEquals( 1, _listener.getDataChangedCount() ); //Should be only one notification for the entire import
     
     IUnit loadRap = _mockUnitService.getUnit(rapId);
-    assertEquals( "RAP", loadRap.getAcronym() );
+    assertEquals(  Acronym.fromString("RAP"), loadRap.getAcronym() );
     assertEquals( 100, loadRap.getSpeed() );
     
   }

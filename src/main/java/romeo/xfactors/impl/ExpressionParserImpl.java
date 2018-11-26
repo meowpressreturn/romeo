@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import romeo.fleet.model.SourceId;
+import romeo.units.api.Acronym;
 import romeo.utils.Convert;
 import romeo.xfactors.api.IExpression;
 import romeo.xfactors.api.IExpressionParser;
@@ -342,7 +343,7 @@ public class ExpressionParserImpl implements IExpressionParser {
     }
     String acronym = trimToken(tokens[0]);
     acronym = Convert.toUnquotedString(acronym);
-    return new Present(acronym);
+    return new Present( Acronym.fromString(acronym) );
   }
   
   public Quantity parseQuantity(String params) {
@@ -353,7 +354,7 @@ public class ExpressionParserImpl implements IExpressionParser {
         throw new IllegalArgumentException("Expecting 3 parameters but found " + tokens.length);
       }
       QuantityOperand operand = QuantityOperand.fromString( trimToken(tokens[0]) );
-      String acronym = trimToken( tokens[1] );
+      Acronym acronym = Acronym.fromString( trimToken( tokens[1] ) );
       String sourceIdToken = trimToken( tokens[2] );
       //note: can be "null" (now case-insensive as of 0.6.3), or from 0.6.4 onwards we use "any"
       final SourceId _sourceId = SourceId.fromString( sourceIdToken );      

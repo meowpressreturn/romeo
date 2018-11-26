@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.UnitId;
 import romeo.xfactors.api.XFactorId;
@@ -17,11 +18,11 @@ import romeo.xfactors.api.XFactorId;
 public class TestUnitImpl {
   
   public static IUnit newBsr(UnitId id) {
-    return new UnitImpl(id, "Big Shooty Robot", 30, 50, 96, 200, 180, 0, 1000, 1500, 0, 2000, "BSR", null);
+    return new UnitImpl(id, "Big Shooty Robot", 30, 50, 96, 200, 180, 0, 1000, 1500, 0, 2000, Acronym.fromString("BSR"), null);
   }
   
   public static IUnit newRap(UnitId id) {
-    IUnit rap = new UnitImpl(id, "Recon", 3, 20, 35, 5, 100, 30, 100, 250, 200, 500, "RAP", null);
+    IUnit rap = new UnitImpl(id, "Recon", 3, 20, 35, 5, 100, 30, 100, 250, 200, 500, Acronym.fromString("RAP"), null);
     assertRapCorrect(id, rap); //sanity check
     return rap;
   }
@@ -40,12 +41,12 @@ public class TestUnitImpl {
     assertEquals(250, rap.getComplexity());
     assertEquals(200, rap.getScanner());
     assertEquals(500, rap.getLicense());
-    assertEquals("RAP",rap.getAcronym());
+    assertEquals(Acronym.fromString("RAP"),rap.getAcronym());
     assertNull(rap.getXFactor());
   }
   
   public static UnitImpl newBStar() {
-    return new UnitImpl(null, "Carrier", 20, 90, 98, 10, 80, 500, 2000, 1800, 100, 2000, "BS", null);
+    return new UnitImpl(null, "Carrier", 20, 90, 98, 10, 80, 500, 2000, 1800, 100, 2000, Acronym.fromString("BS"), null);
   }
 
   public static void assertBsCorrect(UnitId id, IUnit bs) {
@@ -62,7 +63,7 @@ public class TestUnitImpl {
     assertEquals(1800, bs.getComplexity());
     assertEquals(100, bs.getScanner());
     assertEquals(2000, bs.getLicense());
-    assertEquals("BS", bs.getAcronym());
+    assertEquals(Acronym.fromString("BS"), bs.getAcronym());
     assertNull( bs.getXFactor() );
   }
   
@@ -71,7 +72,7 @@ public class TestUnitImpl {
    * @return
    */
   public static UnitImpl newVip() {
-    return new UnitImpl(null, "Fighter", 1, 20, 25, 2, 120, 1, 100, 30, 25, 200, "vip", new XFactorId("XF1"));
+    return new UnitImpl(null, "Fighter", 1, 20, 25, 2, 120, 1, 100, 30, 25, 200, Acronym.fromString("vip"), new XFactorId("XF1"));
   }
 
   /**
@@ -92,7 +93,7 @@ public class TestUnitImpl {
     assertEquals(30, vip.getComplexity());
     assertEquals(25, vip.getScanner());
     assertEquals(200, vip.getLicense());
-    assertEquals("vip",vip.getAcronym());
+    assertEquals(Acronym.fromString("VIP"),vip.getAcronym());
     assertEquals(new XFactorId("XF1"), vip.getXFactor());
   }
   
@@ -185,8 +186,8 @@ public class TestUnitImpl {
     
     for(String[] test : tests) {
       String name = test[0];
-      String expected = test[1];
-      String actual = UnitImpl.generatePlaceholderAcronym(name);
+      Acronym expected = Acronym.fromString( test[1] );
+      Acronym actual = UnitImpl.generatePlaceholderAcronym(name);
       assertEquals(expected, actual);      
     }
     

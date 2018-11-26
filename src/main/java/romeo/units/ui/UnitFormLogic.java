@@ -16,6 +16,7 @@ import romeo.ui.forms.FieldDef;
 import romeo.ui.forms.IFormLogic;
 import romeo.ui.forms.RomeoForm;
 import romeo.ui.forms.XFactorCombo;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
@@ -62,6 +63,10 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
     }
   }
 
+  /**
+   * Initialise the form fields based on the data in the unit
+   * @param unit
+   */
   public void loadWith(IUnit unit) {
     _unit = unit;
     if(_form != null) {
@@ -77,7 +82,7 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
       ((JTextField) _form.getEntryFields().get("complexity")).setText(unit.getComplexity() + "");
       ((JTextField) _form.getEntryFields().get("scanner")).setText(unit.getScanner() + "");
       ((JTextField) _form.getEntryFields().get("license")).setText(unit.getLicense() + "");
-      ((JTextField) _form.getEntryFields().get("acronym")).setText(unit.getAcronym());
+      ((JTextField) _form.getEntryFields().get("acronym")).setText(unit.getAcronym().toString());
       ((XFactorCombo) _form.getEntryFields().get("xfactor")).setXFactor(unit.getXFactor());
 
       //_form.setDirty(false);
@@ -125,7 +130,7 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
     String complexityStr = ((JTextField) _form.getEntryFields().get("complexity")).getText();
     String scannerStr = ((JTextField) _form.getEntryFields().get("scanner")).getText();
     String licenseStr = ((JTextField) _form.getEntryFields().get("license")).getText();
-    String acronym = ((JTextField) _form.getEntryFields().get("acronym")).getText();
+    String acronymStr = ((JTextField) _form.getEntryFields().get("acronym")).getText();
     IXFactor xf = (IXFactor) ((XFactorCombo) _form.getEntryFields().get("xfactor")).getXFactor();
     XFactorId xfactor = (xf == null) ? null : xf.getId();
 
@@ -142,7 +147,7 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
         Convert.toInt(complexityStr),
         Convert.toInt(scannerStr),
         Convert.toInt(licenseStr),
-        acronym, 
+        Acronym.fromString(acronymStr), 
         xfactor);
     UnitId id = _unitService.saveUnit(unit);
     loadWith( new UnitImpl(id, unit) );
@@ -154,10 +159,11 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
 
   @Override
   public void dataChanged(EventObject event) {
-    if(_unit.getId() != null && !_form.isDirty()) { //Only load fresh data if user hadnt started an edit operation
+    if(_unit.getId() != null && !_form.isDirty()) { 
+      //Only load fresh data if user hadnt started an edit operation
       IUnit reloaded = _unitService.getUnit(_unit.getId());
       if(reloaded == null) { //It was deleted 
-        loadWith(new UnitImpl(null, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "", null));
+        loadWith(new UnitImpl(null, "DELETED", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Acronym.fromString("DELETED"), null));
         _form.setDirty(true);
       } else { //Load fresh data into the form
         loadWith(reloaded);

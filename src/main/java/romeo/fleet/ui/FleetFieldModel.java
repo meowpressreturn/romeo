@@ -23,6 +23,7 @@ import romeo.fleet.model.FleetElement;
 import romeo.fleet.model.SourceId;
 import romeo.ui.BeanTableModel;
 import romeo.ui.forms.IFieldChangeListener;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.utils.Convert;
@@ -400,8 +401,9 @@ public class FleetFieldModel {
 
       try {
         if(token.startsWith(FLAG_SYMBOL)) { //Flag token
-          if(token.length() == 1)
+          if(token.length() == 1) {
             throw new IllegalArgumentException("Flag text not specified");
+          }
           String flag = token.substring(1).toUpperCase(Locale.US);
           element.setFlag(flag);
           element.setValid(true);
@@ -409,12 +411,14 @@ public class FleetFieldModel {
 
           //if(token.length()==0) break; //skip ,,
           int star = token.indexOf('*');
-          if(star == -1)
+          if(star == -1) {
             throw new IllegalArgumentException("Missing '*' in token:" + token);
-          String acronym = token.substring(star + 1).trim(); // on the right
+          }
+          Acronym acronym = Acronym.fromString( token.substring(star + 1).trim() ); // on the right
           IUnit unit = _unitService.getByAcronym(acronym);
-          if(unit == null)
+          if(unit == null) {
             throw new IllegalArgumentException("Bad acronym:" + acronym);
+          }
           String qtyStr = token.substring(0, star).trim(); //on the left
 
           //Here to parse sourceId

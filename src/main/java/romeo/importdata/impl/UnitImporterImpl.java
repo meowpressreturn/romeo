@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import romeo.importdata.IUnitFile;
 import romeo.importdata.IUnitImportReport;
 import romeo.importdata.IUnitImporter;
+import romeo.units.api.Acronym;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
@@ -47,10 +48,15 @@ public class UnitImporterImpl implements IUnitImporter {
   /**
    * Import unit data from the unitFile into Romeo.
    * The order in which units are added to the database (and thus the id assigned by the service) is not guaranteed.
-   * @param unitFile
+   * @param unitFile represents a file of unit data read from a source such as a unit.csv as strings
+   * @param adjustments represents adjustments to be made to the values in unitFile (also all strings)
+   * @param enableUpdate if true, will update existing units in romeo with values imported
    */
   @Override
-  public IUnitImportReport importData(IUnitFile unitFile, Map<String, Map<String, String>> adjustments, boolean enableUpdate) {
+  public IUnitImportReport importData(
+      IUnitFile unitFile, 
+      Map<String, Map<String, String>> adjustments, 
+      boolean enableUpdate) {
     Objects.requireNonNull(unitFile, "unitFile may not be null");
     if(adjustments==null) {
       adjustments = Collections.emptyMap();
@@ -70,6 +76,7 @@ public class UnitImporterImpl implements IUnitImporter {
       }
       List<IUnit> updateUnits = new ArrayList<>(existingUnits.size()); //will hold the updated unit objects
       List<IUnit> importUnits = new ArrayList<>(existingUnits.size()); //will hold the newly imported unit objects
+   //TODO ^ review size of the above
       //Now perform the importing
       while(unitFileIterator.hasNext()) {
         Map<String, String> unitData = unitFileIterator.next();
@@ -138,12 +145,15 @@ public class UnitImporterImpl implements IUnitImporter {
   /**
    * Create a {@link Unit} based on data in the map. Information in the
    * adjustments map is taken into account.
-   * @param unitData
+   * @param unitColumns
    * @param name
    *          used in place of acronym if the adjustments did not specify one
+   * @param adjustmentsMap
    */
-  private IUnit createUnit(Map<String, String> unitColumns, String name, Map<String, Map<String, String>> adjustmentsMap) {
-    
+  private IUnit createUnit(
+      Map<String, String> unitColumns, 
+      String name, 
+      Map<String, Map<String, String>> adjustmentsMap) {    
     try {
       if(unitColumns.get("acronym") == null || "".equals(unitColumns.get("acronym"))) {
         String unitName = (String)unitColumns.get("name");
@@ -155,12 +165,12 @@ public class UnitImporterImpl implements IUnitImporter {
         }
         if(adjustments == null) {
           //For units without an adjustment we generate a placeholder acronym by removing spaces from its name
-          unitColumns.put("acronym", UnitImpl.generatePlaceholderAcronym(name) );
+          unitColumns.put("acronym", UnitImpl.generatePlaceholderAcronym(name).toString() ); //this map oly holds strings
         } else {
           copyAdjustmentsToUnit(adjustments, unitColumns);
         }
       }
-      Map<String,Object> unit = extractUnitColumns(unitColumns);
+      Map<String,Object> unit = extractUnitColumns(unitColumns); //strings get converted in this extraction
       IUnit record = UnitImpl.createFromMap(unit);
       return record;
     } catch(Exception e) {
@@ -170,8 +180,8 @@ public class UnitImporterImpl implements IUnitImporter {
   
   /**
    * Extract only those values we support in IUnit from the csv column data and convert data types.
-   * @param data
-   * @return unitData
+   * @param data unconverted string data
+   * @return unitData unit data with converted types
    */
   private Map<String,Object> extractUnitColumns(Map<String,String> data) {
     Map<String,Object> unit = new HashMap<>();
@@ -186,7 +196,12 @@ public class UnitImporterImpl implements IUnitImporter {
     unit.put( "complexity", Convert.toInt((String)data.get("complexity")) );
     unit.put( "scanner", Convert.toInt((String)data.get("scanner")) );
     unit.put( "license", Convert.toInt((String)data.get("license")) );
-    unit.put( "acronym", (String)data.get("acronym") );
+    String acronymStr = data.get("acronym");
+    if(acronymStr != null && !acronymStr.trim().isEmpty()) {
+      //fromString will fail for an invalid or null value, and since acronyms aren't (usually) in the unit csv
+      //we need to check for this before trying to convert
+      unit.put( "acronym", Acronym.fromString(data.get("acronym")) );
+    }
     return unit;    
   }
 

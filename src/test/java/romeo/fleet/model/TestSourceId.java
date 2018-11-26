@@ -26,7 +26,7 @@ public class TestSourceId {
       SourceId.fromString("-2"); //Negatives aren't allowed
     } catch(IllegalArgumentException expected) {}
     
-    for(String test : Arrays.asList(SourceId.ANY,"ANY","any","anY","Any","NULL","null","Null","nUlL")) {
+    for(String test : Arrays.asList(SourceId.ANY,"ANY","any","anY","Any","NULL","null","Null","nUlL","NulL")) {
       SourceId any = SourceId.fromString(test);
       assertTrue(any.isAny());
       assertNull(any.asInteger());

@@ -3,6 +3,7 @@ package romeo.xfactors.expressions;
 import java.util.Objects;
 
 import romeo.battle.impl.RoundContext;
+import romeo.units.api.Acronym;
 import romeo.xfactors.api.IExpression;
 
 /**
@@ -19,18 +20,14 @@ import romeo.xfactors.api.IExpression;
  */
 public class Present implements IExpression {
   
-  private final String _acronym;
+  private final Acronym _acronym;
 
   /**
    * Constructor. nb: the string supplied will not be trimmed here.
    * @param acronym 
    */
-  public Present(String acronym) {
+  public Present(Acronym acronym) {
     _acronym = Objects.requireNonNull(acronym);
-    if(_acronym.isEmpty()) {
-      throw new IllegalArgumentException("acronym not specified");
-    }
-    //TODO - verify there are no illegal chars in the acronym
   }
 
   /**
@@ -58,7 +55,7 @@ public class Present implements IExpression {
     }
   }
   
-  public String getAcronym() {
+  public Acronym getAcronym() {
     return _acronym;
   }
 }

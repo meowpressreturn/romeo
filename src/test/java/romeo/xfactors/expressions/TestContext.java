@@ -9,6 +9,7 @@ import romeo.battle.impl.RoundContext;
 import romeo.fleet.model.FleetContents;
 import romeo.fleet.model.FleetElement;
 import romeo.fleet.model.SourceId;
+import romeo.units.api.Acronym;
 import romeo.units.impl.UnitImpl;
 import romeo.xfactors.expressions.Context.ContextOperand;
 
@@ -21,7 +22,7 @@ public class TestContext {
   
   @Before
   public void setup() {
-    UnitImpl viper = new UnitImpl(null, "Viper", 2, 30, 25, 10, 120, 1, 100, 30, 25, 200, "VIP", null);
+    UnitImpl viper = new UnitImpl(null, "Viper", 2, 30, 25, 10, 120, 1, 100, 30, 25, 200, Acronym.fromString("VIP"), null);
     
     _context = new RoundContext(new String[] { "Mars", "Earth" } );
     _context.setDefendingPlayer("Earth");
