@@ -46,7 +46,7 @@ public class BattleFleetsManager implements ActionListener {
       "Erowhon", "Marian", "Wilhelmina", "Shizuka", "Blade", "Maria", "Gordon", "Manuel", "Kaspar", "Kitty", "Red",
       "Abdul", "Danforth", "Claw", "Bandersnatch", "Scrooge", "Apprentice", "Doctor", "Houston", "Apollo", "Sudohbucks",
       "Genki", "Saga", "Lotus", "Larry", "Godwin", "Dodd", "Pacific", "Winston", "Lowry",
-      "Sir Not-Appearing-In-This-Program", }; //remember to keep kaspar as 14th :-)
+      "Sir Not-Appearing-In-This-Program", }; //remember to keep kaspar as 14th (index 13) :-)
 
   /**
    * To get the preset fleet name for a given fleet index you must use this
@@ -146,7 +146,7 @@ public class BattleFleetsManager implements ActionListener {
    * defender (in addFleetField).
    */
   public void resetFleets() {
-    while(getSize() > 0) { //Remove all the fleet fields (including unliking them as service listeners)
+    while(getSize() > 0) { //Remove all the fleet fields (including unlinking them as service listeners)
       removeFleetField();
     }
 

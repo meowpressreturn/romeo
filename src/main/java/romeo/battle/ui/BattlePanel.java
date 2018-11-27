@@ -1,5 +1,6 @@
 package romeo.battle.ui;
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -47,7 +48,16 @@ public class BattlePanel extends JPanel {
 
     _fleets = new BattleFleetsManager(settingsService, unitService, xFactorService, compiler);
 
-    JButton _fightButton = new JButton("Execute", EXECUTE_IMAGE);
+    JButton _fightButton = new JButton("RUN SIMULATION", EXECUTE_IMAGE);
+    /*
+     * We would like to make this button twice as high as the others, but how?
+     * Changing minimum dimension ... does nothing
+     * Changing gridheight ... does nothing
+     * ah... preferredSize
+     * Swing is annoying
+     */
+    Dimension d = _fightButton.getPreferredSize();
+    _fightButton.setPreferredSize(new Dimension(d.width,(int)(d.height*1.5)));
     _fightButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -72,7 +82,7 @@ public class BattlePanel extends JPanel {
     gbc.insets = insets;
     gbc.gridx = 0;
     add(_fightButton, gbc);
-    gbc.gridy++;
+    gbc.gridy+=2;
 
     gbc.gridx = 0;
     add(fleetsUi, gbc);
