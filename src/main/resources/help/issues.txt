@@ -36,8 +36,6 @@ Known issues and feature requests:
 
 #49  The unit.csv file must be placed into resources for the initial default value import on first use, however once this has been done the unit.csv is no longer referred to unless explicitly specified by the user. The check for its presence should therefore be removed so it can be safely deleted after initial import.
 
-#50  When selecting a row for an entry in the fleet the source id for that row is not selected in the source combo box. This requires manually changing the value in the combo box too, in order to update the quantity for that source.
-
 #54  The word wrapping in the help dialogs is not yet perfect. There are some off by one errors.
 
 #55  The first attacker should get allocated the colour red in the graphs. Currently it is allocated to the first fleet in the battle which is now the defender.
@@ -115,7 +113,12 @@ their appropriate field by unwanted whitespace)
 
 #151 If the file selection dialog is cancelled when locating the unit.csv to copy at initial startup, Romeo will continue attempting to run initialisers instead of terminating. The unit service initialiser will create the units table but then terminate Romeo with an error. Running Romeo a subsequent time will complete the initial setup, but with an empty unit database.
 
-#152 
+#152 The source combo box in the fleet field only supports a limited number (eg: 10) source fleets, while it is possible to use any positive integer as a source id in the text field. When selection a row for a fleet element whose source isn't one of the combo's options the combo box doesn't get changed. Ideally we should add that option to the combo box when it is typed in the text field.
+
+#153 Sorting of the table rows in the fleet field does not seem to be correct.
+
+#154 
+
 
 ---------------------------------------
 
@@ -363,9 +366,11 @@ Addressed in Romeo 0.6.3
 
 #148 (FIXED) Sorting order in the data tables should be case-insensitive
 
+---------------------------------------
 
+Addressed in Romeo 0.6.3
 
-
+#50  (FIXED) When selecting a row for an entry in the fleet the source id for that row is not selected in the source combo box. This requires manually changing the value in the combo box too, in order to update the quantity for that source.
 
 
 

@@ -175,17 +175,22 @@ public class FleetField extends JPanel implements IServiceListener {
     _fleetTable = new JTable(_model.getTableModel());
     _fleetTable.setDefaultRenderer(Double.class, new NumericCellRenderer(2));
     _fleetTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    //Listener that will update the combo boxes etc above the table when the user selects a row in the table
     _fleetTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       @Override
       public void valueChanged(ListSelectionEvent e) {
         ListSelectionModel lsm = (ListSelectionModel) e.getSource();
         if(!lsm.isSelectionEmpty()) {
-          TableModel tableModel = _model.getTableModel();
-          if(tableModel instanceof BeanTableModel) {
-            Object row = ((BeanTableModel) tableModel).getRowBean(lsm.getMinSelectionIndex());
-            IUnit unit = ((FleetElement) row).getUnit();
-            _unitCombo.setSelectedItem(unit);
-          }
+          BeanTableModel tableModel = (BeanTableModel)_model.getTableModel();
+          FleetElement row = (FleetElement)tableModel.getRowBean(lsm.getMinSelectionIndex());
+          _unitCombo.setSelectedItem( row.getUnit() );          
+          int sourceId = row.getSource().asInteger(); //nb: FleetElements dont allow the ANY source so this isnt null
+          Vector<String> options = _model.isDefender() ? DEF_SOURCE_OPTIONS : ATK_SOURCE_OPTIONS;
+          if(sourceId < options.size()) {
+            //The combo box supports only a limited number of source fleets, so if the source id is beyond that
+            //we shall just ignore it for now. (TODO issue #152)
+            _sourceCombo.setSelectedItem( options.get(sourceId) );
+          }          
         }
       }
     });
