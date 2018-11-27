@@ -305,6 +305,8 @@ public class FleetFieldModel {
       }
       //....
 
+      _fleetContents.sort(); 
+      
       _tableModel.setData(new ArrayList<FleetElement>(_fleetContents.getElements()));
 
       notifyFieldChangeListeners();

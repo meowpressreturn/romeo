@@ -205,7 +205,8 @@ public class FleetField extends JPanel implements IServiceListener {
     _fleetTableScroll = tableScroll;
     tableScroll.setPreferredSize(new Dimension(PREF_WIDTH, (PREF_HEIGHT / 5) * 3));
     tableScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    tableScroll.setCorner(JScrollPane.UPPER_RIGHT_CORNER, testButton); //Test button
+    tableScroll.setCorner(JScrollPane.UPPER_RIGHT_CORNER, testButton); //Test button, adds some fleet text to field
+    //Normalise button will rewrite the fleet text in normalised fashion (merging same unit/source etc)
     _normaliseButton = new JButton(NORMALISE_IMAGE);
     _normaliseButton.addActionListener(new ActionListener() {
       @Override
