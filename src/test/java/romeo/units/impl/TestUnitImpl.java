@@ -2,6 +2,7 @@ package romeo.units.impl;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.Test;
@@ -17,11 +18,23 @@ import romeo.xfactors.api.XFactorId;
  */
 public class TestUnitImpl {
   
+  /**
+   * Create a new unit with BSR acronym for use in tests. If you don't care about the persistence id pass it as null
+   * @param id unitId for persistence
+   * @return unit named "Big Shooty Robot"
+   */
   public static IUnit newBsr(UnitId id) {
+    //lots of tests depend on these specific values so dont change them
     return new UnitImpl(id, "Big Shooty Robot", 30, 50, 96, 200, 180, 0, 1000, 1500, 0, 2000, Acronym.fromString("BSR"), null);
   }
   
+  /**
+   * Create a new unit with RAP acronym for use in tests. If you don't care about the persistence id pass it as null
+   * @param id unitId for persistence
+   * @return unit named "Recon"
+   */
   public static IUnit newRap(UnitId id) {
+  //lots of tests depend on these specific values so dont change them
     IUnit rap = new UnitImpl(id, "Recon", 3, 20, 35, 5, 100, 30, 100, 250, 200, 500, Acronym.fromString("RAP"), null);
     assertRapCorrect(id, rap); //sanity check
     return rap;
@@ -45,7 +58,12 @@ public class TestUnitImpl {
     assertNull(rap.getXFactor());
   }
   
+  /**
+   * Create a new unit with BS acronym for use in tests. Its UnitId will be null.
+   * @return unit named "Carrier"
+   */
   public static UnitImpl newBStar() {
+    //lots of tests depend on these specific values so dont change them
     return new UnitImpl(null, "Carrier", 20, 90, 98, 10, 80, 500, 2000, 1800, 100, 2000, Acronym.fromString("BS"), null);
   }
 
@@ -68,8 +86,9 @@ public class TestUnitImpl {
   }
   
   /**
-   * Returns a new test unit with some well known (to our tests) data. nb: The acronym is "vip"
-   * @return
+   * Returns a new test unit with some well known (to our tests) data. nb: The acronym is "VIP" and the
+   * UnitId is null.
+   * @return unit named "Fighter"
    */
   public static UnitImpl newVip() {
     return new UnitImpl(null, "Fighter", 1, 20, 25, 2, 120, 1, 100, 30, 25, 200, Acronym.fromString("vip"), new XFactorId("XF1"));
@@ -192,6 +211,45 @@ public class TestUnitImpl {
     }
     
     
+  }
+  
+  
+  /**
+   * Tests the compareTo (for Comparable interface) that should compare by the unit's name
+   */
+  @Test
+  public void testCompareTo() {
+    
+    IUnit aadvark = new UnitImpl(null, "Aardvark", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Acronym.fromString("FOO"), null);
+    IUnit budgie = new UnitImpl(null, "Budgie", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Acronym.fromString("FOO"), null);
+    IUnit cocky = new UnitImpl(null, "Cocky", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Acronym.fromString("FOO"), null);
+    IUnit dingo = new UnitImpl(null, "Dingo", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Acronym.fromString("FOO"), null);
+    IUnit elephant = new UnitImpl(null, "Elephant", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Acronym.fromString("FOO"), null);
+    IUnit zebra = new UnitImpl(null, "Zebra", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, Acronym.fromString("FOO"), null);
+    
+    assertTrue( aadvark.compareTo(aadvark) == 0 );
+    assertTrue( aadvark.compareTo(budgie) < 0 );
+    assertTrue( budgie.compareTo(aadvark) > 0 );
+    
+    IUnit[] expected = new IUnit[] { aadvark, budgie, cocky, dingo, elephant, zebra };
+    
+    IUnit[] test1 = new IUnit[] { zebra, elephant, dingo, cocky, budgie, aadvark };
+    Arrays.sort(test1);
+    assertArrayEquals(expected, test1 );
+    
+    IUnit[] test2 = new IUnit[] { cocky, dingo, zebra, elephant, aadvark, budgie };
+    Arrays.sort(test2);
+    assertArrayEquals(expected, test2);
+    
+    IUnit[] test3 = new IUnit[] { budgie, cocky, dingo, zebra, aadvark, elephant };
+    Arrays.sort(test3);
+    assertArrayEquals(expected, test3);
+    
+    IUnit[] expected2 = new IUnit[] { aadvark, aadvark, aadvark, zebra };
+    IUnit[] test4 = new IUnit[] { aadvark, aadvark, zebra, aadvark };
+    Arrays.sort(test4);
+    assertArrayEquals(expected2, test4);
+
   }
 
 

@@ -513,7 +513,7 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
 
   /**
    * Compares the FleetElement with another FleetElement to see if they are
-   * 'equal' for sorting purposes (its based on the sourceId). (If the other
+   * 'equal' for sorting purposes (its based on the sourceId and then the name). (If the other
    * object isnt a FleetElement or is null then an exception is thrown)
    * @param o
    *          The other element
@@ -524,20 +524,18 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
   @Override
   public int compareTo(FleetElement o) {
     if(o==null || !(o instanceof FleetElement)) {
-      throw new IllegalArgumentException("o must be a FleetElement (or subclass)");
+      throw new IllegalArgumentException("o must be a " + FleetElement.class.getName());
     }
-    FleetElement comparee = (FleetElement) o;
+    FleetElement other = (FleetElement) o;
 
-    int srcDif = getSource().compareTo(comparee.getSource()); 
-    //nb: when sourceId was an int, the above the previously used: getSource() - comparee.getSource();
+    int srcDif = _source.compareTo(other._source); 
     if(srcDif == 0) {
-      int unitDif = 0;
-      IUnit thisUnit = getUnit();
-      IUnit thatUnit = getUnit();
-      if(thisUnit == null) {
-        unitDif = thatUnit == null ? 0 : -1;
+      final int unitDif;
+      //TODO - why is unit allowed to be null???
+      if(_unit == null) {
+        unitDif = (other._unit == null) ? 0 : -1;
       } else {
-        unitDif = thisUnit.compareTo(thatUnit);
+        unitDif = (other._unit == null) ? 1 : _unit.compareTo(other._unit); //UnitImpl will compare units based on name
       }
       return unitDif;
     } else {
@@ -547,7 +545,7 @@ public class FleetElement implements Cloneable, Comparable<FleetElement> {
   
   @Override
   public String toString() {
-    return "FleetElement[" + _unit.getAcronym() + "," + _quantity + "]";
+    return "FleetElement[" + _unit.getAcronym() + "," + _quantity + "," + _source +"]";
     
   }
 
