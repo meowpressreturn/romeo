@@ -79,8 +79,6 @@ their appropriate field by unwanted whitespace)
 
 #123 Add support to the PRESENT expression for OPPOSING_PLAYERS
 
-#124 Show selected turns labour, capital, ownership etc in the Worlds data table rather than the somewhat useless X and Y cordinates
-
 #125 Players form should have a table of worlds owned by that player for the selected turn
 
 #128 UnitTypesSelector should use available space but also shrink if necessary (split from issue #24)
@@ -107,7 +105,7 @@ their appropriate field by unwanted whitespace)
 
 #147 Fix multiple world file import sending service notifications on the wrong thread
 
-#149 The 'find world' function exhibits some oddities with matching when different case is involved, eg: "archer" finding "Marcher" instead of "Archer". Also exact matches don't beat other matches, eg always finding "Marstrom" instead of "Mars" when searching for any case variant of "Mars"
+#149 The 'find world' function exhibits some oddities with matching when different case is involved, eg: "archer" finding "Marcher" instead of "Archer". Also exact matches don't beat other matches, eg always finding "Marstrom" instead of "Mars" when searching for any case variant of "Mars" (Need to check if the change to using FuzzyScore in 0.6.4 has had any impact on this issue)
 
 #150 If importing from a non team game with blank team columns, assign owned worlds to team 'Somebody' and unowned worlds to team 'Nobody'. Do not auto-allocate player colours though
 
@@ -117,7 +115,9 @@ their appropriate field by unwanted whitespace)
 
 #153 Sorting of the table rows in the fleet field does not seem to be correct.
 
-#154 
+#154 Add support for horizontal scrolling gestures (vertical is already supported)
+
+#155 
 
 
 ---------------------------------------
@@ -344,6 +344,8 @@ Addressed in Romeo 0.6.3
 
 #122 (FIXED) Deleting an XFactor record does not clear the foreign key in units that link to it although it looks like it does in the UI. This does not seem to affect functionality however.
 
+#124 (FIXED) Show selected turns labour, capital, ownership etc in the Worlds data table rather than the somewhat useless X and Y cordinates
+
 #126 (FIXED) When upgrading an ancient (eg: 0.1.0, 0.2.0, etc) database that doesn't have a Players table, the color and ownership information (if available) for the worlds should be used to create new Player records so that the map colors can be preserved
 
 #127 (FIXED) We need some extensive refactoring and tightening up of data types and nullability checks and start to add unit tests for the existing and new code
@@ -371,6 +373,7 @@ Addressed in Romeo 0.6.3
 Addressed in Romeo 0.6.4
 
 #50  (FIXED) When selecting a row for an entry in the fleet the source id for that row is not selected in the source combo box. This requires manually changing the value in the combo box too, in order to update the quantity for that source.
+
 
 
 
