@@ -199,10 +199,14 @@ public class FleetFieldModel {
         }
       }
     };
-    BeanTableModel.ColumnDef[] columns = new BeanTableModel.ColumnDef[] { new BeanTableModel.ColumnDef("xfActive", "X"),
-        new BeanTableModel.ColumnDef("unit.name", "Unit"), new BeanTableModel.ColumnDef(null, "A*O/D", statsProc),
-        new BeanTableModel.ColumnDef("unitFirepower", "uFP"), new BeanTableModel.ColumnDef("firepower", "tFP"),
-        new BeanTableModel.ColumnDef("carry", "tCA", noFracProc), new BeanTableModel.ColumnDef("source", "Src"),
+    BeanTableModel.ColumnDef[] columns = new BeanTableModel.ColumnDef[] { 
+		new BeanTableModel.ColumnDef("xfActive", "X"),
+        new BeanTableModel.ColumnDef("unit.name", "Unit"),        
+        new BeanTableModel.ColumnDef(null, "A*O/D", statsProc),   
+        new BeanTableModel.ColumnDef("unitFirepower", "@ FP"),
+        new BeanTableModel.ColumnDef("firepower", "Σ FP"),
+        new BeanTableModel.ColumnDef("carry", "Σ CA", noFracProc), 
+        new BeanTableModel.ColumnDef("source", "Src"),
         new BeanTableModel.ColumnDef("quantity", "Qty", noFracProc), };
     _tableModel = new BeanTableModel(columns, Collections.emptyList());
   }
