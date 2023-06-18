@@ -129,7 +129,7 @@ public class TurnControls implements IServiceListener {
         _firstButton.setEnabled(_currentTurn > 1);
         _lastButton.setEnabled((_currentTurn != _maxTurn) && (_maxTurn != 0));
         _lastButton.setToolTipText((_maxTurn == 0) ? "N/A" : "Turn " + _maxTurn);
-        _turnLabel.setText("Turn " + _currentTurn);
+        _turnLabel.setText(String.format("Turn %02d", _currentTurn));
       }
     });
   }
