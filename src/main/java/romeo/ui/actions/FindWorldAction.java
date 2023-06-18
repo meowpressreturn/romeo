@@ -9,7 +9,7 @@ import java.util.Set;
 import javax.swing.Action;
 import javax.swing.JOptionPane;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.similarity.FuzzyScore;
 
 import romeo.Romeo;
 import romeo.ui.AbstractRomeoAction;
@@ -70,7 +70,7 @@ public class FindWorldAction extends AbstractRomeoAction {
     int bestScore = 1;
     for(WorldAndHistory wh : data) {
       String worldName = wh.getWorld().getName() + " " + wh.getHistory().getOwner();
-      int score = StringUtils.getFuzzyDistance(worldName, name, Locale.ENGLISH);
+      int score = new FuzzyScore(Locale.ENGLISH).fuzzyScore(worldName, name);
       if(score > bestScore) {
         bestScore = score;
         bestMatch = wh;
