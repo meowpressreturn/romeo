@@ -368,7 +368,7 @@ Addressed in Romeo 0.6.3
 
 ---------------------------------------
 
-Addressed in Romeo 0.6.3
+Addressed in Romeo 0.6.4
 
 #50  (FIXED) When selecting a row for an entry in the fleet the source id for that row is not selected in the source combo box. This requires manually changing the value in the combo box too, in order to update the quantity for that source.
 
@@ -376,7 +376,7 @@ Addressed in Romeo 0.6.3
 
 
 
-
+ 
 
 
 
