@@ -1,6 +1,9 @@
 package romeo.ui;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.EventObject;
@@ -8,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -32,6 +36,7 @@ import romeo.utils.events.IEventHubs;
 import romeo.utils.events.IEventListener;
 import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
+import romeo.worlds.ui.TurnControls;
 import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 import romeo.xfactors.api.IXFactor;
 import romeo.xfactors.api.IXFactorService;
@@ -162,6 +167,16 @@ public class DataTabs extends JPanel {
     playerTable.getTableHeader().setDefaultRenderer(
         new BeanTableHeaderRenderer((DefaultTableCellRenderer) playerTable.getTableHeader().getDefaultRenderer()));
 
+    
+    TurnControls turnControls = new TurnControls(settingsService, worldService);
+    JPanel turnPanel = new JPanel();
+    turnPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    turnPanel.add(turnControls.getFirstButton());
+    turnPanel.add(turnControls.getPrevButton());
+    turnPanel.add(turnControls.getNextButton());
+    turnPanel.add(turnControls.getLastButton());
+    turnPanel.add(turnControls.getTurnLabel());
+    
     //Layout the tabs and components
     _tabs = new JTabbedPane();
     _tabs.addTab(TAB_NAME_PLAYERS, playerIcon, playerTableScrollPane, null);
@@ -192,8 +207,6 @@ public class DataTabs extends JPanel {
     shutDownNotifier.addWeakListener(_shutdownListener);
 
     GridBagConstraints gbc = GuiUtils.prepGridBag(this);
-    gbc.insets = new Insets(1, 1, 1, 1);
-
     gbc.insets = new Insets(3, 0, 0, 0);
     gbc.gridwidth = 4;
     gbc.gridx = 0;
@@ -202,6 +215,12 @@ public class DataTabs extends JPanel {
     gbc.weightx = 2;
     gbc.weighty = 2;
     add(_tabs, gbc);
+    
+    gbc.gridy++;
+    gbc.weighty = 0;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    add(turnPanel, gbc);
+    
     validate();
   }
 }
