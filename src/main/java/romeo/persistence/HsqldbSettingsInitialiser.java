@@ -10,6 +10,7 @@ import romeo.model.api.IServiceInitialiser;
 import romeo.utils.DbUtils;
 
 /**
+ * The HSQLDB settings initialiser will prepare Romeo's hsqldb database, setting up its configuration and such like
  * Sets some db-wide settings (such as WRITE_DELAY)
  */
 public class HsqldbSettingsInitialiser implements IServiceInitialiser {

@@ -15,6 +15,9 @@ import romeo.ui.DataTabs;
 import romeo.ui.MainFrame;
 import romeo.utils.DbUtils;
 
+/**
+ * Prepares the various SETTINGS_xxx tables used to persist various simple settings
+ */
 public class SettingsServiceInitialiser implements IServiceInitialiser {
   
   /**

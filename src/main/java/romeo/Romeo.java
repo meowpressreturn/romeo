@@ -36,7 +36,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 
 import romeo.model.api.IServiceInitialiser;
@@ -108,13 +107,6 @@ public class Romeo {
   private static MainFrame _mainFrame;
 
   /**
-   * Path to the application context definition file. This is a path on the
-   * classpath. On the filesystem this file should be in Romeo's resources
-   * folder.
-   */
-  private static final String AC_PATH = "context.xml";
-
-  /**
    * Global reference that allows access to the various services etc
    */
   public static RomeoContext CONTEXT = null;
@@ -137,21 +129,9 @@ public class Romeo {
     try {
       Romeo.showSplash();
       Romeo.checkUnitsFileExists();
-      Romeo.incrementSplashProgress("Initialise ApplicationContext");
-      /**
-       * Create the spring context. This contains definitions for a bunch of
-       * objects used in romeo and their dependencies.
-       */
-      ClassPathXmlApplicationContext c = new ClassPathXmlApplicationContext(AC_PATH);
-      c.registerShutdownHook(); //Close context on JVM shutdown please
-      Romeo.CONTEXT = new RomeoContext(c);
-      /**
-       * The Romeo class will make sure that database in initialised and will
-       * then bring up the applications main frame. We obtain the Romeo bean
-       * from the context so that the dependencies such as a db datasource
-       * object are already injected for us.
-       */
-      Romeo romeo = c.getBean("romeo", Romeo.class);
+      Romeo.incrementSplashProgress("Initialise RomeoContext");
+      Romeo.CONTEXT = new RomeoContext();
+      Romeo romeo = Romeo.CONTEXT.createRomeo();
       romeo.whereforeArtThou();
     } catch(Exception e) {
       Romeo.showStartupError(e);

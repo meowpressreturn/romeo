@@ -29,7 +29,6 @@ import romeo.units.api.IUnitService;
 import romeo.units.ui.UnitNavigatorRecordSelectionListener;
 import romeo.utils.GuiUtils;
 import romeo.utils.events.IEventHub;
-import romeo.utils.events.IEventHubs;
 import romeo.utils.events.IEventListener;
 import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
@@ -189,7 +188,7 @@ public class DataTabs extends JPanel {
     //to it here so it doesnt get collected before the DataTabs itself. (We could also have made DataTabs implement
     //the listener interface and expose the method itself which would get rid of the need for the variable but
     //hang out our dirty listener laundry for all to see...)
-    IEventHub shutDownNotifier = Romeo.CONTEXT.getEventHub(IEventHubs.SHUTDOWN_NOTIFIER);
+    IEventHub shutDownNotifier = Romeo.CONTEXT.getShutdownNotifier();
     _shutdownListener = new IEventListener() {
       @Override
       public void onEvent(EventObject event) {

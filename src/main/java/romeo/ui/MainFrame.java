@@ -45,7 +45,6 @@ import romeo.utils.Convert;
 import romeo.utils.DbUtils;
 import romeo.utils.GuiUtils;
 import romeo.utils.events.IEventHub;
-import romeo.utils.events.IEventHubs;
 import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
 import romeo.worlds.api.WorldAndHistory;
@@ -72,14 +71,10 @@ public class MainFrame extends JFrame {
   protected JTabbedPane _leftTabs;
   protected DataTabs _dataTabs;
   protected ISettingsService _settingsService;
+  protected IEventHub _shutdownNotifier;
 
   /**
-   * Constructor.
-   * @param navigatorPanel
-   * @param worldsMap
-   * @param unitGraphsPanel
-   * @param graphsPanel
-   * @param battlePanel
+   * Constructor. All dependendencies must be provided.
    */
   public MainFrame(NavigatorPanel navigatorPanel,
                    GenericMap worldsMap,
@@ -87,13 +82,15 @@ public class MainFrame extends JFrame {
                    GraphsPanel graphsPanel,
                    BattlePanel battlePanel,
                    ISettingsService settingsService,
-                   IWorldService worldService) {
+                   IWorldService worldService,
+                   IEventHub shutdownNotifier) {
     Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     Objects.requireNonNull(worldsMap, "worldsMap must not be null");
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(settingsService, "settingsService must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");
+    Objects.requireNonNull(shutdownNotifier, "shutdownNotifier must not be null");
     
     //Log log = LogFactory.getLog(this.getClass());
 
@@ -103,6 +100,7 @@ public class MainFrame extends JFrame {
     _graphsPanel = graphsPanel;
     _battlePanel = battlePanel;
     _settingsService = settingsService;
+    _shutdownNotifier = shutdownNotifier;
 
     ImageIcon dataIcon = GuiUtils.getImageIcon("/images/data.gif");
     ImageIcon mapIcon = GuiUtils.getImageIcon("/images/map.gif");
@@ -301,8 +299,7 @@ public class MainFrame extends JFrame {
     log.info("onClose() invoked");
 
     //Inform shutdown listeners of impending shutdown
-    IEventHub shutdownNotifier = Romeo.CONTEXT.getEventHub(IEventHubs.SHUTDOWN_NOTIFIER);
-    shutdownNotifier.notifyListeners(new ShutdownEvent(this));
+    _shutdownNotifier.notifyListeners(new ShutdownEvent(this));
 
     //TODO - the below should be done in a shutdown listener so onClose is only responsible
     // for sending the notification and performing shutdown
