@@ -186,7 +186,7 @@ public class BattleCalculatorImpl implements IBattleCalculator {
     for(int battle = 0; battle < numberOfBattles; battle++) {
       if(battle % 6475 == 0) { //Every so many battles give other threads a breath
         try {
-          Thread.sleep(1000);
+          Thread.sleep(250);
         } catch(Exception e) {
           /* ignore */}
       }
