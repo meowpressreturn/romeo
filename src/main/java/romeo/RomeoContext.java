@@ -18,7 +18,7 @@ import romeo.persistence.QndDataSource;
 import romeo.players.api.IPlayerService;
 import romeo.players.impl.PlayerServiceImpl;
 import romeo.players.impl.PlayerServiceInitialiser;
-import romeo.players.ui.PlayerFormLogic;
+import romeo.players.ui.PlayerFormFactory;
 import romeo.scenarios.api.IScenarioService;
 import romeo.scenarios.impl.ScenarioServiceImpl;
 import romeo.scenarios.impl.ScenarioServiceInitialiser;
@@ -86,6 +86,7 @@ public class RomeoContext {
   private final BattleCalculatorFactory _battleCalculatorFactory;
   private final WorldFormFactory _worldFormFactory;
   private final UnitFormFactory _unitFormFactory;
+  private final PlayerFormFactory _playerFormFactory;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -102,9 +103,10 @@ public class RomeoContext {
     _expressionParser = new ExpressionParserImpl();
     _xFactorCompiler = new XFactorCompilerImpl(_expressionParser, _xFactorService);
     _navigatorPanel = new NavigatorPanel();    
-    _shutdownNotifier = new EventHubImpl();
-    _worldFormFactory = new WorldFormFactory(_worldService, _settingsService);
+    _shutdownNotifier = new EventHubImpl();    
     _unitFormFactory = new UnitFormFactory(_unitService, _xFactorService);
+    _playerFormFactory = new PlayerFormFactory(_playerService, _worldService, _settingsService);
+    _worldFormFactory = new WorldFormFactory(_worldService, _settingsService, _playerService, _playerFormFactory);
     
     IMapLogic logic = new WorldMapLogic(_worldService, _unitService, _settingsService, _playerService); 
     IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(_navigatorPanel, _worldFormFactory);
@@ -229,6 +231,7 @@ public class RomeoContext {
 		createGraphsPanel(), 
 		createBattlePanel(), 
 		_settingsService, 
+		_playerService,
 		_worldService, 
 		_unitService,
 		_shutdownNotifier,
@@ -237,57 +240,8 @@ public class RomeoContext {
 		_scenarioService,
 		_dataSource,
 		_worldFormFactory,
-		_unitFormFactory);
-  }
-
-  public RomeoForm createPlayerForm() {
-  //TODO - create a class to wrap the below
-    RomeoForm form = new RomeoForm();
-    form.setName("Player");
-    form.setFormLogic(new PlayerFormLogic(_playerService, _worldService, _settingsService));
-    List<FieldDef> fields = new ArrayList<FieldDef>();
-    
-    //name
-    FieldDef name = new FieldDef("name","Name");
-    name.setMandatory(true);
-    fields.add(name);
-    
-    //color
-    FieldDef color = new FieldDef("color","Colour", FieldDef.TYPE_COLOR);
-    color.setDefaultValue("255,0,0");
-    fields.add(color);
-    
-    //status
-    fields.add(new FieldDef("status","Status"));
-    
-    //team
-    fields.add(new FieldDef("team","Team"));
-    
-    //notes
-    FieldDef notes = new FieldDef("notes","Notes", FieldDef.TYPE_LONG_TEXT);
-    notes.setWide(true);
-    fields.add(notes);
-    
-    //turn
-    FieldDef turn = new FieldDef("turn","Turn", FieldDef.TYPE_LABEL);
-    turn.setWide(true);
-    fields.add(turn);
-    
-    //totalFirepower
-    fields.add(new FieldDef("totalFirepower","Firepower", FieldDef.TYPE_LABEL));
-    
-    //worldCount
-    fields.add(new FieldDef("worldCount","Worlds", FieldDef.TYPE_LABEL));
-    
-    //totalLabour
-    fields.add(new FieldDef("totalLabour","Labour", FieldDef.TYPE_LABEL));
-    
-    //totalCapital
-    fields.add(new FieldDef("totalCapital", "Capital", FieldDef.TYPE_LABEL));
-    
-    form.setFields(fields);
-    
-    return form;
+		_unitFormFactory,
+		_playerFormFactory);
   }
 
   public RomeoForm createXFactorForm() {

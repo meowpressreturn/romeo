@@ -2,25 +2,28 @@ package romeo.worlds.ui;
 
 import java.util.Objects;
 
-import romeo.Romeo;
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
+import romeo.players.ui.PlayerFormFactory;
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 import romeo.worlds.api.IHistory;
 
 public class WorldFormTableListener extends AbstractNavigatorRecordSelectionListener {
-  protected IPlayerService _playerService;
+  
+  private final IPlayerService _playerService;
+  private final PlayerFormFactory _playerFormFactory;
 
-  public WorldFormTableListener(NavigatorPanel navigatorPanel, IPlayerService playerService) {
+  public WorldFormTableListener(NavigatorPanel navigatorPanel, IPlayerService playerService, PlayerFormFactory playerFormFactory) {
     super(navigatorPanel);
-    _playerService = Objects.requireNonNull(playerService);
+    _playerService = Objects.requireNonNull(playerService, "playerService may not be null");
+    _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
   }
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createPlayerForm();
+    return _playerFormFactory.newPlayerForm();
   }
 
   @Override

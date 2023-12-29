@@ -21,6 +21,7 @@ import romeo.Romeo;
 import romeo.model.api.IServiceListener;
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
+import romeo.players.ui.PlayerFormFactory;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.ui.BeanTableHeaderRenderer;
@@ -46,21 +47,30 @@ import romeo.worlds.impl.HistoryImpl;
 import romeo.worlds.impl.WorldImpl;
 
 public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener {
-  protected IWorldService _worldService;
-  protected IWorld _world;
-  protected IHistory _history;
-  protected JTable _historyTable;
-  protected ISettingsService _settingsService;
-  protected TableNavigatorMediator _tnm;
+  
+  private final IWorldService _worldService;
+  private final IPlayerService _playerService;
+  private final PlayerFormFactory _playerFormFactory;
+  private final ISettingsService _settingsService;
+  
+  private IWorld _world;
+  private IHistory _history;
+  private JTable _historyTable;  
+  private TableNavigatorMediator _tnm;
 
-  public WorldForm(IWorldService worldService, ISettingsService settingsService) {
-    Objects.requireNonNull(worldService, "worldService must not be null");
-    Objects.requireNonNull(settingsService, "settingsService must not be null");
+  public WorldForm(
+      IWorldService worldService, 
+      ISettingsService settingsService, 
+      IPlayerService playerService, 
+      PlayerFormFactory playerFormFactory) {
+    _worldService = Objects.requireNonNull(worldService, "worldService must not be null");
+    _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
+    _playerService = Objects.requireNonNull(playerService, "playerService must not be null");
+    _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory must not be null");
+    
     setName("World");
     setForceTwoColumns(true);
     super.setFormLogic(this);
-    _worldService = worldService;
-    _settingsService = settingsService;
     ArrayList<FieldDef> fields = new ArrayList<FieldDef>();
     FieldDef nameDef = new FieldDef("name", "Name");
     nameDef.setMandatory(true);
@@ -323,8 +333,7 @@ public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener
 
       //Make it so clicking on a row in the table , opens the relevant player's form
       NavigatorPanel navigatorPanel = Romeo.getMainFrame().getNavigatorPanel();
-      IPlayerService playerService = Romeo.CONTEXT.getPlayerService();
-      WorldFormTableListener listener = new WorldFormTableListener(navigatorPanel, playerService);
+      WorldFormTableListener listener = new WorldFormTableListener(navigatorPanel, _playerService, _playerFormFactory);
       _tnm = new TableNavigatorMediator(table, listener);
 
       return scrollPane;

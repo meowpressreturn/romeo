@@ -1,7 +1,9 @@
 package romeo.ui.actions;
 
-import romeo.Romeo;
+import java.util.Objects;
+
 import romeo.players.impl.PlayerImpl;
+import romeo.players.ui.PlayerFormFactory;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 
@@ -10,12 +12,14 @@ import romeo.ui.forms.RomeoForm;
  * panel
  */
 public class NewPlayerAction extends AbstractNewRecordAction {
-  /**
-   * Constructor
-   * @param navigatorPanel
-   */
-  public NewPlayerAction(NavigatorPanel navigatorPanel) {
+  
+  private final PlayerFormFactory _playerFormFactory;
+  
+  public NewPlayerAction(NavigatorPanel navigatorPanel, PlayerFormFactory playerFormFactory) {
     super(navigatorPanel);
+    
+    _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
+    
     setDescription("Create a Player record");
     setName("New Player");
     setIcon("/images/playerNew.gif");
@@ -23,7 +27,7 @@ public class NewPlayerAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createPlayerForm();
+    return _playerFormFactory.newPlayerForm();
   }
 
   @Override

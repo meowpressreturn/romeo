@@ -30,6 +30,8 @@ import org.apache.commons.logging.LogFactory;
 
 import romeo.Romeo;
 import romeo.battle.ui.BattlePanel;
+import romeo.players.api.IPlayerService;
+import romeo.players.ui.PlayerFormFactory;
 import romeo.scenarios.api.IScenarioService;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
@@ -87,6 +89,7 @@ public class MainFrame extends JFrame {
                    GraphsPanel graphsPanel,
                    BattlePanel battlePanel,
                    ISettingsService settingsService,
+                   IPlayerService playerService,
                    IWorldService worldService,
                    IUnitService unitService,
                    IEventHub shutdownNotifier,
@@ -95,7 +98,8 @@ public class MainFrame extends JFrame {
                    IScenarioService scenarioService,
                    DataSource dataSource,
                    WorldFormFactory worldFormFactory,
-                   UnitFormFactory unitFormFactory) {
+                   UnitFormFactory unitFormFactory,
+                   PlayerFormFactory playerFormFactory) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");   
@@ -105,6 +109,7 @@ public class MainFrame extends JFrame {
     Objects.requireNonNull(scenarioService, "scenarioService must not be null");
     Objects.requireNonNull(worldFormFactory, "worldFormFactory must not be null");
     Objects.requireNonNull(unitFormFactory, "unitFormFactory must not be null");
+    Objects.requireNonNull(playerFormFactory, "playerFormFactory must not be null");
     
     _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap must not be null");
@@ -138,14 +143,16 @@ public class MainFrame extends JFrame {
 
     prepareMenus(
         settingsService, 
-        worldService,
-        scenarioService,
-        unitService,
-        navigatorPanel,
-        worldColumns,
+        worldService, 
+        playerService, 
+        scenarioService, 
+        unitService, 
+        navigatorPanel, 
+        worldColumns, 
         unitColumns, 
-        worldFormFactory,
-        unitFormFactory);
+        worldFormFactory, 
+        unitFormFactory, 
+        playerFormFactory);
 
     _mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
     _mainSplitPane.setOneTouchExpandable(true);
@@ -156,7 +163,14 @@ public class MainFrame extends JFrame {
     _mainSplitPane.setLeftComponent(_leftTabs);
 
     //Data tab
-    DataTabs dataTabs = new DataTabs(settingsService, navigatorPanel, shutdownNotifier, worldFormFactory, unitFormFactory);
+    DataTabs dataTabs = new DataTabs(
+        settingsService, 
+        playerService, 
+        navigatorPanel, 
+        shutdownNotifier, 
+        worldFormFactory, 
+        unitFormFactory,
+        playerFormFactory);
     Romeo.incrementSplashProgress("Services");
     _leftTabs.addTab(TAB_NAME_DATA, dataIcon, dataTabs, null);
 
@@ -201,19 +215,21 @@ public class MainFrame extends JFrame {
   protected void prepareMenus(
       ISettingsService settingsService, 
       IWorldService worldService,
+      IPlayerService playerService,
       IScenarioService scenarioService,
       IUnitService unitService,
       NavigatorPanel navigatorPanel,
       List<String> worldColumns,
       List<String> unitColumns,
       WorldFormFactory worldFormFactory,
-      UnitFormFactory unitFormFactory) {
+      UnitFormFactory unitFormFactory,
+      PlayerFormFactory playerFormFactory) {
     
     Action prefsAction = new OpenPreferencesAction(navigatorPanel, settingsService, scenarioService);
     Action newWorldAction = new NewWorldAction(navigatorPanel, worldFormFactory);
     Action newUnitAction = new NewUnitAction(navigatorPanel, unitFormFactory);
     Action newXFactorAction = new NewXFactorAction(navigatorPanel);
-    Action newPlayerAction = new NewPlayerAction(navigatorPanel);
+    Action newPlayerAction = new NewPlayerAction(navigatorPanel, playerFormFactory);
     Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitService, unitColumns);
     Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns));
     Action findWorldAction = new FindWorldAction(navigatorPanel, worldFormFactory);

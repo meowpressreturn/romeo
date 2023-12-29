@@ -21,6 +21,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import romeo.Romeo;
+import romeo.players.api.IPlayerService;
+import romeo.players.ui.PlayerFormFactory;
 import romeo.players.ui.PlayerNavigatorRecordSelectionListener;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
@@ -63,10 +65,12 @@ public class DataTabs extends JPanel {
 
   public DataTabs(
       ISettingsService settingsService, 
+      IPlayerService playerService,
       NavigatorPanel navigatorPanel,
       IEventHub shutDownNotifier,
       WorldFormFactory worldFormFactory,
-      UnitFormFactory unitFormFactory) {
+      UnitFormFactory unitFormFactory,
+      PlayerFormFactory playerFormFactory) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
@@ -166,7 +170,7 @@ public class DataTabs extends JPanel {
     playerTableModel.initColumnClickListener(playerTable);
     playerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     new TableNavigatorMediator(playerTable,
-        new PlayerNavigatorRecordSelectionListener(navigatorPanel, Romeo.CONTEXT.getPlayerService()));
+        new PlayerNavigatorRecordSelectionListener(navigatorPanel, playerService, playerFormFactory));
     JScrollPane playerTableScrollPane = new JScrollPane(playerTable);
     playerTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon playerIcon = GuiUtils.getImageIcon("/images/player.gif");

@@ -3,7 +3,6 @@ package romeo.players.ui;
 import java.util.Map;
 import java.util.Objects;
 
-import romeo.Romeo;
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
 import romeo.players.api.PlayerId;
@@ -16,16 +15,22 @@ import romeo.ui.forms.RomeoForm;
  * Opens a Player Form in the {@link NavigatorPanel}
  */
 public class PlayerNavigatorRecordSelectionListener extends AbstractNavigatorRecordSelectionListener {
+  
   private IPlayerService _playerService;
+  private PlayerFormFactory _playerFormFactory;
 
-  public PlayerNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel, IPlayerService playerService) {
+  public PlayerNavigatorRecordSelectionListener(
+      NavigatorPanel navigatorPanel, 
+      IPlayerService playerService,
+      PlayerFormFactory playerFormFactory) {
     super(navigatorPanel);
     _playerService = Objects.requireNonNull(playerService, "playerService may not be null");
+    _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
   }
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createPlayerForm();
+    return _playerFormFactory.newPlayerForm();
   }
 
   /**
