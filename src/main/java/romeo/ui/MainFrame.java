@@ -42,6 +42,7 @@ import romeo.ui.actions.NewUnitAction;
 import romeo.ui.actions.NewWorldAction;
 import romeo.ui.actions.NewXFactorAction;
 import romeo.ui.actions.OpenPreferencesAction;
+import romeo.units.api.IUnitService;
 import romeo.units.ui.UnitGraphsPanel;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
@@ -84,13 +85,15 @@ public class MainFrame extends JFrame {
                    BattlePanel battlePanel,
                    ISettingsService settingsService,
                    IWorldService worldService,
+                   IUnitService unitService,
                    IEventHub shutdownNotifier,
                    List<String> worldColumns,
                    List<String> unitColumns,
                    IScenarioService scenarioService) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
-    Objects.requireNonNull(worldService, "worldService must not be null");    
+    Objects.requireNonNull(worldService, "worldService must not be null");   
+    Objects.requireNonNull(unitService, "unitService must not be null");
     Objects.requireNonNull(worldColumns, "worldColumns must not be null");
     Objects.requireNonNull(unitColumns, "unitColumns must not be null");
     Objects.requireNonNull(scenarioService, "scenarioService must not be null");
@@ -128,6 +131,7 @@ public class MainFrame extends JFrame {
         settingsService, 
         worldService,
         scenarioService,
+        unitService,
         navigatorPanel,
         worldColumns,
         unitColumns);
@@ -188,6 +192,7 @@ public class MainFrame extends JFrame {
       ISettingsService settingsService, 
       IWorldService worldService,
       IScenarioService scenarioService,
+      IUnitService unitService,
       NavigatorPanel navigatorPanel,
       List<String> worldColumns,
       List<String> unitColumns) {
@@ -197,7 +202,7 @@ public class MainFrame extends JFrame {
     Action newUnitAction = new NewUnitAction(navigatorPanel);
     Action newXFactorAction = new NewXFactorAction(navigatorPanel);
     Action newPlayerAction = new NewPlayerAction(navigatorPanel);
-    Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitColumns, Romeo.CONTEXT);
+    Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitService, unitColumns);
     Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns));
     Action findWorldAction = new FindWorldAction(navigatorPanel);
 

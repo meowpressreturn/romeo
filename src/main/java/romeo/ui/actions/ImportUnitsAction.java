@@ -16,14 +16,15 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import romeo.RomeoContext;
 import romeo.importdata.IUnitImportReport;
 import romeo.importdata.IUnitImporter;
 import romeo.importdata.impl.CsvUnitFile;
+import romeo.importdata.impl.UnitImporterImpl;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.ui.AbstractRomeoAction;
 import romeo.ui.ErrorDialog;
+import romeo.units.api.IUnitService;
 import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 
@@ -36,18 +37,18 @@ import romeo.utils.GuiUtils;
 public class ImportUnitsAction extends AbstractRomeoAction {
 
   private final ISettingsService _settingsService;
+  private final IUnitService _unitService;
   private final JFrame _mainFrame;
-  private final RomeoContext _context;
   private final List<String> _unitColumns;
   
   public ImportUnitsAction(JFrame mainFrame,
       ISettingsService settingsService,
-      List<String> unitColumns,
-      RomeoContext context) {
+      IUnitService unitService,
+      List<String> unitColumns) {
     _mainFrame = Objects.requireNonNull(mainFrame, "mainFrame may not be null");
     _settingsService = Objects.requireNonNull(settingsService,"settingsService may not be null");
+    _unitService = Objects.requireNonNull(unitService, "unitService may not be null");
     _unitColumns = Objects.requireNonNull(unitColumns, "unitColumns may not be null");
-    _context = Objects.requireNonNull(context,"context may not be null");
     
     putValue(Action.LONG_DESCRIPTION, "Update Unit data from file");
     putValue(Action.NAME, "Import Unit Data");
@@ -104,7 +105,7 @@ public class ImportUnitsAction extends AbstractRomeoAction {
       String nameColumn = "name"; //we no longer support changing this via context
       CsvUnitFile unitFile = new CsvUnitFile(file, columns, nameColumn);
       
-      IUnitImporter unitImporter = _context.createUnitImporter();
+      IUnitImporter unitImporter = new UnitImporterImpl(_unitService);
       IUnitImportReport report = null;
       try {
         Map<String, Map<String, String>> adjustments = null; //we only adjust at startup currently. Later may be an option?

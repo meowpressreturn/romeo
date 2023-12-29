@@ -9,7 +9,6 @@ import javax.sql.DataSource;
 import romeo.battle.IBattleCalculator;
 import romeo.battle.impl.BattleCalculatorImpl;
 import romeo.battle.ui.BattlePanel;
-import romeo.importdata.IUnitImporter;
 import romeo.importdata.IWorldImporter;
 import romeo.importdata.impl.AdjustmentsFileReader;
 import romeo.importdata.impl.UnitImporterImpl;
@@ -169,16 +168,6 @@ public class RomeoContext {
   }
 
   /**
-   * Returns the standard implementation of the {@link IUnitImporter} interface This is
-   * configured in the Spring context under "unitImporter". 
-   * @return unitImporter
-   * @return
-   */
-  public IUnitImporter createUnitImporter() {
-    return new UnitImporterImpl(_unitService);
-  }
-
-  /**
    * Returns a reference to the DataSource that Romeo is using for persistence.
    * @return datasource
    */
@@ -256,6 +245,7 @@ public class RomeoContext {
 		createBattlePanel(), 
 		_settingsService, 
 		_worldService, 
+		_unitService,
 		_shutdownNotifier,
 		_worldColumns,
 		_unitColumns,
