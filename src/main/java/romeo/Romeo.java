@@ -110,13 +110,7 @@ public class Romeo {
    * Global reference that allows access to the various services etc
    */
   public static RomeoContext CONTEXT = null;
-
-  //End of static definitions
-  /////////////////////////////////////////////////////////////////////////////
-
-  private List<IServiceInitialiser> _initialisers = Collections.emptyList(); //Set via DI
-  private DataSource _dataSource; //Set via DI
-
+  
   /**
    * Create the spring context, show the splash screen, obtain an instance of
    * Romeo and call its whereForArtThou() entry method. Note that the Romeo
@@ -139,7 +133,7 @@ public class Romeo {
       log.error("Romeo startup failure", e);
     }
   }
-
+  
   /**
    * Fixes some 'issues' with the style of JFreeChart This code should be called
    * before any JFreeChart code is used
@@ -149,6 +143,12 @@ public class Romeo {
     XYBarRenderer.setDefaultShadowsVisible(false);
     ChartFactory.setChartTheme(StandardChartTheme.createLegacyTheme());
   }
+
+  //End of static definitions
+  /////////////////////////////////////////////////////////////////////////////
+
+  private List<IServiceInitialiser> _initialisers = Collections.emptyList(); //Set via DI
+  private DataSource _dataSource; //Set via DI
 
   /**
    * Run the initialisers and create the UI by instantiating the MainFrame
