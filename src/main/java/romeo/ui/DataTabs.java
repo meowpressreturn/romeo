@@ -33,6 +33,7 @@ import romeo.utils.events.IEventListener;
 import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
 import romeo.worlds.ui.TurnControls;
+import romeo.worlds.ui.WorldFormFactory;
 import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 import romeo.xfactors.api.IXFactor;
 import romeo.xfactors.api.IXFactorService;
@@ -62,7 +63,8 @@ public class DataTabs extends JPanel {
   public DataTabs(
       ISettingsService settingsService, 
       NavigatorPanel navigatorPanel,
-      IEventHub shutDownNotifier) {
+      IEventHub shutDownNotifier,
+      WorldFormFactory worldFormFactory) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
@@ -79,7 +81,7 @@ public class DataTabs extends JPanel {
     }
     worldTableModel.initColumnClickListener(_worldTable);
     _worldTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    _worldTnm = new TableNavigatorMediator(_worldTable, new WorldNavigatorRecordSelectionListener(navigatorPanel));
+    _worldTnm = new TableNavigatorMediator(_worldTable, new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory));
     JScrollPane worldsTableScrollPane = new JScrollPane(_worldTable);
     worldsTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon worldIcon = GuiUtils.getImageIcon("/images/world.gif");

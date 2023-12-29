@@ -3,7 +3,6 @@ package romeo.worlds.ui;
 import java.util.Map;
 import java.util.Objects;
 
-import romeo.Romeo;
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
@@ -13,13 +12,16 @@ import romeo.worlds.impl.WorldImpl;
 
 public class WorldNavigatorRecordSelectionListener extends AbstractNavigatorRecordSelectionListener {
 
-  public WorldNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel) {
+  private final WorldFormFactory _worldFormFactory;
+  
+  public WorldNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel, WorldFormFactory worldFormFactory) {
     super(navigatorPanel);
+    _worldFormFactory = Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
   }
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createWorldForm();
+    return _worldFormFactory.newWorldForm();
   }
   
   @Override

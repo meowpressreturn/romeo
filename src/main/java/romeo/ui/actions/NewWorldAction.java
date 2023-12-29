@@ -1,13 +1,21 @@
 package romeo.ui.actions;
 
-import romeo.Romeo;
+import java.util.Objects;
+
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 import romeo.worlds.impl.WorldImpl;
+import romeo.worlds.ui.WorldFormFactory;
 
 public class NewWorldAction extends AbstractNewRecordAction {
-  public NewWorldAction(NavigatorPanel navigatorPanel) {
+  
+  private final WorldFormFactory _worldFormFactory;
+  
+  public NewWorldAction(NavigatorPanel navigatorPanel, WorldFormFactory worldFormFactory) {
     super(navigatorPanel);
+    
+    _worldFormFactory = Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
+    
     setDescription("Create a World record");
     setName("New World");
     setIcon("/images/worldNew.gif");
@@ -15,7 +23,7 @@ public class NewWorldAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createWorldForm();
+    return _worldFormFactory.newWorldForm();
   }
 
   @Override

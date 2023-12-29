@@ -19,6 +19,7 @@ import romeo.ui.MainFrame;
 import romeo.ui.NavigatorPanel;
 import romeo.utils.GuiUtils;
 import romeo.worlds.api.WorldAndHistory;
+import romeo.worlds.ui.WorldFormFactory;
 import romeo.worlds.ui.WorldMapLogic;
 import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 
@@ -31,16 +32,15 @@ import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
  * displayed turn.
  */
 public class FindWorldAction extends AbstractRomeoAction {
-  IRecordSelectionListener _recordSelector;
+  
+  private final IRecordSelectionListener _recordSelector;
 
-  /**
-   * Constructor
-   * @param navigatorPanel
-   */
-  public FindWorldAction(NavigatorPanel navigatorPanel) {
+  public FindWorldAction(NavigatorPanel navigatorPanel, WorldFormFactory worldFormFactory) {
     super();
     Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
-    _recordSelector = new WorldNavigatorRecordSelectionListener(navigatorPanel);
+    Objects.requireNonNull(worldFormFactory, "worldFormFactory must not be null");
+    _recordSelector = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory);
+    
     putValue(Action.NAME, "Find on Map");
     putValue(Action.LONG_DESCRIPTION, "Locate a World or Player on the map");
     putValue(Action.SMALL_ICON, GuiUtils.getImageIcon("/images/magnifier.gif"));
@@ -48,10 +48,6 @@ public class FindWorldAction extends AbstractRomeoAction {
 
   @Override
   protected void doActionPerformed(ActionEvent e) {
-    //    PreferencesControls prefsCtrl = (PreferencesControls)Romeo.CONTEXT.getBean(
-    //        "preferencesControls",PreferencesControls.class);
-    //    JPanel prefsPanel = prefsCtrl.getPanel();
-    //    _navigatorPanel.display(prefsPanel);\
     MainFrame mainFrame = Romeo.getMainFrame();
     String name = JOptionPane.showInputDialog(mainFrame, "Enter a world and/or player name", "Find on Map",
         JOptionPane.QUESTION_MESSAGE);

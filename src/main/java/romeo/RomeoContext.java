@@ -50,7 +50,7 @@ import romeo.worlds.api.IWorldService;
 import romeo.worlds.impl.HistoryChartsHelper;
 import romeo.worlds.impl.WorldServiceImpl;
 import romeo.worlds.impl.WorldServiceInitialiser;
-import romeo.worlds.ui.WorldForm;
+import romeo.worlds.ui.WorldFormFactory;
 import romeo.worlds.ui.WorldMapLogic;
 import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 import romeo.xfactors.api.IExpressionParser;
@@ -85,6 +85,7 @@ public class RomeoContext {
   private final List<String> _worldColumns;
   private final List<String> _unitColumns;
   private final BattleCalculatorFactory _battleCalculatorFactory;
+  private final WorldFormFactory _worldFormFactory;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -102,26 +103,19 @@ public class RomeoContext {
     _xFactorCompiler = new XFactorCompilerImpl(_expressionParser, _xFactorService);
     _navigatorPanel = new NavigatorPanel();    
     _shutdownNotifier = new EventHubImpl();
-    _worldsMap = initWorldsMap(_worldService, _unitService, _settingsService, _playerService, _shutdownNotifier, _navigatorPanel);
+    _worldFormFactory = new WorldFormFactory(_worldService, _settingsService);
+    
+    IMapLogic logic = new WorldMapLogic(_worldService, _unitService, _settingsService, _playerService); 
+    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(_navigatorPanel, _worldFormFactory);
+    _worldsMap = new GenericMap(logic, listener, _shutdownNotifier);
+    _worldsMap.setFont(new java.awt.Font("Arial", 0, 10));
+    
     _mapCenterer = new MapCenterer(_settingsService, _worldService, _worldsMap);
     _worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
     _unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
     _battleCalculatorFactory = new BattleCalculatorFactory(_xFactorCompiler);
+    
     addLogThreadListeners();
-  }
-  
-  private GenericMap initWorldsMap(
-      IWorldService worldService,
-      IUnitService unitService,
-      ISettingsService settingsService,
-      IPlayerService playerService,
-      IEventHub shutdownNotifier,
-      NavigatorPanel navigatorPanel) {
-    IMapLogic logic = new WorldMapLogic(worldService, unitService, settingsService, playerService); 
-    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(navigatorPanel);
-    GenericMap worldsMap = new GenericMap(logic, listener, shutdownNotifier);
-    worldsMap.setFont(new java.awt.Font("Arial", 0, 10));
-    return worldsMap;
   }
   
   public Romeo createRomeo() {
@@ -244,7 +238,8 @@ public class RomeoContext {
 		_worldColumns,
 		_unitColumns,
 		_scenarioService,
-		_dataSource);
+		_dataSource,
+		_worldFormFactory);
   }
 
   public RomeoForm createPlayerForm() {
@@ -430,10 +425,6 @@ public class RomeoContext {
     fields.add(new FieldDef("xfRemove","Destruct", FieldDef.TYPE_EXPRESSION));
 
     return form;
-  }
-
-  public WorldForm createWorldForm() {
-    return new WorldForm(_worldService, _settingsService);
   }
 
   /**
