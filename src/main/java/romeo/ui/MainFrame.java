@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import romeo.Romeo;
 import romeo.battle.ui.BattlePanel;
+import romeo.scenarios.api.IScenarioService;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.ui.actions.AboutAction;
@@ -74,6 +75,7 @@ public class MainFrame extends JFrame {
   protected ISettingsService _settingsService;
   protected IEventHub _shutdownNotifier;
   protected String[] _worldColumns;
+  protected IScenarioService _scenarioService;
 
   /**
    * Constructor. All dependendencies must be provided.
@@ -86,7 +88,8 @@ public class MainFrame extends JFrame {
                    ISettingsService settingsService,
                    IWorldService worldService,
                    IEventHub shutdownNotifier,
-                   List<String> worldColumns) {
+                   List<String> worldColumns,
+                   IScenarioService scenarioService) {
     Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     Objects.requireNonNull(worldsMap, "worldsMap must not be null");
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
@@ -95,6 +98,7 @@ public class MainFrame extends JFrame {
     Objects.requireNonNull(worldService, "worldService must not be null");
     Objects.requireNonNull(shutdownNotifier, "shutdownNotifier must not be null");
     Objects.requireNonNull(worldColumns, "worldColumns must not be null");
+    Objects.requireNonNull(scenarioService, "scenarioService must not be null");
     
     //Log log = LogFactory.getLog(this.getClass());
 
@@ -106,6 +110,7 @@ public class MainFrame extends JFrame {
     _settingsService = settingsService;
     _shutdownNotifier = shutdownNotifier;
     _worldColumns = Convert.toStrArray(worldColumns);
+    _scenarioService = scenarioService;
 
     ImageIcon dataIcon = GuiUtils.getImageIcon("/images/data.gif");
     ImageIcon mapIcon = GuiUtils.getImageIcon("/images/map.gif");
@@ -185,7 +190,7 @@ public class MainFrame extends JFrame {
    */
   protected void prepareMenus(ISettingsService settingsService, IWorldService worldService) {
     
-    Action prefsAction = new OpenPreferencesAction(_navigatorPanel);
+    Action prefsAction = new OpenPreferencesAction(_navigatorPanel, _settingsService, _scenarioService);
     Action newWorldAction = new NewWorldAction(_navigatorPanel);
     Action newUnitAction = new NewUnitAction(_navigatorPanel);
     Action newXFactorAction = new NewXFactorAction(_navigatorPanel);

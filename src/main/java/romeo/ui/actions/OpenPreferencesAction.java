@@ -4,25 +4,31 @@ import java.awt.event.ActionEvent;
 import java.util.Objects;
 
 import javax.swing.Action;
-import javax.swing.JPanel;
 
-import romeo.Romeo;
+import romeo.scenarios.api.IScenarioService;
+import romeo.settings.api.ISettingsService;
 import romeo.settings.ui.PreferencesControls;
 import romeo.ui.AbstractRomeoAction;
 import romeo.ui.NavigatorPanel;
 import romeo.utils.GuiUtils;
 
 public class OpenPreferencesAction extends AbstractRomeoAction {
-  private NavigatorPanel _navigatorPanel;
+  private final NavigatorPanel _navigatorPanel;
+  private final ISettingsService _settingsService;
+  private final IScenarioService _scenarioService;
 
   /**
    * Constructor
    * @param navigatorPanel
    */
-  public OpenPreferencesAction(NavigatorPanel navigatorPanel) {
+  public OpenPreferencesAction(
+      final NavigatorPanel navigatorPanel,
+      final ISettingsService settingsService,
+      final IScenarioService scenarioService) {
     super();
-    Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
-    _navigatorPanel = navigatorPanel;
+    _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
+    _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
+    _scenarioService= Objects.requireNonNull(scenarioService, "scenarioService must not be null");
     putValue(Action.NAME, "Options");
     putValue(Action.LONG_DESCRIPTION, "Manage Romeo Options");
     putValue(Action.SMALL_ICON, GuiUtils.getImageIcon("/images/prefs.gif"));
@@ -35,8 +41,6 @@ public class OpenPreferencesAction extends AbstractRomeoAction {
    */
   @Override
   protected void doActionPerformed(ActionEvent e) {
-    PreferencesControls prefsCtrl = (PreferencesControls) Romeo.CONTEXT.createPreferencesControls();
-    JPanel prefsPanel = prefsCtrl.getPanel();
-    _navigatorPanel.display(prefsPanel);
+    _navigatorPanel.display(new PreferencesControls(_settingsService, _scenarioService).getPanel());
   }
 }

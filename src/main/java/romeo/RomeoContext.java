@@ -27,7 +27,6 @@ import romeo.scenarios.impl.ScenarioServiceInitialiser;
 import romeo.settings.api.ISettingsService;
 import romeo.settings.impl.SettingsServiceImpl;
 import romeo.settings.impl.SettingsServiceInitialiser;
-import romeo.settings.ui.PreferencesControls;
 import romeo.ui.GenericMap;
 import romeo.ui.GenericMap.IMapLogic;
 import romeo.ui.GraphsPanel;
@@ -291,11 +290,8 @@ public class RomeoContext {
 		_settingsService, 
 		_worldService, 
 		_shutdownNotifier,
-		_worldColumns);
-  }
-
-  public PreferencesControls createPreferencesControls() {
-    return new PreferencesControls(_settingsService, _scenarioService);
+		_worldColumns,
+		_scenarioService);
   }
 
   public RomeoForm createPlayerForm() {
