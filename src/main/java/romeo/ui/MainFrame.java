@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Objects;
 
 import javax.sql.DataSource;
@@ -72,6 +73,7 @@ public class MainFrame extends JFrame {
   protected DataTabs _dataTabs;
   protected ISettingsService _settingsService;
   protected IEventHub _shutdownNotifier;
+  protected String[] _worldColumns;
 
   /**
    * Constructor. All dependendencies must be provided.
@@ -83,7 +85,8 @@ public class MainFrame extends JFrame {
                    BattlePanel battlePanel,
                    ISettingsService settingsService,
                    IWorldService worldService,
-                   IEventHub shutdownNotifier) {
+                   IEventHub shutdownNotifier,
+                   List<String> worldColumns) {
     Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     Objects.requireNonNull(worldsMap, "worldsMap must not be null");
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
@@ -91,6 +94,7 @@ public class MainFrame extends JFrame {
     Objects.requireNonNull(settingsService, "settingsService must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");
     Objects.requireNonNull(shutdownNotifier, "shutdownNotifier must not be null");
+    Objects.requireNonNull(worldColumns, "worldColumns must not be null");
     
     //Log log = LogFactory.getLog(this.getClass());
 
@@ -101,6 +105,7 @@ public class MainFrame extends JFrame {
     _battlePanel = battlePanel;
     _settingsService = settingsService;
     _shutdownNotifier = shutdownNotifier;
+    _worldColumns = Convert.toStrArray(worldColumns);
 
     ImageIcon dataIcon = GuiUtils.getImageIcon("/images/data.gif");
     ImageIcon mapIcon = GuiUtils.getImageIcon("/images/map.gif");
@@ -180,15 +185,13 @@ public class MainFrame extends JFrame {
    */
   protected void prepareMenus(ISettingsService settingsService, IWorldService worldService) {
     
-    String[] worldColumns = Convert.toStrArray(Romeo.CONTEXT.getWorldColumns());
-    
     Action prefsAction = new OpenPreferencesAction(_navigatorPanel);
     Action newWorldAction = new NewWorldAction(_navigatorPanel);
     Action newUnitAction = new NewUnitAction(_navigatorPanel);
     Action newXFactorAction = new NewXFactorAction(_navigatorPanel);
     Action newPlayerAction = new NewPlayerAction(_navigatorPanel);
     Action importUnitsAction = new ImportUnitsAction(this, settingsService, Romeo.CONTEXT);
-    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, worldColumns);
+    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, _worldColumns);
     Action findWorldAction = new FindWorldAction(_navigatorPanel);
 
     JMenuBar menuBar = new JMenuBar();

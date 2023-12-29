@@ -84,6 +84,7 @@ public class RomeoContext {
   private final GenericMap _worldsMap; 
   private final MapCenterer _mapCenterer;
   private final IEventHub _shutdownNotifier;
+  private final List<String> _worldColumns;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -103,6 +104,7 @@ public class RomeoContext {
     _shutdownNotifier = new EventHubImpl();
     _worldsMap = initWorldsMap(_worldService, _unitService, _settingsService, _playerService, _shutdownNotifier, _navigatorPanel);
     _mapCenterer = new MapCenterer(_settingsService, _worldService, _worldsMap);
+    _worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
   }
   
   private GenericMap initWorldsMap(
@@ -174,50 +176,6 @@ public class RomeoContext {
    */
   public IUnitImporter createUnitImporter() {
     return new UnitImporterImpl(_unitService);
-  }
-
-  /**
-   * Returns the order in which world properties are read from the columns of a
-   * csv file. Not all column names are actual properties, it is up to the
-   * importer to decide whether it ignores or complains when these are
-   * encountered. Currently we configure this under the "worldCsvColumns" bean
-   * in context.xml
-   * @return columnNames names of properties to which worlds.csv columns are
-   *         mapped
-   */
-  public List<String> getWorldColumns() {
-    return Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
-    /*
-<!-- Defines the default order of the properties mapped to columns in the map.csv
-       If the column order in the csv changes, this is what you need to change so the
-       ImportMapAction can read the data correctly.
-       nb: Dont change the actual names used for the columns here or it wont be able to import.
-       Apparently UC only exports a team column if it is a team game. Romeo currently understands that
-       the team column may be missing, but this only works if the team column is the last column
-       and if uc changes it so team column precedes another column then we will have a situation where
-       different game types have a different column order. You would need to edit this to add or remove
-       the team column in accordance with what type of csv you are importing. Thankfully this is not
-       currently the case. -->
-  <bean id="worldCsvColumns" scope="singleton" class="java.util.ArrayList">
-    <constructor-arg><list>
-      <value>worldID</value><!-- nb World doesnt use this property -->
-      <value>name</value>
-      <value>worldX</value>
-      <value>worldY</value>
-      <value>worldEi</value>
-      <value>worldRer</value>
-      <value>ownerID</value><!-- nb World doesnt use this property -->
-      <value>owner</value> <!-- player name -->
-      <value>ownerRace</value>
-      <value>class</value> <!-- homeworld | nobody -->
-      <value>labour</value> <!-- pop -->
-      <value>capital</value> <!-- ult -->
-      <value>firepower</value> <!-- visible fp only -->
-      <value>team</value> <!-- currently used to import player only. numeric 0=none (but romeo can handle strings here -->
-      <!--<value>scanner</value>--> <!-- uc still doesn't provide us this essential information :-( -->
-    </list></constructor-arg>
-  </bean>
-     */
   }
 
   public List<String> getUnitColumns() {
@@ -332,7 +290,8 @@ public class RomeoContext {
 		createBattlePanel(), 
 		_settingsService, 
 		_worldService, 
-		_shutdownNotifier);
+		_shutdownNotifier,
+		_worldColumns);
   }
 
   public PreferencesControls createPreferencesControls() {
