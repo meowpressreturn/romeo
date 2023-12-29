@@ -166,14 +166,6 @@ public class RomeoContext {
   public IWorldImporter createWorldImporter() {
     return new WorldImporterImpl(_worldService, _playerService, _settingsService);
   }
-
-  /**
-   * Returns a reference to the DataSource that Romeo is using for persistence.
-   * @return datasource
-   */
-  public DataSource getDataSource() {
-    return _dataSource;
-  }
   
   public GenericMap getWorldsMap() {
     return _worldsMap;
@@ -251,7 +243,8 @@ public class RomeoContext {
 		_shutdownNotifier,
 		_worldColumns,
 		_unitColumns,
-		_scenarioService);
+		_scenarioService,
+		_dataSource);
   }
 
   public RomeoForm createPlayerForm() {

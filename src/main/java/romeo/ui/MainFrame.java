@@ -71,9 +71,10 @@ public class MainFrame extends JFrame {
   
   //The following are referenced in onClose (and maybe other places)
   private final JSplitPane _mainSplitPane = new JSplitPane();
-  private final  JTabbedPane _leftTabs;
-  private final  ISettingsService _settingsService;
-  private final  IEventHub _shutdownNotifier;
+  private final JTabbedPane _leftTabs;
+  private final ISettingsService _settingsService;
+  private final IEventHub _shutdownNotifier;
+  private final DataSource _dataSource;
 
   /**
    * Constructor. All dependendencies must be provided.
@@ -89,7 +90,8 @@ public class MainFrame extends JFrame {
                    IEventHub shutdownNotifier,
                    List<String> worldColumns,
                    List<String> unitColumns,
-                   IScenarioService scenarioService) {
+                   IScenarioService scenarioService,
+                   DataSource dataSource) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");   
@@ -102,6 +104,7 @@ public class MainFrame extends JFrame {
     _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
     _shutdownNotifier = Objects.requireNonNull(shutdownNotifier, "shutdownNotifier must not be null");
+    _dataSource = Objects.requireNonNull(dataSource, "dataSource must not be null");
     
     //Log log = LogFactory.getLog(this.getClass());
 
@@ -342,9 +345,8 @@ public class MainFrame extends JFrame {
 
     //nb: database shutdown should occur last so it shouldnt be called as a listener
     //    where there are no guarantees of order called.
-    DataSource ds = Romeo.CONTEXT.getDataSource();
     try {
-      Connection connection = ds.getConnection();
+      Connection connection = _dataSource.getConnection();
       try {
         log.debug("Shutting down database engine");
         DbUtils.writeQuery("SHUTDOWN", null, connection);
