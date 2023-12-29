@@ -26,6 +26,7 @@ import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
+import romeo.units.ui.UnitFormFactory;
 import romeo.units.ui.UnitNavigatorRecordSelectionListener;
 import romeo.utils.GuiUtils;
 import romeo.utils.events.IEventHub;
@@ -64,10 +65,13 @@ public class DataTabs extends JPanel {
       ISettingsService settingsService, 
       NavigatorPanel navigatorPanel,
       IEventHub shutDownNotifier,
-      WorldFormFactory worldFormFactory) {
+      WorldFormFactory worldFormFactory,
+      UnitFormFactory unitFormFactory) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
+    Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
+    Objects.requireNonNull(unitFormFactory, "unitFormFactory may not be null");
 
     //prep worlds table
     IWorldService worldService = Romeo.CONTEXT.getWorldService();
@@ -112,7 +116,7 @@ public class DataTabs extends JPanel {
     GuiUtils.setColumnWidths(unitTable, new int[] { 200, 100 });
     unitTableModel.initColumnClickListener(unitTable);
     unitTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    _unitTnm = new TableNavigatorMediator(unitTable, new UnitNavigatorRecordSelectionListener(navigatorPanel));
+    _unitTnm = new TableNavigatorMediator(unitTable, new UnitNavigatorRecordSelectionListener(navigatorPanel, unitFormFactory));
     JScrollPane unitsTableScrollPane = new JScrollPane(unitTable);
     unitsTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon unitIcon = GuiUtils.getImageIcon("/images/unit.gif");

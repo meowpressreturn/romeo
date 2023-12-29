@@ -1,15 +1,22 @@
 package romeo.ui.actions;
 
-import romeo.Romeo;
+import java.util.Objects;
+
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 import romeo.units.impl.UnitImpl;
+import romeo.units.ui.UnitFormFactory;
 import romeo.units.ui.UnitFormLogic;
 
 public class NewUnitAction extends AbstractNewRecordAction {
   
-  public NewUnitAction(NavigatorPanel navigatorPanel) {
+  private final UnitFormFactory _unitFormFactory;
+  
+  public NewUnitAction(NavigatorPanel navigatorPanel, UnitFormFactory unitFormFactory) {
     super(navigatorPanel);
+    
+    _unitFormFactory = Objects.requireNonNull(unitFormFactory, "unitFormFactory may not be null");
+    
     setDescription("Create a Unit record");
     setName("New Unit");
     setIcon("/images/unitNew.gif");
@@ -17,7 +24,7 @@ public class NewUnitAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createUnitForm();
+    return _unitFormFactory.createUnitForm();
   }
 
   @Override
