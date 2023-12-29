@@ -14,6 +14,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import romeo.Romeo;
+import romeo.battle.BattleCalculatorFactory;
 import romeo.battle.IBattleCalculator;
 import romeo.scenarios.api.IScenarioService;
 import romeo.settings.api.ISettings;
@@ -31,20 +32,26 @@ import romeo.xfactors.api.IXFactorService;
 public class BattlePanel extends JPanel {
   protected static final ImageIcon EXECUTE_IMAGE = GuiUtils.getImageIcon("/images/execute.gif");
 
-  protected NavigatorPanel _navigator;
-  protected BattleFleetsManager _fleets;
-  protected ISettingsService _settingsService;
+  private final NavigatorPanel _navigatorPanel;
+  private final BattleFleetsManager _fleets;
+  private final ISettingsService _settingsService;
+  private final BattleCalculatorFactory _battleCalculatorFactory;
+  
 
   public BattlePanel(IUnitService unitService,
                      ISettingsService settingsService,
                      IXFactorService xFactorService,
                      IXFactorCompiler compiler,
-                     IScenarioService scenarioService) {
+                     IScenarioService scenarioService,
+                     BattleCalculatorFactory battleCalculatorFactory,
+                     NavigatorPanel navigatorPanel) {
     Objects.requireNonNull(unitService, "unitService must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
     Objects.requireNonNull(xFactorService, "xFactorService must not be null");
     Objects.requireNonNull(compiler, "compiler must not be null");
     Objects.requireNonNull(scenarioService, "scenarioService must not be null");
+    _battleCalculatorFactory = Objects.requireNonNull(battleCalculatorFactory, "battleCalculatorFactory must not be null");
+    _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
 
     _fleets = new BattleFleetsManager(settingsService, unitService, xFactorService, compiler);
 
@@ -100,20 +107,11 @@ public class BattlePanel extends JPanel {
 
   protected void fight() {
     int numberOfBattles = (int) _settingsService.getLong(ISettings.NUMBER_OF_BATTLES);
-    IBattleCalculator bc = Romeo.CONTEXT.createBattleCalculator();
+    IBattleCalculator bc = _battleCalculatorFactory.newBattleCalculator();
     bc.setNumberOfBattles(numberOfBattles);
     _fleets.read(bc);
     BattleProgressorImpl progressor = new BattleProgressorImpl(Romeo.getMainFrame(), bc);
-    progressor.setNavigator(_navigator);
+    progressor.setNavigator(_navigatorPanel);
     progressor.executeCalculator();
   }
-
-  public NavigatorPanel getNavigator() {
-    return _navigator;
-  }
-
-  public void setNavigator(NavigatorPanel panel) {
-    _navigator = panel;
-  }
-
 }

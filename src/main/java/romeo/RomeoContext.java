@@ -6,8 +6,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import romeo.battle.IBattleCalculator;
-import romeo.battle.impl.BattleCalculatorImpl;
+import romeo.battle.BattleCalculatorFactory;
 import romeo.battle.ui.BattlePanel;
 import romeo.importdata.IWorldImporter;
 import romeo.importdata.impl.AdjustmentsFileReader;
@@ -85,6 +84,7 @@ public class RomeoContext {
   private final IEventHub _shutdownNotifier;
   private final List<String> _worldColumns;
   private final List<String> _unitColumns;
+  private final BattleCalculatorFactory _battleCalculatorFactory;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -106,7 +106,7 @@ public class RomeoContext {
     _mapCenterer = new MapCenterer(_settingsService, _worldService, _worldsMap);
     _worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
     _unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
-    
+    _battleCalculatorFactory = new BattleCalculatorFactory(_xFactorCompiler);
     addLogThreadListeners();
   }
   
@@ -229,7 +229,9 @@ public class RomeoContext {
         _settingsService,
         _xFactorService,
         _xFactorCompiler,
-        _scenarioService);
+        _scenarioService,
+        _battleCalculatorFactory,
+        _navigatorPanel);
   }
   
   /**
@@ -450,14 +452,6 @@ public class RomeoContext {
     return new ExpressionField(_expressionParser);
   }
 
-  /**
-   * Returns a new object that implements {@link IBattleCalculator}
-   * @return calculator
-   */
-  public IBattleCalculator createBattleCalculator() {
-    return new BattleCalculatorImpl(_xFactorCompiler);
-  }
-  
   private void addLogThreadListeners() {
     _worldService.addListener(new LogThreadNameInvocationListener());
     _unitService.addListener(new LogThreadNameInvocationListener());

@@ -160,7 +160,6 @@ public class MainFrame extends JFrame {
     _leftTabs.addTab(TAB_NAME_GRAPHS, graphsIcon, graphsPanel, null);
 
     //Simulator tab
-    battlePanel.setNavigator(navigatorPanel);
     JScrollPane battleScroll = new JScrollPane(battlePanel);
     battleScroll.getVerticalScrollBar().setUnitIncrement(16);
     battleScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
