@@ -55,6 +55,7 @@ import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
 import romeo.worlds.api.WorldAndHistory;
 import romeo.worlds.ui.WorldFormFactory;
+import romeo.xfactors.ui.XFactorFormFactory;
 
 /**
  * This is the main window for Romeo. Its is also responsible for instantiating
@@ -99,7 +100,8 @@ public class MainFrame extends JFrame {
                    DataSource dataSource,
                    WorldFormFactory worldFormFactory,
                    UnitFormFactory unitFormFactory,
-                   PlayerFormFactory playerFormFactory) {
+                   PlayerFormFactory playerFormFactory,
+                   XFactorFormFactory xFactorFormFactory) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");   
@@ -110,6 +112,7 @@ public class MainFrame extends JFrame {
     Objects.requireNonNull(worldFormFactory, "worldFormFactory must not be null");
     Objects.requireNonNull(unitFormFactory, "unitFormFactory must not be null");
     Objects.requireNonNull(playerFormFactory, "playerFormFactory must not be null");
+    Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory must not be null");
     
     _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap must not be null");
@@ -152,7 +155,8 @@ public class MainFrame extends JFrame {
         unitColumns, 
         worldFormFactory, 
         unitFormFactory, 
-        playerFormFactory);
+        playerFormFactory,
+        xFactorFormFactory);
 
     _mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
     _mainSplitPane.setOneTouchExpandable(true);
@@ -170,7 +174,9 @@ public class MainFrame extends JFrame {
         shutdownNotifier, 
         worldFormFactory, 
         unitFormFactory,
-        playerFormFactory);
+        playerFormFactory,
+        xFactorFormFactory);
+    
     Romeo.incrementSplashProgress("Services");
     _leftTabs.addTab(TAB_NAME_DATA, dataIcon, dataTabs, null);
 
@@ -223,12 +229,13 @@ public class MainFrame extends JFrame {
       List<String> unitColumns,
       WorldFormFactory worldFormFactory,
       UnitFormFactory unitFormFactory,
-      PlayerFormFactory playerFormFactory) {
+      PlayerFormFactory playerFormFactory,
+      XFactorFormFactory xFactorFormFactory) {
     
     Action prefsAction = new OpenPreferencesAction(navigatorPanel, settingsService, scenarioService);
     Action newWorldAction = new NewWorldAction(navigatorPanel, worldFormFactory);
     Action newUnitAction = new NewUnitAction(navigatorPanel, unitFormFactory);
-    Action newXFactorAction = new NewXFactorAction(navigatorPanel);
+    Action newXFactorAction = new NewXFactorAction(navigatorPanel, xFactorFormFactory);
     Action newPlayerAction = new NewPlayerAction(navigatorPanel, playerFormFactory);
     Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitService, unitColumns);
     Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns));

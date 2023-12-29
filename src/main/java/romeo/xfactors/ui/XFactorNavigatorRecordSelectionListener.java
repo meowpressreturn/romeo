@@ -1,19 +1,23 @@
 package romeo.xfactors.ui;
 
-import romeo.Romeo;
-import romeo.ui.NavigatorPanel;
+import java.util.Objects;
+
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
+import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 
 public class XFactorNavigatorRecordSelectionListener extends AbstractNavigatorRecordSelectionListener {
 
-  public XFactorNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel) {
+  private final XFactorFormFactory _xFactorFormFactory;
+  
+  public XFactorNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel, XFactorFormFactory xFactorFormFactory) {
     super(navigatorPanel);
+    _xFactorFormFactory = Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory may not be null");
   }
 
   @Override
   protected RomeoForm newForm() {
-    return Romeo.CONTEXT.createXFactorForm();
+    return _xFactorFormFactory.newXFactorForm();
   }
 
 }

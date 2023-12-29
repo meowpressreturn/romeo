@@ -40,6 +40,7 @@ import romeo.worlds.ui.WorldFormFactory;
 import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 import romeo.xfactors.api.IXFactor;
 import romeo.xfactors.api.IXFactorService;
+import romeo.xfactors.ui.XFactorFormFactory;
 import romeo.xfactors.ui.XFactorNavigatorRecordSelectionListener;
 
 /**
@@ -70,12 +71,14 @@ public class DataTabs extends JPanel {
       IEventHub shutDownNotifier,
       WorldFormFactory worldFormFactory,
       UnitFormFactory unitFormFactory,
-      PlayerFormFactory playerFormFactory) {
+      PlayerFormFactory playerFormFactory,
+      XFactorFormFactory xFactorFormFactory) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
     Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
     Objects.requireNonNull(unitFormFactory, "unitFormFactory may not be null");
+    Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory may not be null");
 
     //prep worlds table
     IWorldService worldService = Romeo.CONTEXT.getWorldService();
@@ -148,7 +151,7 @@ public class DataTabs extends JPanel {
     xfTcm.getColumn(0).setPreferredWidth(80);
     xfTableModel.initColumnClickListener(xfTable);
     xfTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    _xFactorTnm = new TableNavigatorMediator(xfTable, new XFactorNavigatorRecordSelectionListener(navigatorPanel));
+    _xFactorTnm = new TableNavigatorMediator(xfTable, new XFactorNavigatorRecordSelectionListener(navigatorPanel, xFactorFormFactory));
     JScrollPane xfTableScrollPane = new JScrollPane(xfTable);
     xfTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon xfIcon = GuiUtils.getImageIcon("/images/xFactor.gif");

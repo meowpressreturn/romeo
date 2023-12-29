@@ -1,6 +1,5 @@
 package romeo;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,8 +32,6 @@ import romeo.ui.MainFrame;
 import romeo.ui.MapCenterer;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.ExpressionField;
-import romeo.ui.forms.FieldDef;
-import romeo.ui.forms.RomeoForm;
 import romeo.units.api.IUnitService;
 import romeo.units.impl.UnitServiceImpl;
 import romeo.units.impl.UnitServiceInitialiser;
@@ -59,7 +56,7 @@ import romeo.xfactors.impl.ExpressionParserImpl;
 import romeo.xfactors.impl.XFactorCompilerImpl;
 import romeo.xfactors.impl.XFactorServiceImpl;
 import romeo.xfactors.impl.XFactorServiceInitialiser;
-import romeo.xfactors.ui.XFactorFormLogic;
+import romeo.xfactors.ui.XFactorFormFactory;
 
 /**
  * Wraps the Spring ApplicationContext and provides specific methods to access the beans Romeo needs.
@@ -87,6 +84,7 @@ public class RomeoContext {
   private final WorldFormFactory _worldFormFactory;
   private final UnitFormFactory _unitFormFactory;
   private final PlayerFormFactory _playerFormFactory;
+  private final XFactorFormFactory _xFactorFormFactory;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -107,6 +105,7 @@ public class RomeoContext {
     _unitFormFactory = new UnitFormFactory(_unitService, _xFactorService);
     _playerFormFactory = new PlayerFormFactory(_playerService, _worldService, _settingsService);
     _worldFormFactory = new WorldFormFactory(_worldService, _settingsService, _playerService, _playerFormFactory);
+    _xFactorFormFactory = new XFactorFormFactory(_xFactorService);
     
     IMapLogic logic = new WorldMapLogic(_worldService, _unitService, _settingsService, _playerService); 
     IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(_navigatorPanel, _worldFormFactory);
@@ -241,44 +240,8 @@ public class RomeoContext {
 		_dataSource,
 		_worldFormFactory,
 		_unitFormFactory,
-		_playerFormFactory);
-  }
-
-  public RomeoForm createXFactorForm() {
-    //TODO - create a class to wrap the below
-    RomeoForm form = new RomeoForm();
-    form.setName("X-Factor");
-    form.setFormLogic(new XFactorFormLogic(_xFactorService));
-    List<FieldDef> fields = new ArrayList<FieldDef>();
-    
-    //name
-    FieldDef name = new FieldDef("name","Name");
-    name.setMandatory(true);
-    fields.add(name);
-    form.setFields(fields);
-    
-    //description
-    fields.add(new FieldDef("description","Description"));
-    
-    //trigger
-    fields.add(new FieldDef("trigger","Trigger", FieldDef.TYPE_EXPRESSION));
-    
-    //xfAttacks
-    fields.add(new FieldDef("xfAttacks","Attacks", FieldDef.TYPE_EXPRESSION));
-    
-    //xfOffence
-    fields.add(new FieldDef("xfOffense","Offense", FieldDef.TYPE_EXPRESSION));
-    
-    //xfDefense
-    fields.add(new FieldDef("xfDefense","Defense", FieldDef.TYPE_EXPRESSION));
-    
-    //xfPd
-    fields.add(new FieldDef("xfPd","PD", FieldDef.TYPE_EXPRESSION));
-    
-    //xfRemove
-    fields.add(new FieldDef("xfRemove","Destruct", FieldDef.TYPE_EXPRESSION));
-
-    return form;
+		_playerFormFactory,
+		_xFactorFormFactory);
   }
 
   /**
