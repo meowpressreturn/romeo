@@ -48,7 +48,6 @@ import romeo.units.impl.UnitServiceInitialiser;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
 import romeo.utils.GuiUtils;
-import romeo.utils.LogThreadNameInvocationListener;
 
 /**
  * Contains the main method that creates the ApplicationContext and starts the
@@ -169,7 +168,6 @@ public class Romeo {
   public void whereforeArtThou() {
     Log log = LogFactory.getLog(this.getClass());
     log.info("wherefore art thou Romeo?");
-    addLogThreadListeners();
     runInitialisers();
     final MainFrame frame = Romeo.CONTEXT.createMainFrame();
     Romeo.incrementSplashProgress("Open main frame");
@@ -183,15 +181,6 @@ public class Romeo {
     
   }
   
-  private void addLogThreadListeners() {
-    Romeo.CONTEXT.getWorldService().addListener(new LogThreadNameInvocationListener());
-    Romeo.CONTEXT.getUnitService().addListener(new LogThreadNameInvocationListener());
-    Romeo.CONTEXT.getXFactorService().addListener(new LogThreadNameInvocationListener());
-    Romeo.CONTEXT.getPlayerService().addListener(new LogThreadNameInvocationListener());
-    Romeo.CONTEXT.getScenarioService().addListener(new LogThreadNameInvocationListener());
-    Romeo.CONTEXT.getSettingsService().addListener(new LogThreadNameInvocationListener()); 
-  }
-
   /**
    * Runs the IServiceInitialisers defined in the initialisers property (which
    * we set using spring DI). The initialisers are responsible for examining the

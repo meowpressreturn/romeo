@@ -45,6 +45,7 @@ import romeo.units.ui.UnitFormLogic;
 import romeo.units.ui.UnitGraphsPanel;
 import romeo.utils.IKeyGen;
 import romeo.utils.KeyGenImpl;
+import romeo.utils.LogThreadNameInvocationListener;
 import romeo.utils.events.EventHubImpl;
 import romeo.utils.events.IEventHub;
 import romeo.worlds.api.IWorldService;
@@ -106,6 +107,8 @@ public class RomeoContext {
     _mapCenterer = new MapCenterer(_settingsService, _worldService, _worldsMap);
     _worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
     _unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
+    
+    addLogThreadListeners();
   }
   
   private GenericMap initWorldsMap(
@@ -135,7 +138,7 @@ public class RomeoContext {
             new PlayerServiceInitialiser(_keyGen),
             new ScenarioServiceInitialiser()));
   }
-  
+
   public IScenarioService getScenarioService() {
     return _scenarioService;
   }
@@ -467,5 +470,14 @@ public class RomeoContext {
    */
   public IBattleCalculator createBattleCalculator() {
     return new BattleCalculatorImpl(_xFactorCompiler);
+  }
+  
+  private void addLogThreadListeners() {
+    _worldService.addListener(new LogThreadNameInvocationListener());
+    _unitService.addListener(new LogThreadNameInvocationListener());
+    _xFactorService.addListener(new LogThreadNameInvocationListener());
+    _playerService.addListener(new LogThreadNameInvocationListener());
+    _scenarioService.addListener(new LogThreadNameInvocationListener());
+    _settingsService.addListener(new LogThreadNameInvocationListener()); 
   }
 }
