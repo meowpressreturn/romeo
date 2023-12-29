@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -147,9 +148,16 @@ public class Romeo {
   //End of static definitions
   /////////////////////////////////////////////////////////////////////////////
 
-  private List<IServiceInitialiser> _initialisers = Collections.emptyList(); //Set via DI
-  private DataSource _dataSource; //Set via DI
+  private List<IServiceInitialiser> _initialisers = Collections.emptyList();
+  private DataSource _dataSource;
 
+  public Romeo(
+      DataSource dataSource, 
+      List<IServiceInitialiser> initialisers) {
+    _initialisers = Objects.requireNonNull(initialisers, "initialisers may not be null");
+    _dataSource = Objects.requireNonNull(dataSource, "dataSource may not be null");
+  }
+  
   /**
    * Run the initialisers and create the UI by instantiating the MainFrame
    * instance
@@ -192,7 +200,6 @@ public class Romeo {
       throw new NullPointerException("dataSource not set");
     }
     try {
-      List<IServiceInitialiser> inits = getInitialisers();
       Romeo.incrementSplashProgress("Start database");
       Connection connection = null;
       try {
@@ -213,7 +220,7 @@ public class Romeo {
         long startTime = System.currentTimeMillis();
         Set<String> tableNames = DbUtils.getTableNames(connection);
         log.info("Executing service initialisers");
-        for(IServiceInitialiser initialiser : inits) {
+        for(IServiceInitialiser initialiser : _initialisers) {
           Romeo.incrementSplashProgress("Run " + initialiser.getClass().getName());
           log.info("Executing service initialiser:" + initialiser);
           initialiser.init(tableNames, connection);
@@ -229,42 +236,7 @@ public class Romeo {
       throw new RuntimeException("Exception caught running initialisers", e);
     }
   }
-
-  /**
-   * Returns the list of IServiceInitialiser
-   * @return initialisers
-   */
-  public List<IServiceInitialiser> getInitialisers() {
-    return _initialisers;
-  }
-
-  /**
-   * Set the list of IServiceInitialiser that will be called when the
-   * application is started. These will initialise the database on first use or
-   * when the application has been upgraded. This list is normally set using
-   * Spring DI from context.xml.
-   * @param initialisers
-   */
-  public void setInitialisers(List<IServiceInitialiser> initialisers) {
-    _initialisers = initialisers;
-  }
-
-  /**
-   * Returns the DataSource
-   * @return datasource
-   */
-  public DataSource getDataSource() {
-    return _dataSource;
-  }
-
-  /**
-   * Set the datasource that we use to get connections to the database. We
-   * normally initialise this property using Spring DI.
-   */
-  public void setDataSource(DataSource source) {
-    _dataSource = source;
-  }
-
+  
   /**
    * Create and show the romeo splash screen. This includes a progress bar that
    * can be advanced with calls to incrementSplashProgress(). To hide the splash

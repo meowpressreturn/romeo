@@ -15,7 +15,6 @@ import romeo.importdata.impl.AdjustmentsFileReader;
 import romeo.importdata.impl.UnitImporterImpl;
 import romeo.importdata.impl.WorldImporterImpl;
 import romeo.importdata.impl.XFactorFileReader;
-import romeo.model.api.IServiceInitialiser;
 import romeo.persistence.HsqldbSettingsInitialiser;
 import romeo.persistence.QndDataSource;
 import romeo.players.api.IPlayerService;
@@ -121,19 +120,16 @@ public class RomeoContext {
   }
   
   public Romeo createRomeo() {
-    Romeo romeo = new Romeo();
-    romeo.setDataSource(_dataSource);
-    
-    List<IServiceInitialiser> initialisers = new ArrayList<>();
-    initialisers.add(new HsqldbSettingsInitialiser());
-    initialisers.add(new SettingsServiceInitialiser());
-    initialisers.add(new WorldServiceInitialiser(_keyGen, _settingsService));
-    initialisers.add(new UnitServiceInitialiser(new UnitImporterImpl(_unitService), getUnitColumns(), new AdjustmentsFileReader()));
-    initialisers.add(new XFactorServiceInitialiser(_unitService, new XFactorFileReader(), _keyGen));
-    initialisers.add(new PlayerServiceInitialiser(_keyGen));
-    initialisers.add(new ScenarioServiceInitialiser());    
-    romeo.setInitialisers(initialisers);
-    return romeo;
+    return new Romeo(
+        _dataSource,
+        Arrays.asList(
+            new HsqldbSettingsInitialiser(),
+            new SettingsServiceInitialiser(),
+            new WorldServiceInitialiser(_keyGen, _settingsService),
+            new UnitServiceInitialiser(new UnitImporterImpl(_unitService), getUnitColumns(), new AdjustmentsFileReader()),
+            new XFactorServiceInitialiser(_unitService, new XFactorFileReader(), _keyGen),
+            new PlayerServiceInitialiser(_keyGen),
+            new ScenarioServiceInitialiser()));
   }
   
   /**
