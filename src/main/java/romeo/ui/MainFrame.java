@@ -64,18 +64,15 @@ public class MainFrame extends JFrame {
 
   ////////////////////////////////////////////////////////////////////////////
 
-  protected JSplitPane _mainSplitPane = new JSplitPane();
-  protected NavigatorPanel _navigatorPanel;
-  protected GenericMap _worldsMap;
-  protected UnitGraphsPanel _unitGraphsPanel;
-  protected GraphsPanel _graphsPanel;
-  protected BattlePanel _battlePanel;
-  protected JTabbedPane _leftTabs;
-  protected DataTabs _dataTabs;
-  protected ISettingsService _settingsService;
-  protected IEventHub _shutdownNotifier;
-  protected String[] _worldColumns;
-  protected IScenarioService _scenarioService;
+  //Need to keep reference for the getters still used by some other classes
+  private final  NavigatorPanel _navigatorPanel;
+  private final  GenericMap _worldsMap;
+  
+  //The following are referenced in onClose (and maybe other places)
+  private final JSplitPane _mainSplitPane = new JSplitPane();
+  private final  JTabbedPane _leftTabs;
+  private final  ISettingsService _settingsService;
+  private final  IEventHub _shutdownNotifier;
 
   /**
    * Constructor. All dependendencies must be provided.
@@ -90,27 +87,18 @@ public class MainFrame extends JFrame {
                    IEventHub shutdownNotifier,
                    List<String> worldColumns,
                    IScenarioService scenarioService) {
-    Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
-    Objects.requireNonNull(worldsMap, "worldsMap must not be null");
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
-    Objects.requireNonNull(settingsService, "settingsService must not be null");
-    Objects.requireNonNull(worldService, "worldService must not be null");
-    Objects.requireNonNull(shutdownNotifier, "shutdownNotifier must not be null");
+    Objects.requireNonNull(worldService, "worldService must not be null");    
     Objects.requireNonNull(worldColumns, "worldColumns must not be null");
     Objects.requireNonNull(scenarioService, "scenarioService must not be null");
     
+    _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
+    _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap must not be null");
+    _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
+    _shutdownNotifier = Objects.requireNonNull(shutdownNotifier, "shutdownNotifier must not be null");
+    
     //Log log = LogFactory.getLog(this.getClass());
-
-    _navigatorPanel = navigatorPanel;
-    _worldsMap = worldsMap;
-    _unitGraphsPanel = unitGraphsPanel;
-    _graphsPanel = graphsPanel;
-    _battlePanel = battlePanel;
-    _settingsService = settingsService;
-    _shutdownNotifier = shutdownNotifier;
-    _worldColumns = Convert.toStrArray(worldColumns);
-    _scenarioService = scenarioService;
 
     ImageIcon dataIcon = GuiUtils.getImageIcon("/images/data.gif");
     ImageIcon mapIcon = GuiUtils.getImageIcon("/images/map.gif");
@@ -134,20 +122,25 @@ public class MainFrame extends JFrame {
     });
     contentPane.add(_mainSplitPane, BorderLayout.CENTER);
 
-    prepareMenus(settingsService, worldService);
+    prepareMenus(
+        settingsService, 
+        worldService,
+        scenarioService,
+        navigatorPanel,
+        worldColumns);
 
     _mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
     _mainSplitPane.setOneTouchExpandable(true);
-    _mainSplitPane.setRightComponent(_navigatorPanel);
+    _mainSplitPane.setRightComponent(navigatorPanel);
 
     //Tabbed panel for the tabs that show in the left side of main split pane
     _leftTabs = new JTabbedPane();
     _mainSplitPane.setLeftComponent(_leftTabs);
 
     //Data tab
-    _dataTabs = new DataTabs(settingsService, _navigatorPanel, _shutdownNotifier);
+    DataTabs dataTabs = new DataTabs(settingsService, navigatorPanel, shutdownNotifier);
     Romeo.incrementSplashProgress("Services");
-    _leftTabs.addTab(TAB_NAME_DATA, dataIcon, _dataTabs, null);
+    _leftTabs.addTab(TAB_NAME_DATA, dataIcon, dataTabs, null);
 
     //Map tab
     Romeo.incrementSplashProgress("Map");
@@ -160,19 +153,19 @@ public class MainFrame extends JFrame {
     _leftTabs.addTab(TAB_NAME_GRAPHS, graphsIcon, graphsPanel, null);
 
     //Simulator tab
-    battlePanel.setNavigator(_navigatorPanel);
+    battlePanel.setNavigator(navigatorPanel);
     JScrollPane battleScroll = new JScrollPane(battlePanel);
     battleScroll.getVerticalScrollBar().setUnitIncrement(16);
     battleScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     _leftTabs.addTab(TAB_NAME_SIMULATOR, battleIcon, battleScroll, null);
 
     //Set which tab is shown first. This now comes from a setting
-    String tabName = _settingsService.getString(ISettings.SELECTED_TAB);
+    String tabName = settingsService.getString(ISettings.SELECTED_TAB);
     GuiUtils.setSelectedTab(_leftTabs, tabName);
 
     setLocationRelativeTo(null); //center it
     //and finally nudge the panes into position (need to use a callback for this)
-    int splitPaneWidth = (int) _settingsService.getLong(ISettings.LEFT_PANE_WIDTH);
+    int splitPaneWidth = (int) settingsService.getLong(ISettings.LEFT_PANE_WIDTH);
     SwingUtilities.invokeLater(new SplitPaneMover(_mainSplitPane, splitPaneWidth));
     
     //nb: initial centering of the map is now done by the MapCenterer object
@@ -188,16 +181,21 @@ public class MainFrame extends JFrame {
   /**
    * Creates and sets the menus of this frame
    */
-  protected void prepareMenus(ISettingsService settingsService, IWorldService worldService) {
+  protected void prepareMenus(
+      ISettingsService settingsService, 
+      IWorldService worldService,
+      IScenarioService scenarioService,
+      NavigatorPanel navigatorPanel,
+      List<String> worldColumns) {
     
-    Action prefsAction = new OpenPreferencesAction(_navigatorPanel, _settingsService, _scenarioService);
-    Action newWorldAction = new NewWorldAction(_navigatorPanel);
-    Action newUnitAction = new NewUnitAction(_navigatorPanel);
-    Action newXFactorAction = new NewXFactorAction(_navigatorPanel);
-    Action newPlayerAction = new NewPlayerAction(_navigatorPanel);
+    Action prefsAction = new OpenPreferencesAction(navigatorPanel, settingsService, scenarioService);
+    Action newWorldAction = new NewWorldAction(navigatorPanel);
+    Action newUnitAction = new NewUnitAction(navigatorPanel);
+    Action newXFactorAction = new NewXFactorAction(navigatorPanel);
+    Action newPlayerAction = new NewPlayerAction(navigatorPanel);
     Action importUnitsAction = new ImportUnitsAction(this, settingsService, Romeo.CONTEXT);
-    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, _worldColumns);
-    Action findWorldAction = new FindWorldAction(_navigatorPanel);
+    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns));
+    Action findWorldAction = new FindWorldAction(navigatorPanel);
 
     JMenuBar menuBar = new JMenuBar();
 
@@ -358,14 +356,6 @@ public class MainFrame extends JFrame {
    */
   public NavigatorPanel getNavigatorPanel() {
     return _navigatorPanel;
-  }
-
-  public JTabbedPane getLeftTabs() {
-    return _leftTabs;
-  }
-
-  public DataTabs getDataTabs() {
-    return _dataTabs;
   }
 
   /**
