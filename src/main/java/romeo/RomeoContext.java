@@ -161,10 +161,6 @@ public class RomeoContext {
     return new WorldImporterImpl(_worldService, _playerService, _settingsService);
   }
   
-  public GenericMap getWorldsMap() {
-    return _worldsMap;
-  }
-  
   private GraphsPanel createGraphsPanel() {
     
     HistoryChartsHelper worldChartsHelper = new HistoryChartsHelper(_dataSource);
