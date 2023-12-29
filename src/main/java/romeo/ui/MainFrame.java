@@ -135,7 +135,7 @@ public class MainFrame extends JFrame {
     _mainSplitPane.setLeftComponent(_leftTabs);
 
     //Data tab
-    _dataTabs = new DataTabs(settingsService, _navigatorPanel);
+    _dataTabs = new DataTabs(settingsService, _navigatorPanel, _shutdownNotifier);
     Romeo.incrementSplashProgress("Services");
     _leftTabs.addTab(TAB_NAME_DATA, dataIcon, _dataTabs, null);
 

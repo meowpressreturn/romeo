@@ -59,9 +59,13 @@ public class DataTabs extends JPanel {
 
   private ISettingsService _settingsService;
 
-  public DataTabs(ISettingsService settingsService, NavigatorPanel navigatorPanel) {
+  public DataTabs(
+      ISettingsService settingsService, 
+      NavigatorPanel navigatorPanel,
+      IEventHub shutDownNotifier) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
+    Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
 
     //prep worlds table
     IWorldService worldService = Romeo.CONTEXT.getWorldService();
@@ -188,7 +192,6 @@ public class DataTabs extends JPanel {
     //to it here so it doesnt get collected before the DataTabs itself. (We could also have made DataTabs implement
     //the listener interface and expose the method itself which would get rid of the need for the variable but
     //hang out our dirty listener laundry for all to see...)
-    IEventHub shutDownNotifier = Romeo.CONTEXT.getShutdownNotifier();
     _shutdownListener = new IEventListener() {
       @Override
       public void onEvent(EventObject event) {

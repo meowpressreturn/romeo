@@ -168,10 +168,6 @@ public class RomeoContext {
   public IXFactorService getXFactorService() {
     return _xFactorService;
   }
-  
-  public IEventHub getShutdownNotifier() {
-	  return _shutdownNotifier;
-  }
 
   /**
    * Returns an object implenting the {@link IWorldImporter} interface. Call
