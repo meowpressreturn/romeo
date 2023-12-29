@@ -326,10 +326,6 @@ public class RomeoContext {
 	  return graphsPanel;
   }
   
-  private IXFactorCompiler getXFactorCompiler() {
-    return _xFactorCompiler;
-  }
-  
   private BattlePanel createBattlePanel() {
     return new BattlePanel(
         _unitService,
