@@ -84,6 +84,7 @@ public class RomeoContext {
   private final MapCenterer _mapCenterer;
   private final IEventHub _shutdownNotifier;
   private final List<String> _worldColumns;
+  private final List<String> _unitColumns;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -104,6 +105,7 @@ public class RomeoContext {
     _worldsMap = initWorldsMap(_worldService, _unitService, _settingsService, _playerService, _shutdownNotifier, _navigatorPanel);
     _mapCenterer = new MapCenterer(_settingsService, _worldService, _worldsMap);
     _worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
+    _unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
   }
   
   private GenericMap initWorldsMap(
@@ -128,7 +130,7 @@ public class RomeoContext {
             new HsqldbSettingsInitialiser(),
             new SettingsServiceInitialiser(),
             new WorldServiceInitialiser(_keyGen, _settingsService),
-            new UnitServiceInitialiser(new UnitImporterImpl(_unitService), getUnitColumns(), new AdjustmentsFileReader()),
+            new UnitServiceInitialiser(new UnitImporterImpl(_unitService), _unitColumns, new AdjustmentsFileReader()),
             new XFactorServiceInitialiser(_unitService, new XFactorFileReader(), _keyGen),
             new PlayerServiceInitialiser(_keyGen),
             new ScenarioServiceInitialiser()));
@@ -175,40 +177,6 @@ public class RomeoContext {
    */
   public IUnitImporter createUnitImporter() {
     return new UnitImporterImpl(_unitService);
-  }
-
-  public List<String> getUnitColumns() {
-    //TODO - this needs to be read from a file (again) so that users can tweak it themselves
-    //       if necessary. Previously was in the Spring context xml but are removing that file.
-    return Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
-    
-    /*
-  <!-- Defines the default order of the properties mapped to columns in the units.csv
-       If the order of columns in the unit.csv is changed then this will need to be
-       reordered accordingly. Dont change the actual names used here as they are the names
-       of properties mapped internally -->
-  <bean id="unitCsvColumns" scope="singleton" class="java.util.ArrayList">
-    <constructor-arg><list>
-      <value>name</value>
-      <value>firepower</value>
-      <value>maximum</value>
-      <value>offense</value>
-      <value>defense</value>
-      <value>attacks</value>
-      <value>pd</value>
-      <value>carry</value>
-      <value>speed</value>
-      <value>complexity</value>
-      <value>basePrice</value>
-      <value>cost</value>
-      <value>license</value>
-      <value>unitId</value> <!-- unused by Romeo -->
-      <value>turnAvailable</value> <!-- unused by Romeo -->
-      <value>stealth</value> <!-- unused by Romeo -->
-      <value>scanner</value>
-    </list></constructor-arg>
-  </bean>
-     */
   }
 
   /**
@@ -291,6 +259,7 @@ public class RomeoContext {
 		_worldService, 
 		_shutdownNotifier,
 		_worldColumns,
+		_unitColumns,
 		_scenarioService);
   }
 

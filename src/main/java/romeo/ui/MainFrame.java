@@ -86,11 +86,13 @@ public class MainFrame extends JFrame {
                    IWorldService worldService,
                    IEventHub shutdownNotifier,
                    List<String> worldColumns,
+                   List<String> unitColumns,
                    IScenarioService scenarioService) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");    
     Objects.requireNonNull(worldColumns, "worldColumns must not be null");
+    Objects.requireNonNull(unitColumns, "unitColumns must not be null");
     Objects.requireNonNull(scenarioService, "scenarioService must not be null");
     
     _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
@@ -127,7 +129,8 @@ public class MainFrame extends JFrame {
         worldService,
         scenarioService,
         navigatorPanel,
-        worldColumns);
+        worldColumns,
+        unitColumns);
 
     _mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
     _mainSplitPane.setOneTouchExpandable(true);
@@ -186,14 +189,15 @@ public class MainFrame extends JFrame {
       IWorldService worldService,
       IScenarioService scenarioService,
       NavigatorPanel navigatorPanel,
-      List<String> worldColumns) {
+      List<String> worldColumns,
+      List<String> unitColumns) {
     
     Action prefsAction = new OpenPreferencesAction(navigatorPanel, settingsService, scenarioService);
     Action newWorldAction = new NewWorldAction(navigatorPanel);
     Action newUnitAction = new NewUnitAction(navigatorPanel);
     Action newXFactorAction = new NewXFactorAction(navigatorPanel);
     Action newPlayerAction = new NewPlayerAction(navigatorPanel);
-    Action importUnitsAction = new ImportUnitsAction(this, settingsService, Romeo.CONTEXT);
+    Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitColumns, Romeo.CONTEXT);
     Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns));
     Action findWorldAction = new FindWorldAction(navigatorPanel);
 

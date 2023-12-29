@@ -35,15 +35,18 @@ import romeo.utils.GuiUtils;
  */
 public class ImportUnitsAction extends AbstractRomeoAction {
 
-  private ISettingsService _settingsService;
-  private JFrame _mainFrame;
-  private RomeoContext _context;
+  private final ISettingsService _settingsService;
+  private final JFrame _mainFrame;
+  private final RomeoContext _context;
+  private final List<String> _unitColumns;
   
   public ImportUnitsAction(JFrame mainFrame,
       ISettingsService settingsService,
+      List<String> unitColumns,
       RomeoContext context) {
     _mainFrame = Objects.requireNonNull(mainFrame, "mainFrame may not be null");
     _settingsService = Objects.requireNonNull(settingsService,"settingsService may not be null");
+    _unitColumns = Objects.requireNonNull(unitColumns, "unitColumns may not be null");
     _context = Objects.requireNonNull(context,"context may not be null");
     
     putValue(Action.LONG_DESCRIPTION, "Update Unit data from file");
@@ -93,8 +96,7 @@ public class ImportUnitsAction extends AbstractRomeoAction {
       File file = chooser.getSelectedFile();
       importFolderPath = file.getParent();
       _settingsService.setString(ISettings.IMPORT_FOLDER, importFolderPath);
-      List<String> columnsList = _context.getUnitColumns();
-      String[] columns = columnsList.toArray(new String[]{});
+      String[] columns = _unitColumns.toArray(new String[]{});
       if(log.isDebugEnabled()) {
         log.debug("Preparing to import from file " + file.getName());
         log.debug("CSV Columns=" + Convert.toCsv( Arrays.asList(columns) ));
