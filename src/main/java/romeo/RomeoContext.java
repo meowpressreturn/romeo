@@ -139,10 +139,6 @@ public class RomeoContext {
             new ScenarioServiceInitialiser()));
   }
 
-  public IScenarioService getScenarioService() {
-    return _scenarioService;
-  }
-
   public IPlayerService getPlayerService() {
     return _playerService;
   }
