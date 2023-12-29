@@ -282,11 +282,7 @@ public class RomeoContext {
     return _worldsMap;
   }
   
-  private NavigatorPanel getNavigatorPanel() {
-	  return _navigatorPanel;
-  }
-  
-  private GraphsPanel getGraphsPanel() {
+  private GraphsPanel createGraphsPanel() {
     
     HistoryChartsHelper worldChartsHelper = new HistoryChartsHelper(_dataSource);
     worldChartsHelper.setPlayerHistorySql(
@@ -336,11 +332,11 @@ public class RomeoContext {
   
   private BattlePanel createBattlePanel() {
     return new BattlePanel(
-        getUnitService(),
-        getSettingsService(),
-        getXFactorService(),
-        getXFactorCompiler(),
-        getScenarioService());
+        _unitService,
+        _settingsService,
+        _xFactorService,
+        _xFactorCompiler,
+        _scenarioService);
   }
   
   /**
@@ -349,25 +345,25 @@ public class RomeoContext {
    */
   public MainFrame createMainFrame() {
 	  return new MainFrame(
-		getNavigatorPanel(),
-		getWorldsMap(), 
+		_navigatorPanel,
+		_worldsMap, 
 		new UnitGraphsPanel(getUnitService()), 
-		getGraphsPanel(), 
+		createGraphsPanel(), 
 		createBattlePanel(), 
-		getSettingsService(), 
-		getWorldService(), 
-		getShutdownNotifier());
+		_settingsService, 
+		_worldService, 
+		_shutdownNotifier);
   }
 
   public PreferencesControls createPreferencesControls() {
-    return new PreferencesControls(getSettingsService(), getScenarioService());
+    return new PreferencesControls(_settingsService, _scenarioService);
   }
 
   public RomeoForm createPlayerForm() {
   //TODO - create a class to wrap the below
     RomeoForm form = new RomeoForm();
     form.setName("Player");
-    form.setFormLogic(new PlayerFormLogic(getPlayerService(), getWorldService(), getSettingsService()));
+    form.setFormLogic(new PlayerFormLogic(_playerService, _worldService, _settingsService));
     List<FieldDef> fields = new ArrayList<FieldDef>();
     
     //name
@@ -417,7 +413,7 @@ public class RomeoContext {
   //TODO - create a class to wrap the below
     RomeoForm form = new RomeoForm();
     form.setName("Unit");
-    form.setFormLogic(new UnitFormLogic(getUnitService(), getXFactorService()));
+    form.setFormLogic(new UnitFormLogic(_unitService, _xFactorService));
     List<FieldDef> fields = new ArrayList<FieldDef>();
 
     //name
@@ -515,7 +511,7 @@ public class RomeoContext {
     //TODO - create a class to wrap the below
     RomeoForm form = new RomeoForm();
     form.setName("X-Factor");
-    form.setFormLogic(new XFactorFormLogic(getXFactorService()));
+    form.setFormLogic(new XFactorFormLogic(_xFactorService));
     List<FieldDef> fields = new ArrayList<FieldDef>();
     
     //name
@@ -549,7 +545,7 @@ public class RomeoContext {
   }
 
   public WorldForm createWorldForm() {
-    return new WorldForm(getWorldService(), getSettingsService());
+    return new WorldForm(_worldService, _settingsService);
   }
 
   /**
