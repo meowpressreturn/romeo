@@ -43,6 +43,7 @@ import romeo.model.api.IServiceInitialiser;
 import romeo.settings.impl.SettingsServiceInitialiser;
 import romeo.ui.ErrorDialog;
 import romeo.ui.MainFrame;
+import romeo.ui.MapCenterer;
 import romeo.units.impl.UnitServiceInitialiser;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
@@ -150,11 +151,14 @@ public class Romeo {
 
   private List<IServiceInitialiser> _initialisers = Collections.emptyList();
   private DataSource _dataSource;
+  private MapCenterer _mapCenterer;
 
   public Romeo(
       DataSource dataSource, 
+      MapCenterer mapCenterer,
       List<IServiceInitialiser> initialisers) {
     _initialisers = Objects.requireNonNull(initialisers, "initialisers may not be null");
+    _mapCenterer = Objects.requireNonNull(mapCenterer, "mapCenterer may not be null");
     _dataSource = Objects.requireNonNull(dataSource, "dataSource may not be null");
   }
   
@@ -175,7 +179,7 @@ public class Romeo {
     
     //Now that the mainFrame is displayed the map centering should work properly
     //(it doesn't if we try to set it while setting up the ui as scrollPane reports its sizes as 0)
-    SwingUtilities.invokeLater( Romeo.CONTEXT.getMapCenterer() );
+    SwingUtilities.invokeLater( _mapCenterer );
     
   }
   

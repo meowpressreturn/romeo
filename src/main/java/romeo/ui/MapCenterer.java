@@ -16,7 +16,7 @@ import romeo.worlds.api.WorldAndHistory;
 import romeo.worlds.api.WorldId;
 
 /**
- * Invoked by Romeo to centre the map on the saved cooridnates in settings after the MainFrame has been
+ * Invoked by Romeo to centre the map on the saved coordinates in settings after the MainFrame has been
  * displayed (and thus its scrollpane will return its correct size). This will also set the origin world.
  */
 public class MapCenterer implements Runnable {

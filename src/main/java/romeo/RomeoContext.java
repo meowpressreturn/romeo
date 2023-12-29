@@ -122,6 +122,7 @@ public class RomeoContext {
   public Romeo createRomeo() {
     return new Romeo(
         _dataSource,
+        _mapCenterer,
         Arrays.asList(
             new HsqldbSettingsInitialiser(),
             new SettingsServiceInitialiser(),
@@ -132,15 +133,6 @@ public class RomeoContext {
             new ScenarioServiceInitialiser()));
   }
   
-  /**
-   * Once the MainFrame has been displayed, Romeo will use this object to centre the map on the coordinates that
-   * were saved in the settings, and to select the origin world that was saved. 
-   * @return mapCenterer
-   */
-  public MapCenterer getMapCenterer() {
-    return _mapCenterer;
-  }
-
   public IScenarioService getScenarioService() {
     return _scenarioService;
   }
