@@ -8,13 +8,13 @@ import java.awt.event.ItemListener;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import romeo.Romeo;
 import romeo.model.api.IServiceListener;
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
@@ -32,8 +32,9 @@ public class PlayerCombo extends JComboBox<Object>
   private boolean _mandatory = false;
   private String _initYet = "Yes";
 
-  public PlayerCombo() {
-    init(Romeo.CONTEXT.getPlayerService());
+  public PlayerCombo(IPlayerService playerService) {
+    Objects.requireNonNull(playerService, "playerService may not be null");
+    init(playerService);
     prepareOptions();
     setPlayerName("");
   }

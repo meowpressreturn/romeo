@@ -159,8 +159,7 @@ public class DataTabs extends JPanel {
         new BeanTableHeaderRenderer((DefaultTableCellRenderer) xfTable.getTableHeader().getDefaultRenderer()));
 
     //prep players table
-    PlayerDataTableModel playerTableModel = new PlayerDataTableModel(Romeo.CONTEXT.getPlayerService(),
-        Romeo.CONTEXT.getWorldService(), Romeo.CONTEXT.getSettingsService());
+    PlayerDataTableModel playerTableModel = new PlayerDataTableModel(playerService, worldService, settingsService);
 
     JTable playerTable = new JTable(playerTableModel);
     GuiUtils.setColumnWidths(playerTable, new int[] { 150, 32, 48, 48, 48, 48, 100, 64 });

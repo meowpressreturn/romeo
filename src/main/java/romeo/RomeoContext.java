@@ -153,10 +153,6 @@ public class RomeoContext {
         _mainFrameFactory);
   }
 
-  public IPlayerService getPlayerService() {
-    return _playerService;
-  }
-
   public ISettingsService getSettingsService() {
     return _settingsService;
   }

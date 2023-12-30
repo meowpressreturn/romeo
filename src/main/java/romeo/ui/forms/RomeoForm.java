@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import romeo.Romeo;
 import romeo.persistence.DuplicateRecordException;
+import romeo.players.api.IPlayerService;
 import romeo.ui.ErrorDialog;
 import romeo.ui.NavigatorPanel;
 import romeo.utils.Convert;
@@ -64,6 +65,7 @@ public class RomeoForm extends JPanel
   private boolean _forceTwoColumns = false;
   private boolean _bindingInProgess = false;
   private IExpressionParser _expressionParser = null;
+  private IPlayerService _playerService = null;
 
   public RomeoForm() {
     super();
@@ -74,6 +76,14 @@ public class RomeoForm extends JPanel
       fields = Collections.emptyList();
     }
     _fields = fields;
+  }
+  
+  public IPlayerService getPlayerService() {
+    return _playerService;
+  }
+  
+  public void setPlayerService(IPlayerService playerService) {
+    _playerService = playerService;
   }
   
   public IExpressionParser getExpressionParser() {
@@ -312,7 +322,8 @@ public class RomeoForm extends JPanel
           break;
 
         case FieldDef.TYPE_PLAYER_COMBO: {
-          PlayerCombo entryField = new PlayerCombo();
+          if(_playerService==null) throw new IllegalStateException("No player service provided to form");
+          PlayerCombo entryField = new PlayerCombo(_playerService);
           entryField.setMandatory(field.isMandatory());
           entryField.setPreferredSize(new Dimension(140, 24));
           Object defaultValue = field.getDefaultValue();
