@@ -39,6 +39,7 @@ import romeo.persistence.DuplicateRecordException;
 import romeo.players.api.IPlayerService;
 import romeo.ui.ErrorDialog;
 import romeo.ui.NavigatorPanel;
+import romeo.units.api.IUnitService;
 import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 import romeo.utils.INamed;
@@ -68,6 +69,7 @@ public class RomeoForm extends JPanel
   private IExpressionParser _expressionParser = null;
   private IPlayerService _playerService = null;
   private IXFactorService _xFactorService = null;
+  private IUnitService _unitService = null;
 
   public RomeoForm() {
     super();
@@ -78,6 +80,14 @@ public class RomeoForm extends JPanel
       fields = Collections.emptyList();
     }
     _fields = fields;
+  }
+  
+  public IUnitService getUnitService() {
+    return _unitService;
+  }
+  
+  public void setUnitService(IUnitService unitService) {
+    _unitService = unitService;
   }
   
   public IXFactorService getXFactorService() {
@@ -318,8 +328,11 @@ public class RomeoForm extends JPanel
 
         case FieldDef.TYPE_SCANNER_COMBO: {
           Number defaultRange = (Number) field.getDefaultValue();
-          ScannerCombo entryField = (defaultRange == null) ? new ScannerCombo()
-              : new ScannerCombo(defaultRange.intValue());
+          if(_unitService==null) throw new IllegalStateException("No Unit Service provided to form");
+          ScannerCombo entryField 
+              = (defaultRange == null) 
+              ? new ScannerCombo(_unitService)
+              : new ScannerCombo(_unitService, defaultRange.intValue());
           entryField.setMandatory(field.isMandatory());
           entryField.setPreferredSize(new Dimension(140, 24));
           Object defaultValue = field.getDefaultValue();

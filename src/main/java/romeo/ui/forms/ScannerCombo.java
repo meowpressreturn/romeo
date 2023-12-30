@@ -16,23 +16,16 @@ import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
 
 public class ScannerCombo extends AbstractRecordCombo implements ListCellRenderer<Object> {
+  
   private int _defaultValue = 0;
   private DefaultListCellRenderer _renderer = new DefaultListCellRenderer();
 
-  public ScannerCombo() {
-    super(Romeo.CONTEXT.getUnitService(), null);
-    setRenderer(this);
-    initDefault();
+  public ScannerCombo(IUnitService unitService) {
+    this(unitService, 0);
   }
-
-  public ScannerCombo(int defaultValue) {
-    super(Romeo.CONTEXT.getUnitService(), null);
-    _defaultValue = defaultValue;
-    setRenderer(this);
-  }
-
+  
   public ScannerCombo(IUnitService unitService, int defaultValue) {
-    super(unitService);
+    super(unitService, null);
     _defaultValue = defaultValue;
     setRenderer(this);
   }

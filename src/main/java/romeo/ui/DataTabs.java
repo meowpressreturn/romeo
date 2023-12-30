@@ -73,7 +73,8 @@ public class DataTabs extends JPanel {
       UnitFormFactory unitFormFactory,
       PlayerFormFactory playerFormFactory,
       XFactorFormFactory xFactorFormFactory,
-      IXFactorService xFactorService) {
+      IXFactorService xFactorService,
+      IUnitService unitService) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
@@ -102,8 +103,6 @@ public class DataTabs extends JPanel {
     GuiUtils.setColumnWidths(_worldTable, new int[] { 128, 64, 32, 48, 32, 32, 48, 48 });
 
     //Prep the units table
-    IUnitService us = Romeo.CONTEXT.getUnitService();
-
     BeanTableModel.ColumnDef[] unitColumns = new BeanTableModel.ColumnDef[] {
         new BeanTableModel.ColumnDef("name", "Name"), new BeanTableModel.ColumnDef("acronym", "Acr"),
         new BeanTableModel.ColumnDef("speed", "Spd"), new BeanTableModel.ColumnDef("firepower", "FP"),
@@ -111,7 +110,7 @@ public class DataTabs extends JPanel {
         new BeanTableModel.ColumnDef("defense", "Def"), new BeanTableModel.ColumnDef("pd", "PD"),
         new BeanTableModel.ColumnDef("carry", "CA"), new BeanTableModel.ColumnDef("license", "Lic"),
         new BeanTableModel.ColumnDef("complexity", "Cpx"), };
-    ServiceTableModel unitTableModel = new ServiceTableModel(unitColumns, us) {
+    ServiceTableModel unitTableModel = new ServiceTableModel(unitColumns, unitService) {
       @Override
       protected List<IUnit> fetchNewData() {
         return new ArrayList<IUnit>(((IUnitService) _service).getUnits());

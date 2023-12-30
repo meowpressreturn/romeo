@@ -100,7 +100,7 @@ public class RomeoContext {
     _shutdownNotifier = new EventHubImpl();    
     _unitFormFactory = new UnitFormFactory(_unitService, _xFactorService);
     _playerFormFactory = new PlayerFormFactory(_playerService, _worldService, _settingsService);
-    _worldFormFactory = new WorldFormFactory(_worldService, _settingsService, _playerService, _playerFormFactory);
+    _worldFormFactory = new WorldFormFactory(_worldService, _settingsService, _playerService, _unitService, _playerFormFactory);
     _xFactorFormFactory = new XFactorFormFactory(_xFactorService, _expressionParser);
     _worldImporterFactory = new WorldImporterFactory(_worldService, _playerService, _settingsService);
     
@@ -155,10 +155,6 @@ public class RomeoContext {
 
   public ISettingsService getSettingsService() {
     return _settingsService;
-  }
-
-  public IUnitService getUnitService() {
-    return _unitService;
   }
 
   public IWorldService getWorldService() {

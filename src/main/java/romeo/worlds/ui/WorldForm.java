@@ -34,6 +34,7 @@ import romeo.ui.forms.IFormLogic;
 import romeo.ui.forms.RomeoForm;
 import romeo.ui.forms.ScannerCombo;
 import romeo.units.api.IUnit;
+import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
 import romeo.utils.BeanComparator;
 import romeo.utils.Convert;
@@ -62,12 +63,15 @@ public class WorldForm extends RomeoForm implements IFormLogic, IServiceListener
       IWorldService worldService, 
       ISettingsService settingsService, 
       IPlayerService playerService, 
+      IUnitService unitService,
       PlayerFormFactory playerFormFactory) {
     _worldService = Objects.requireNonNull(worldService, "worldService must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
     _playerService = Objects.requireNonNull(playerService, "playerService must not be null");
     _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory must not be null");
+    Objects.requireNonNull(unitService, "unitService may not be null");
     
+    setUnitService(unitService); //need this for the ScannerCombo
     setName("World");
     setForceTwoColumns(true);
     super.setFormLogic(this);
