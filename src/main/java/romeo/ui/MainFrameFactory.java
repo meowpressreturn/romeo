@@ -90,7 +90,7 @@ public class MainFrameFactory {
     _battleCalculatorFactory = Objects.requireNonNull(battleCalculatorFactory, "battleCalculatorFactory must not be null");
   }
   
-  public MainFrame createMainFrame() {
+  public MainFrame layOurScene() {
     return new MainFrame(
       _navigatorPanel,
       _worldsMap, 

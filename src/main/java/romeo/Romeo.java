@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -38,16 +39,58 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.springframework.core.io.ClassPathResource;
 
+import romeo.battle.BattleCalculatorFactory;
+import romeo.importdata.impl.AdjustmentsFileReader;
+import romeo.importdata.impl.UnitImporterImpl;
+import romeo.importdata.impl.WorldImporterFactory;
+import romeo.importdata.impl.XFactorFileReader;
 import romeo.model.api.IServiceInitialiser;
+import romeo.persistence.HsqldbSettingsInitialiser;
+import romeo.persistence.QndDataSource;
+import romeo.players.api.IPlayerService;
+import romeo.players.impl.PlayerServiceImpl;
+import romeo.players.impl.PlayerServiceInitialiser;
+import romeo.players.ui.PlayerFormFactory;
+import romeo.scenarios.api.IScenarioService;
+import romeo.scenarios.impl.ScenarioServiceImpl;
+import romeo.scenarios.impl.ScenarioServiceInitialiser;
+import romeo.settings.api.ISettingsService;
+import romeo.settings.impl.SettingsServiceImpl;
 import romeo.settings.impl.SettingsServiceInitialiser;
 import romeo.ui.ErrorDialog;
+import romeo.ui.GenericMap;
+import romeo.ui.GenericMap.IMapLogic;
+import romeo.ui.IRecordSelectionListener;
 import romeo.ui.MainFrame;
 import romeo.ui.MainFrameFactory;
 import romeo.ui.MapCenterer;
+import romeo.ui.NavigatorPanel;
+import romeo.units.api.IUnitService;
+import romeo.units.impl.UnitServiceImpl;
 import romeo.units.impl.UnitServiceInitialiser;
+import romeo.units.ui.UnitFormFactory;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
 import romeo.utils.GuiUtils;
+import romeo.utils.IKeyGen;
+import romeo.utils.KeyGenImpl;
+import romeo.utils.LogThreadNameInvocationListener;
+import romeo.utils.events.EventHubImpl;
+import romeo.utils.events.IEventHub;
+import romeo.worlds.api.IWorldService;
+import romeo.worlds.impl.WorldServiceImpl;
+import romeo.worlds.impl.WorldServiceInitialiser;
+import romeo.worlds.ui.WorldFormFactory;
+import romeo.worlds.ui.WorldMapLogic;
+import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
+import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IXFactorCompiler;
+import romeo.xfactors.api.IXFactorService;
+import romeo.xfactors.impl.ExpressionParserImpl;
+import romeo.xfactors.impl.XFactorCompilerImpl;
+import romeo.xfactors.impl.XFactorServiceImpl;
+import romeo.xfactors.impl.XFactorServiceInitialiser;
+import romeo.xfactors.ui.XFactorFormFactory;
 
 /**
  * Contains the main method that creates the ApplicationContext and starts the
@@ -108,7 +151,7 @@ public class Romeo {
   private static MainFrame _mainFrame;
 
   /**
-   * Create the context, show the splash screen, obtain an instance of
+   * Create the various objects, show the splash screen, obtain an instance of
    * Romeo and call its whereForArtThou() entry method. Note that the Romeo
    * instance is obtained from Spring to allow for dependency injection of the
    * initialisers etc.
@@ -119,15 +162,89 @@ public class Romeo {
     try {
       Romeo.showSplash();
       Romeo.checkUnitsFileExists();
-      Romeo.incrementSplashProgress("Initialise RomeoContext");
-      RomeoContext fairVerona = new RomeoContext();
-      Romeo romeo = fairVerona.layOurScene();
+      Romeo.incrementSplashProgress("In fair Verona, where we lay our scene");
+      Romeo romeo = fromForthTheFatalLoins();
       romeo.whereforeArtThou();
     } catch(Exception e) {
       Romeo.showStartupError(e);
       Log log = LogFactory.getLog(Romeo.class);
       log.error("Romeo startup failure", e);
     }
+  }
+  
+  private static Romeo fromForthTheFatalLoins() {
+    QndDataSource dataSource = new QndDataSource();
+    dataSource.setDriver("org.hsqldb.jdbcDriver");
+    dataSource.setDatabase("jdbc:hsqldb:database/romeo");  //relative location of the database (to be created on first use)
+    
+    IKeyGen keyGen = new KeyGenImpl();    
+    IUnitService unitService = new UnitServiceImpl(dataSource, keyGen);
+    ISettingsService settingsService = new SettingsServiceImpl(dataSource, keyGen);
+    IPlayerService playerService = new PlayerServiceImpl(dataSource, keyGen);
+    IWorldService worldService = new WorldServiceImpl(dataSource, keyGen, playerService, unitService, settingsService);
+    IScenarioService scenarioService = new ScenarioServiceImpl(dataSource, keyGen);
+    IXFactorService xFactorService = new XFactorServiceImpl(dataSource, keyGen, unitService);
+    IExpressionParser expressionParser = new ExpressionParserImpl();
+    IXFactorCompiler xFactorCompiler = new XFactorCompilerImpl(expressionParser, xFactorService);
+    NavigatorPanel navigatorPanel = new NavigatorPanel();    
+    IEventHub shutdownNotifier = new EventHubImpl();    
+    UnitFormFactory unitFormFactory = new UnitFormFactory(unitService, xFactorService);
+    PlayerFormFactory playerFormFactory = new PlayerFormFactory(playerService, worldService, settingsService);
+    WorldFormFactory worldFormFactory = new WorldFormFactory(worldService, settingsService, playerService, unitService, playerFormFactory);
+    XFactorFormFactory xFactorFormFactory = new XFactorFormFactory(xFactorService, expressionParser);
+    WorldImporterFactory worldImporterFactory = new WorldImporterFactory(worldService, playerService, settingsService);
+    
+    IMapLogic logic = new WorldMapLogic(worldService, unitService, settingsService, playerService); 
+    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory);
+    GenericMap worldsMap = new GenericMap(logic, listener, shutdownNotifier);
+    worldsMap.setFont(new java.awt.Font("Arial", 0, 10));
+    
+    MapCenterer mapCenterer = new MapCenterer(settingsService, worldService, worldsMap);
+    List<String> worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
+    List<String> unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
+    BattleCalculatorFactory battleCalculatorFactory = new BattleCalculatorFactory(xFactorCompiler);
+    
+    MainFrameFactory mainFrameFactory = new MainFrameFactory(
+        navigatorPanel, 
+        worldsMap, 
+        unitService, 
+        settingsService, 
+        playerService, 
+        worldService, 
+        shutdownNotifier, 
+        worldColumns, 
+        unitColumns, 
+        scenarioService, 
+        dataSource, 
+        worldFormFactory, 
+        unitFormFactory, 
+        playerFormFactory, 
+        xFactorFormFactory, 
+        worldImporterFactory, 
+        xFactorService, 
+        xFactorCompiler, 
+        battleCalculatorFactory);
+    
+    //add log thread listeners
+    worldService.addListener(new LogThreadNameInvocationListener());
+    unitService.addListener(new LogThreadNameInvocationListener());
+    xFactorService.addListener(new LogThreadNameInvocationListener());
+    playerService.addListener(new LogThreadNameInvocationListener());
+    scenarioService.addListener(new LogThreadNameInvocationListener());
+    settingsService.addListener(new LogThreadNameInvocationListener()); 
+    
+    return new Romeo(
+        dataSource,
+        mapCenterer,
+        Arrays.asList(
+            new HsqldbSettingsInitialiser(),
+            new SettingsServiceInitialiser(),
+            new WorldServiceInitialiser(keyGen, settingsService),
+            new UnitServiceInitialiser(new UnitImporterImpl(unitService), unitColumns, new AdjustmentsFileReader()),
+            new XFactorServiceInitialiser(unitService, new XFactorFileReader(), keyGen),
+            new PlayerServiceInitialiser(keyGen),
+            new ScenarioServiceInitialiser()),
+        mainFrameFactory);
   }
   
   /**
@@ -160,14 +277,14 @@ public class Romeo {
   }
   
   /**
-   * Run the initialisers and create the UI by instantiating the MainFrame
-   * instance
+   * Run the initialisers and then bring up the main UI by instantiating the MainFrame
+   * (which needs to be done after the initialisers have all been run).
    */
   public void whereforeArtThou() {
     Log log = LogFactory.getLog(this.getClass());
     log.info("wherefore art thou Romeo?");
     runInitialisers();
-    final MainFrame frame = _mainFrameFactory.createMainFrame();
+    final MainFrame frame = _mainFrameFactory.layOurScene();
     Romeo.incrementSplashProgress("Open main frame");
     frame.setVisible(true);
     Romeo.setMainFrame(frame);
@@ -176,7 +293,6 @@ public class Romeo {
     //Now that the mainFrame is displayed the map centering should work properly
     //(it doesn't if we try to set it while setting up the ui as scrollPane reports its sizes as 0)
     SwingUtilities.invokeLater( _mapCenterer );
-    
   }
   
   /**
