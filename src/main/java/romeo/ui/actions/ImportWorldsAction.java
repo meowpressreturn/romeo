@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import romeo.importdata.impl.WorldImporterFactory;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.ui.AbstractRomeoAction;
@@ -30,10 +31,11 @@ import romeo.worlds.ui.ImportWorldsHelper;
 
 public class ImportWorldsAction extends AbstractRomeoAction {
 
-  private ISettingsService _settingsService;
-  private IWorldService _worldService;
-  private String[] _columns;
-  private JFrame _mainFrame;
+  private final ISettingsService _settingsService;
+  private final IWorldService _worldService;
+  private final String[] _columns;
+  private final JFrame _mainFrame;
+  private final WorldImporterFactory _worldImporterFactory;
   
   /**
    * Constructor
@@ -46,11 +48,13 @@ public class ImportWorldsAction extends AbstractRomeoAction {
       JFrame mainFrame,
       ISettingsService settingsService,
       IWorldService worldService,
-      String[] columns) {
+      String[] columns,
+      WorldImporterFactory worldImporterFactory) {
     _mainFrame = Objects.requireNonNull(mainFrame, "mainFrame may not be null");
     _settingsService = Objects.requireNonNull(settingsService,"settingsService may not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService may not be null");
     _columns = Objects.requireNonNull(columns, "columns may not be null");
+    _worldImporterFactory = Objects.requireNonNull(worldImporterFactory, "worldImporterFactory");
         
     putValue(Action.LONG_DESCRIPTION, "Update Map data from file");
     putValue(Action.NAME, "Import Map Data");
@@ -174,7 +178,7 @@ public class ImportWorldsAction extends AbstractRomeoAction {
     }
     //The helper will now run the import task simultaneously on another thread, show a progressmonitor
     //and when complete generate a dialog to show results.
-    ImportWorldsHelper.importWorlds(_columns, turnFiles);
+    ImportWorldsHelper.importWorlds(_columns, turnFiles, _worldImporterFactory);
   }
 
   private void importSingleFile(File file, int turn) {
@@ -191,7 +195,7 @@ public class ImportWorldsAction extends AbstractRomeoAction {
 
     Map<Integer, File> turnFiles = new TreeMap<>();
     turnFiles.put(turn, file);
-    ImportWorldsHelper.importWorlds(_columns, turnFiles);
+    ImportWorldsHelper.importWorlds(_columns, turnFiles, _worldImporterFactory);
   }
 
 }

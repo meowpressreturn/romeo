@@ -7,10 +7,9 @@ import javax.sql.DataSource;
 
 import romeo.battle.BattleCalculatorFactory;
 import romeo.battle.ui.BattlePanel;
-import romeo.importdata.IWorldImporter;
 import romeo.importdata.impl.AdjustmentsFileReader;
 import romeo.importdata.impl.UnitImporterImpl;
-import romeo.importdata.impl.WorldImporterImpl;
+import romeo.importdata.impl.WorldImporterFactory;
 import romeo.importdata.impl.XFactorFileReader;
 import romeo.persistence.HsqldbSettingsInitialiser;
 import romeo.persistence.QndDataSource;
@@ -84,6 +83,7 @@ public class RomeoContext {
   private final UnitFormFactory _unitFormFactory;
   private final PlayerFormFactory _playerFormFactory;
   private final XFactorFormFactory _xFactorFormFactory;
+  private final WorldImporterFactory _worldImporterFactory;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -105,6 +105,7 @@ public class RomeoContext {
     _playerFormFactory = new PlayerFormFactory(_playerService, _worldService, _settingsService);
     _worldFormFactory = new WorldFormFactory(_worldService, _settingsService, _playerService, _playerFormFactory);
     _xFactorFormFactory = new XFactorFormFactory(_xFactorService, _expressionParser);
+    _worldImporterFactory = new WorldImporterFactory(_worldService, _playerService, _settingsService);
     
     IMapLogic logic = new WorldMapLogic(_worldService, _unitService, _settingsService, _playerService); 
     IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(_navigatorPanel, _worldFormFactory);
@@ -153,15 +154,6 @@ public class RomeoContext {
     return _xFactorService;
   }
 
-  /**
-   * Returns an object implenting the {@link IWorldImporter} interface. Call
-   * this for each import as the importer is a disposable stateful object.
-   * @return worldImporter
-   */
-  public IWorldImporter createWorldImporter() {
-    return new WorldImporterImpl(_worldService, _playerService, _settingsService);
-  }
-  
   private GraphsPanel createGraphsPanel() {
     
     HistoryChartsHelper worldChartsHelper = new HistoryChartsHelper(_dataSource);
@@ -240,7 +232,8 @@ public class RomeoContext {
 		_worldFormFactory,
 		_unitFormFactory,
 		_playerFormFactory,
-		_xFactorFormFactory);
+		_xFactorFormFactory,
+		_worldImporterFactory);
   }
 
   private void addLogThreadListeners() {

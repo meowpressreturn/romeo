@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import romeo.Romeo;
 import romeo.battle.ui.BattlePanel;
+import romeo.importdata.impl.WorldImporterFactory;
 import romeo.players.api.IPlayerService;
 import romeo.players.ui.PlayerFormFactory;
 import romeo.scenarios.api.IScenarioService;
@@ -101,7 +102,8 @@ public class MainFrame extends JFrame {
                    WorldFormFactory worldFormFactory,
                    UnitFormFactory unitFormFactory,
                    PlayerFormFactory playerFormFactory,
-                   XFactorFormFactory xFactorFormFactory) {
+                   XFactorFormFactory xFactorFormFactory,
+                   WorldImporterFactory worldImporterFactory) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");   
@@ -113,6 +115,7 @@ public class MainFrame extends JFrame {
     Objects.requireNonNull(unitFormFactory, "unitFormFactory must not be null");
     Objects.requireNonNull(playerFormFactory, "playerFormFactory must not be null");
     Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory must not be null");
+    Objects.requireNonNull(worldImporterFactory, "worldImporterFactory must not be null");
     
     _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap must not be null");
@@ -156,7 +159,8 @@ public class MainFrame extends JFrame {
         worldFormFactory, 
         unitFormFactory, 
         playerFormFactory,
-        xFactorFormFactory);
+        xFactorFormFactory,
+        worldImporterFactory);
 
     _mainSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
     _mainSplitPane.setOneTouchExpandable(true);
@@ -230,7 +234,8 @@ public class MainFrame extends JFrame {
       WorldFormFactory worldFormFactory,
       UnitFormFactory unitFormFactory,
       PlayerFormFactory playerFormFactory,
-      XFactorFormFactory xFactorFormFactory) {
+      XFactorFormFactory xFactorFormFactory,
+      WorldImporterFactory worldImporterFactory) {
     
     Action prefsAction = new OpenPreferencesAction(navigatorPanel, settingsService, scenarioService);
     Action newWorldAction = new NewWorldAction(navigatorPanel, worldFormFactory);
@@ -238,7 +243,7 @@ public class MainFrame extends JFrame {
     Action newXFactorAction = new NewXFactorAction(navigatorPanel, xFactorFormFactory);
     Action newPlayerAction = new NewPlayerAction(navigatorPanel, playerFormFactory);
     Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitService, unitColumns);
-    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns));
+    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns), worldImporterFactory);
     Action findWorldAction = new FindWorldAction(navigatorPanel, worldFormFactory);
 
     JMenuBar menuBar = new JMenuBar();

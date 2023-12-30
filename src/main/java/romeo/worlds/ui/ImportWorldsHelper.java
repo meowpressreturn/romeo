@@ -30,6 +30,7 @@ import romeo.Romeo;
 import romeo.importdata.IWorldImportReport;
 import romeo.importdata.IWorldImporter;
 import romeo.importdata.impl.CsvWorldFile;
+import romeo.importdata.impl.WorldImporterFactory;
 import romeo.ui.ErrorDialog;
 import romeo.ui.NumericCellRenderer;
 import romeo.ui.actions.ImportWorldsAction;
@@ -43,9 +44,9 @@ public class ImportWorldsHelper {
    * @param columnNames
    * @param turnFiles
    */
-  public static void importWorlds(String[] columnNames, Map<Integer, File> turnFiles) {
+  public static void importWorlds(String[] columnNames, Map<Integer, File> turnFiles, WorldImporterFactory worldImporterFactory) {
     ImportWorldsProgressor progressor = new ImportWorldsProgressor(turnFiles);
-    ImportWorldsTask task = new ImportWorldsTask(columnNames, turnFiles, progressor);
+    ImportWorldsTask task = new ImportWorldsTask(columnNames, turnFiles, progressor, worldImporterFactory);
     progressor.executeTask(task);
   }
 
@@ -314,15 +315,21 @@ public class ImportWorldsHelper {
    * pass this to the progressor upon completion.
    */
   private static class ImportWorldsTask implements Runnable {
-    private ImportWorldsProgressor _progressor;
-    private Map<Integer, File> _turnFiles;
-    private String[] _columnNames;
-    private Log _log;
+    private final ImportWorldsProgressor _progressor;
+    private final Map<Integer, File> _turnFiles;
+    private final String[] _columnNames;
+    private final Log _log;
+    private final WorldImporterFactory _worldImporterFactory;
 
-    private ImportWorldsTask(String[] columnNames, Map<Integer, File> turnFiles, ImportWorldsProgressor progressor) {
+    private ImportWorldsTask(
+        String[] columnNames, 
+        Map<Integer, File> turnFiles, 
+        ImportWorldsProgressor progressor,
+        WorldImporterFactory worldImporterFactory) {
       _columnNames = Objects.requireNonNull(columnNames, "columnNames, may not be null");
       _turnFiles = Objects.requireNonNull(turnFiles, "turnFiles may not be null");
-      _progressor = progressor;
+      _progressor = progressor; //optional
+      _worldImporterFactory = Objects.requireNonNull(worldImporterFactory, "worldImporter may not be null");
       _log = LogFactory.getLog(this.getClass());
     }
 
@@ -361,7 +368,7 @@ public class ImportWorldsHelper {
         }
         File file = turnFile.getValue();
         _log.info("Preparing to import data for turn " + turn + " from " + turnFile.getValue().getName());
-        IWorldImporter importer = Romeo.CONTEXT.createWorldImporter(); //use a fresh importer for each file
+        IWorldImporter importer = _worldImporterFactory.newInstance(); //use a fresh importer for each file
         try {
           CsvWorldFile worldFile = new CsvWorldFile(file, _columnNames, "name");
           IWorldImportReport report = importer.importData(worldFile, turn);
