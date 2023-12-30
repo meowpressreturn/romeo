@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import romeo.importdata.IUnitFile;
 import romeo.importdata.IUnitImportReport;
@@ -23,6 +22,7 @@ import romeo.importdata.impl.CsvUnitFile;
 import romeo.model.api.IServiceInitialiser;
 import romeo.units.api.Acronym;
 import romeo.units.api.UnitId;
+import romeo.utils.ClassPathFile;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
 
@@ -224,7 +224,7 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
     IUnitFile unitFile = null;
 
     try {
-      ClassPathResource defUnitsCsv = new ClassPathResource(UNITS_FILE_RESOURCE_PATH);
+      ClassPathFile defUnitsCsv = new ClassPathFile(UNITS_FILE_RESOURCE_PATH);
       InputStream stream = defUnitsCsv.getInputStream();
       log.debug("CSV Columns=" + _columnNames);
       final String nameColumn = "name"; //No longer support setting this in context

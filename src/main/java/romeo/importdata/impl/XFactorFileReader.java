@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import romeo.utils.ClassPathFile;
 import romeo.utils.XmlUtils;
 
 /**
@@ -22,36 +21,16 @@ import romeo.utils.XmlUtils;
 public class XFactorFileReader {
   public static final String DEFAULT_PATH = "defaultXFactors.xml";
 
-  /*
-   * public static void main(String[] args) { //testing only... try {
-   * XFactorFileReader r = new XFactorFileReader(); List results = r.read();
-   * Iterator i = results.iterator(); while(i.hasNext()) {
-   * System.out.println("----------------------------\n"); Map map =
-   * (Map)i.next(); Iterator j = map.entrySet().iterator(); while(j.hasNext()) {
-   * Map.Entry entry = (Map.Entry)j.next(); System.out.println(entry.getKey() +
-   * ":"); System.out.println(entry.getValue()); System.out.println(); } } }
-   * catch(RuntimeException e) { e.printStackTrace(); } }
-   */
-
   //.............
 
-  private Resource _resource;
+  private ClassPathFile _resource;
 
   /**
    * Constructor for an XFactorFileReader that will read the xfactors file from
    * the default path using a ClassPathResource.
    */
   public XFactorFileReader() {
-    setResource(new ClassPathResource(DEFAULT_PATH));
-  }
-
-  /**
-   * Create an XfactorFileReader that will read xfactors from the specified
-   * Resource.
-   * @param resource
-   */
-  public XFactorFileReader(Resource resource) {
-    setResource(resource);
+    _resource = new ClassPathFile(DEFAULT_PATH);
   }
 
   /**
@@ -65,12 +44,10 @@ public class XFactorFileReader {
    */
   public List<Map<String, Object>> read() {
     try {
-      Resource res = getResource();
-      ;
-      InputStream stream = res.getInputStream();
+      InputStream stream = _resource.getInputStream();
       try {
         if(stream == null) {
-          throw new RuntimeException("null InputStream for resource " + res);
+          throw new RuntimeException("null InputStream for resource " + _resource);
         }
         ArrayList<Map<String, Object>> xfactors = new ArrayList<Map<String, Object>>();
         Document document = XmlUtils.readDocument(stream);
@@ -124,21 +101,4 @@ public class XFactorFileReader {
       throw new RuntimeException("Error reading Xfactors", e);
     }
   }
-
-  /**
-   * Returns the Resource from which the xfactors shall be read
-   * @return resource
-   */
-  public Resource getResource() {
-    return _resource;
-  }
-
-  /**
-   * Set the Resource from which the xfactor definitions shall be read
-   * @param resource
-   */
-  public void setResource(Resource resource) {
-    _resource = resource;
-  }
-
 }

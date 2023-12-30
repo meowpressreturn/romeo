@@ -1,4 +1,3 @@
-
 package romeo;
 
 import java.awt.BorderLayout;
@@ -37,7 +36,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.springframework.core.io.ClassPathResource;
 
 import romeo.battle.BattleCalculatorFactory;
 import romeo.importdata.impl.AdjustmentsFileReader;
@@ -69,6 +67,7 @@ import romeo.units.api.IUnitService;
 import romeo.units.impl.UnitServiceImpl;
 import romeo.units.impl.UnitServiceInitialiser;
 import romeo.units.ui.UnitFormFactory;
+import romeo.utils.ClassPathFile;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
 import romeo.utils.GuiUtils;
@@ -150,14 +149,6 @@ public class Romeo {
    */
   private static MainFrame _mainFrame;
 
-  /**
-   * Create the various objects, show the splash screen, obtain an instance of
-   * Romeo and call its whereForArtThou() entry method. Note that the Romeo
-   * instance is obtained from Spring to allow for dependency injection of the
-   * initialisers etc.
-   * @param args
-   *          Currently unused
-   */
   public static void main(String[] args) {
     try {
       Romeo.showSplash();
@@ -383,7 +374,7 @@ public class Romeo {
    *           if the unit.csv file is not installed
    */
   static void checkUnitsFileExists() {
-    if(!new ClassPathResource(UnitServiceInitialiser.UNITS_FILE_RESOURCE_PATH).exists()) {
+    if(!new ClassPathFile(UnitServiceInitialiser.UNITS_FILE_RESOURCE_PATH).exists()) {
 
       //prompt for an alternative filesystem path and then just copy that into resources folder for the
       //unit service initialiser to use later

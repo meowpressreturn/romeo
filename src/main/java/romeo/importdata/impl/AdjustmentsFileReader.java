@@ -5,13 +5,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import romeo.utils.ClassPathFile;
 import romeo.utils.XmlUtils;
 
 /**
@@ -28,22 +27,14 @@ public class AdjustmentsFileReader {
 
   //.............
 
-  private Resource _resource;
+  private ClassPathFile _resource;
 
   /**
    * Create an AdjustmentsFileReader that will read defaultAdjustments.xml via
    * the classpath.
    */
   public AdjustmentsFileReader() {
-    setResource(new ClassPathResource(DEFAULT_PATH));
-  }
-
-  /**
-   * Create an AdjustmentsFileReader that will read the xml from the specified
-   * resource.
-   */
-  public AdjustmentsFileReader(Resource resource) {
-    setResource(resource);
+    _resource = new ClassPathFile(DEFAULT_PATH);
   }
 
   /**
@@ -53,12 +44,10 @@ public class AdjustmentsFileReader {
    */
   public Map<String, Map<String, String>> read() {
     try {
-      Resource res = getResource();
-      ;
-      InputStream stream = res.getInputStream();
+      InputStream stream = _resource.getInputStream();
       try {
         if(stream == null) {
-          throw new RuntimeException("null InputStream for resource " + res);
+          throw new RuntimeException("null InputStream for resource " + _resource);
         }
         Map<String, Map<String, String>> map = new TreeMap<String, Map<String, String>>();
         Document document = XmlUtils.readDocument(stream);
@@ -88,22 +77,4 @@ public class AdjustmentsFileReader {
       throw new RuntimeException("Error reading acronyms", e);
     }
   }
-
-  /**
-   * Get the Resource that is used to access the file to be read
-   * @return resource
-   */
-  public Resource getResource() {
-    return _resource;
-  }
-
-  /**
-   * Set the Resource that is used to access the file containing the xml that
-   * will be read
-   * @param resource
-   */
-  public void setResource(Resource resource) {
-    _resource = resource;
-  }
-
 }

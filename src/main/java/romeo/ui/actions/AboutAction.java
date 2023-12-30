@@ -24,8 +24,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-import org.springframework.core.io.ClassPathResource;
-
 import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 
@@ -109,11 +107,10 @@ public class AboutAction extends AbstractAction {
 
   private String loadText(String file) {
     try {
-      ClassPathResource textRes = new ClassPathResource(_file);
-      if(!textRes.exists()) {
+      InputStream stream = getClass().getClassLoader().getResourceAsStream(file);
+      if(stream==null) {
         throw new IllegalStateException("No about text resource:" + _file);
       }
-      InputStream stream = textRes.getInputStream();
       InputStreamReader reader = new InputStreamReader(stream);
       BufferedReader br = new BufferedReader(reader);
       StringBuffer buffer = new StringBuffer();
