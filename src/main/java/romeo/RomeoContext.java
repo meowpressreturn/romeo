@@ -6,7 +6,6 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import romeo.battle.BattleCalculatorFactory;
-import romeo.battle.ui.BattlePanel;
 import romeo.importdata.impl.AdjustmentsFileReader;
 import romeo.importdata.impl.UnitImporterImpl;
 import romeo.importdata.impl.WorldImporterFactory;
@@ -25,23 +24,20 @@ import romeo.settings.impl.SettingsServiceImpl;
 import romeo.settings.impl.SettingsServiceInitialiser;
 import romeo.ui.GenericMap;
 import romeo.ui.GenericMap.IMapLogic;
-import romeo.ui.GraphsPanel;
 import romeo.ui.IRecordSelectionListener;
-import romeo.ui.MainFrame;
+import romeo.ui.MainFrameFactory;
 import romeo.ui.MapCenterer;
 import romeo.ui.NavigatorPanel;
 import romeo.units.api.IUnitService;
 import romeo.units.impl.UnitServiceImpl;
 import romeo.units.impl.UnitServiceInitialiser;
 import romeo.units.ui.UnitFormFactory;
-import romeo.units.ui.UnitGraphsPanel;
 import romeo.utils.IKeyGen;
 import romeo.utils.KeyGenImpl;
 import romeo.utils.LogThreadNameInvocationListener;
 import romeo.utils.events.EventHubImpl;
 import romeo.utils.events.IEventHub;
 import romeo.worlds.api.IWorldService;
-import romeo.worlds.impl.HistoryChartsHelper;
 import romeo.worlds.impl.WorldServiceImpl;
 import romeo.worlds.impl.WorldServiceInitialiser;
 import romeo.worlds.ui.WorldFormFactory;
@@ -84,6 +80,7 @@ public class RomeoContext {
   private final PlayerFormFactory _playerFormFactory;
   private final XFactorFormFactory _xFactorFormFactory;
   private final WorldImporterFactory _worldImporterFactory;
+  private final MainFrameFactory _mainFrameFactory;
  
   public RomeoContext() {    
     QndDataSource ds = new QndDataSource();
@@ -117,10 +114,31 @@ public class RomeoContext {
     _unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
     _battleCalculatorFactory = new BattleCalculatorFactory(_xFactorCompiler);
     
+    _mainFrameFactory = new MainFrameFactory(
+        _navigatorPanel, 
+        _worldsMap, 
+        _unitService, 
+        _settingsService, 
+        _playerService, 
+        _worldService, 
+        _shutdownNotifier, 
+        _worldColumns, 
+        _unitColumns, 
+        _scenarioService, 
+        _dataSource, 
+        _worldFormFactory, 
+        _unitFormFactory, 
+        _playerFormFactory, 
+        _xFactorFormFactory, 
+        _worldImporterFactory, 
+        _xFactorService, 
+        _xFactorCompiler, 
+        _battleCalculatorFactory);
+    
     addLogThreadListeners();
   }
   
-  public Romeo createRomeo() {
+  public Romeo layOurScene() {
     return new Romeo(
         _dataSource,
         _mapCenterer,
@@ -131,7 +149,8 @@ public class RomeoContext {
             new UnitServiceInitialiser(new UnitImporterImpl(_unitService), _unitColumns, new AdjustmentsFileReader()),
             new XFactorServiceInitialiser(_unitService, new XFactorFileReader(), _keyGen),
             new PlayerServiceInitialiser(_keyGen),
-            new ScenarioServiceInitialiser()));
+            new ScenarioServiceInitialiser()),
+        _mainFrameFactory);
   }
 
   public IPlayerService getPlayerService() {
@@ -152,88 +171,6 @@ public class RomeoContext {
 
   public IXFactorService getXFactorService() {
     return _xFactorService;
-  }
-
-  private GraphsPanel createGraphsPanel() {
-    
-    HistoryChartsHelper worldChartsHelper = new HistoryChartsHelper(_dataSource);
-    worldChartsHelper.setPlayerHistorySql(
-        "SELECT #STAT# AS value, turn, owner FROM WORLDS_HISTORY GROUP BY owner, turn ORDER BY owner, turn");
-    
-    worldChartsHelper.setTeamWorldsSql(
-        "SELECT COUNT(worldId) AS worlds, turn, team"
-        + " FROM WORLDS_HISTORY WH"
-        + " JOIN PLAYERS P"
-        + " ON WH.owner=P.name"
-        + " WHERE team IS NOT NULL"
-        + " GROUP BY team,turn"
-        + " ORDER BY team,turn");
-    
-    worldChartsHelper.setTeamFirepowerSql(
-        "SELECT h.turn AS turn, p.team AS team, SUM(firepower) AS firepower"
-        + " FROM worlds_history h"
-        + " JOIN worlds w ON h.worldId=w.id"
-        + " JOIN players p ON h.owner=p.name"
-        + " GROUP BY team, turn"
-        + " ORDER BY team, turn");
-    
-    worldChartsHelper.setTeamLabourSql(
-        "SELECT h.turn AS turn, p.team AS team, SUM(labour) AS labour"
-        + " FROM worlds_history h"
-        + " JOIN worlds w ON h.worldId=w.id"
-        + " JOIN players p ON h.owner=p.name"
-        + " GROUP BY team, turn"
-        + " ORDER BY team, turn");
-    
-    worldChartsHelper.setTeamCapitalSql(
-        "SELECT h.turn AS turn, p.team AS team, SUM(capital) AS capital"
-        + " FROM worlds_history h"
-        + " JOIN worlds w ON h.worldId=w.id"
-        + " JOIN players p ON h.owner=p.name"
-        + " GROUP BY team, turn"
-        + " ORDER BY team, turn");
-    
-	  GraphsPanel graphsPanel = new GraphsPanel(_worldService, _playerService, worldChartsHelper);
-	  
-	  return graphsPanel;
-  }
-  
-  private BattlePanel createBattlePanel() {
-    return new BattlePanel(
-        _unitService,
-        _settingsService,
-        _xFactorService,
-        _xFactorCompiler,
-        _scenarioService,
-        _battleCalculatorFactory,
-        _navigatorPanel);
-  }
-  
-  /**
-   * If you want a reference to the {@link MainFrame} for use in ui code, then
-   * you should call the static Romeo.getMainFrame() method. 
-   */
-  public MainFrame createMainFrame() {
-	  return new MainFrame(
-		_navigatorPanel,
-		_worldsMap, 
-		new UnitGraphsPanel(getUnitService()), 
-		createGraphsPanel(), 
-		createBattlePanel(), 
-		_settingsService, 
-		_playerService,
-		_worldService, 
-		_unitService,
-		_shutdownNotifier,
-		_worldColumns,
-		_unitColumns,
-		_scenarioService,
-		_dataSource,
-		_worldFormFactory,
-		_unitFormFactory,
-		_playerFormFactory,
-		_xFactorFormFactory,
-		_worldImporterFactory);
   }
 
   private void addLogThreadListeners() {

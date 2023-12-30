@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -43,6 +42,7 @@ import romeo.model.api.IServiceInitialiser;
 import romeo.settings.impl.SettingsServiceInitialiser;
 import romeo.ui.ErrorDialog;
 import romeo.ui.MainFrame;
+import romeo.ui.MainFrameFactory;
 import romeo.ui.MapCenterer;
 import romeo.units.impl.UnitServiceInitialiser;
 import romeo.utils.Convert;
@@ -125,8 +125,9 @@ public class Romeo {
       Romeo.showSplash();
       Romeo.checkUnitsFileExists();
       Romeo.incrementSplashProgress("Initialise RomeoContext");
-      Romeo.CONTEXT = new RomeoContext();
-      Romeo romeo = Romeo.CONTEXT.createRomeo();
+      RomeoContext fairVerona = new RomeoContext();
+      Romeo.CONTEXT = fairVerona;
+      Romeo romeo = fairVerona.layOurScene();
       romeo.whereforeArtThou();
     } catch(Exception e) {
       Romeo.showStartupError(e);
@@ -148,17 +149,20 @@ public class Romeo {
   //End of static definitions
   /////////////////////////////////////////////////////////////////////////////
 
-  private List<IServiceInitialiser> _initialisers = Collections.emptyList();
-  private DataSource _dataSource;
-  private MapCenterer _mapCenterer;
+  private final List<IServiceInitialiser> _initialisers;
+  private final DataSource _dataSource;
+  private final MapCenterer _mapCenterer;
+  private final MainFrameFactory _mainFrameFactory;
 
   public Romeo(
       DataSource dataSource, 
       MapCenterer mapCenterer,
-      List<IServiceInitialiser> initialisers) {
+      List<IServiceInitialiser> initialisers,
+      MainFrameFactory mainFrameFactory) {
     _initialisers = Objects.requireNonNull(initialisers, "initialisers may not be null");
     _mapCenterer = Objects.requireNonNull(mapCenterer, "mapCenterer may not be null");
     _dataSource = Objects.requireNonNull(dataSource, "dataSource may not be null");
+    _mainFrameFactory = Objects.requireNonNull(mainFrameFactory, "mainFrameFactory may not be null");
   }
   
   /**
@@ -169,7 +173,7 @@ public class Romeo {
     Log log = LogFactory.getLog(this.getClass());
     log.info("wherefore art thou Romeo?");
     runInitialisers();
-    final MainFrame frame = Romeo.CONTEXT.createMainFrame();
+    final MainFrame frame = _mainFrameFactory.createMainFrame();
     Romeo.incrementSplashProgress("Open main frame");
     frame.setVisible(true);
     Romeo.setMainFrame(frame);
