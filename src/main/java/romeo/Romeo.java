@@ -1,25 +1,15 @@
 package romeo;
 
 import java.awt.BorderLayout;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.sql.DataSource;
 import javax.swing.JFileChooser;
@@ -42,7 +32,6 @@ import romeo.importdata.impl.AdjustmentsFileReader;
 import romeo.importdata.impl.UnitImporterImpl;
 import romeo.importdata.impl.WorldImporterFactory;
 import romeo.importdata.impl.XFactorFileReader;
-import romeo.model.api.IServiceInitialiser;
 import romeo.persistence.HsqldbSettingsInitialiser;
 import romeo.persistence.QndDataSource;
 import romeo.players.api.IPlayerService;
@@ -69,7 +58,6 @@ import romeo.units.impl.UnitServiceInitialiser;
 import romeo.units.ui.UnitFormFactory;
 import romeo.utils.ClassPathFile;
 import romeo.utils.Convert;
-import romeo.utils.DbUtils;
 import romeo.utils.GuiUtils;
 import romeo.utils.IKeyGen;
 import romeo.utils.KeyGenImpl;
@@ -163,16 +151,37 @@ public class Romeo {
     }
   }
   
+  /**
+   * Initialise the database (create or ensure up-to-date) and create the Romeo object
+   */
   private static Romeo fromForthTheFatalLoins() {
     QndDataSource dataSource = new QndDataSource();
     dataSource.setDriver("org.hsqldb.jdbcDriver");
     dataSource.setDatabase("jdbc:hsqldb:database/romeo");  //relative location of the database (to be created on first use)
     
+    //Minimal bunch of objects we need to run all the db initialisers
     IKeyGen keyGen = new KeyGenImpl();    
     IUnitService unitService = new UnitServiceImpl(dataSource, keyGen);
     ISettingsService settingsService = new SettingsServiceImpl(dataSource, keyGen);
     IPlayerService playerService = new PlayerServiceImpl(dataSource, keyGen);
     IWorldService worldService = new WorldServiceImpl(dataSource, keyGen, playerService, unitService, settingsService);
+    List<String> unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
+    
+    //Initialisers should be run as early as feasibly possible because until the database is in the correct state
+    //code that tries to use it will fail, so we need to do this before anything does try.
+    new DatabaseInitialiser(
+        dataSource, 
+        Arrays.asList(
+          new HsqldbSettingsInitialiser(),
+          new SettingsServiceInitialiser(),
+          new WorldServiceInitialiser(keyGen, settingsService),
+          new UnitServiceInitialiser(new UnitImporterImpl(unitService), unitColumns, new AdjustmentsFileReader()),
+          new XFactorServiceInitialiser(unitService, new XFactorFileReader(), keyGen),
+          new PlayerServiceInitialiser(keyGen),
+          new ScenarioServiceInitialiser()))
+    .runInitialisers();
+    
+    //Now that the db is ready we are safe to start constructing all the rest of the stuff
     IScenarioService scenarioService = new ScenarioServiceImpl(dataSource, keyGen);
     IXFactorService xFactorService = new XFactorServiceImpl(dataSource, keyGen, unitService);
     IExpressionParser expressionParser = new ExpressionParserImpl();
@@ -184,7 +193,7 @@ public class Romeo {
     WorldFormFactory worldFormFactory = new WorldFormFactory(worldService, settingsService, playerService, unitService, playerFormFactory);
     XFactorFormFactory xFactorFormFactory = new XFactorFormFactory(xFactorService, expressionParser);
     WorldImporterFactory worldImporterFactory = new WorldImporterFactory(worldService, playerService, settingsService);
-    
+        
     IMapLogic logic = new WorldMapLogic(worldService, unitService, settingsService, playerService); 
     IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory);
     GenericMap worldsMap = new GenericMap(logic, listener, shutdownNotifier);
@@ -192,7 +201,6 @@ public class Romeo {
     
     MapCenterer mapCenterer = new MapCenterer(settingsService, worldService, worldsMap);
     List<String> worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
-    List<String> unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
     BattleCalculatorFactory battleCalculatorFactory = new BattleCalculatorFactory(xFactorCompiler);
     
     MainFrameFactory mainFrameFactory = new MainFrameFactory(
@@ -227,14 +235,6 @@ public class Romeo {
     return new Romeo(
         dataSource,
         mapCenterer,
-        Arrays.asList(
-            new HsqldbSettingsInitialiser(),
-            new SettingsServiceInitialiser(),
-            new WorldServiceInitialiser(keyGen, settingsService),
-            new UnitServiceInitialiser(new UnitImporterImpl(unitService), unitColumns, new AdjustmentsFileReader()),
-            new XFactorServiceInitialiser(unitService, new XFactorFileReader(), keyGen),
-            new PlayerServiceInitialiser(keyGen),
-            new ScenarioServiceInitialiser()),
         mainFrameFactory);
   }
   
@@ -251,19 +251,15 @@ public class Romeo {
   //End of static definitions
   /////////////////////////////////////////////////////////////////////////////
 
-  private final List<IServiceInitialiser> _initialisers;
-  private final DataSource _dataSource;
+  
   private final MapCenterer _mapCenterer;
   private final MainFrameFactory _mainFrameFactory;
 
   public Romeo(
       DataSource dataSource, 
       MapCenterer mapCenterer,
-      List<IServiceInitialiser> initialisers,
       MainFrameFactory mainFrameFactory) {
-    _initialisers = Objects.requireNonNull(initialisers, "initialisers may not be null");
     _mapCenterer = Objects.requireNonNull(mapCenterer, "mapCenterer may not be null");
-    _dataSource = Objects.requireNonNull(dataSource, "dataSource may not be null");
     _mainFrameFactory = Objects.requireNonNull(mainFrameFactory, "mainFrameFactory may not be null");
   }
   
@@ -274,7 +270,6 @@ public class Romeo {
   public void whereforeArtThou() {
     Log log = LogFactory.getLog(this.getClass());
     log.info("wherefore art thou Romeo?");
-    runInitialisers();
     final MainFrame frame = _mainFrameFactory.layOurScene();
     Romeo.incrementSplashProgress("Open main frame");
     frame.setVisible(true);
@@ -284,55 +279,6 @@ public class Romeo {
     //Now that the mainFrame is displayed the map centering should work properly
     //(it doesn't if we try to set it while setting up the ui as scrollPane reports its sizes as 0)
     SwingUtilities.invokeLater( _mapCenterer );
-  }
-  
-  /**
-   * Runs the IServiceInitialisers defined in the initialisers property (which
-   * we set using spring DI). The initialisers are responsible for examining the
-   * state of the database and initialising it or updating schemas inherited
-   * from older versions of Romeo.
-   */
-  protected void runInitialisers() {
-    Log log = LogFactory.getLog(this.getClass());
-    if(_dataSource == null) {
-      throw new NullPointerException("dataSource not set");
-    }
-    try {
-      Romeo.incrementSplashProgress("Start database");
-      Connection connection = null;
-      try {
-        connection = _dataSource.getConnection();
-      } catch(SQLException connEx) {
-        String msg = connEx.getMessage();
-        if("error in script file line: 4 unexpected token: TRIGGER".equalsIgnoreCase(msg)
-            || msg.toLowerCase().contains("unexpected token: trigger")) { //I can fix it!
-          log.info("Fixing invalid use of TRIGGER keyword in database created with an older Romeo and HSQLDB version");
-          updateTriggerField();
-          connection = _dataSource.getConnection(); //retry after fix
-        } else { //Ralph wrecked it
-          throw connEx;
-        }
-      }
-
-      try {
-        long startTime = System.currentTimeMillis();
-        Set<String> tableNames = DbUtils.getTableNames(connection);
-        log.info("Executing service initialisers");
-        for(IServiceInitialiser initialiser : _initialisers) {
-          Romeo.incrementSplashProgress("Run " + initialiser.getClass().getName());
-          log.info("Executing service initialiser:" + initialiser);
-          initialiser.init(tableNames, connection);
-        }
-        long endTime = System.currentTimeMillis();
-        log.info("Executed service initialisers in " + (endTime-startTime) + " ms");
-      } finally {
-        connection.close();
-      }
-    } catch(ApplicationException ae) {
-      throw ae;
-    } catch(Exception e) {
-      throw new RuntimeException("Exception caught running initialisers", e);
-    }
   }
   
   /**
@@ -529,59 +475,6 @@ public class Romeo {
     return _mainFrame;
   }
 
-  /**
-   * The older version of hsqldb used by Romeo 0.5.x allowed us to use the name
-   * 'trigger' as a column name, however the current version does not and won't
-   * even let us open the old databases. To fix this we need to go and tweak the
-   * .script file itself! See: deployment-chapt.html#dec_script_manual_change in
-   * the hsqldb documentation.
-   */
-  protected void updateTriggerField() {
-    try {
-      BufferedReader reader = null;
-      BufferedWriter writer = null;
-      try {
-        File romeoScript = new File("database/romeo.script");
-        File romeoScriptOld = new File("database/romeo.script.old");
 
-        //First rename the old script file
-        boolean ok = romeoScript.renameTo(romeoScriptOld);
-        if(!ok) {
-          throw new RuntimeException("Failed to rename old .script file");
-        }
-
-        //Open the old script file for reading line by line
-        FileInputStream inStream = new FileInputStream(romeoScriptOld);
-        InputStreamReader streamReader = new InputStreamReader(inStream);
-        reader = new BufferedReader(streamReader);
-
-        //Open the new script file to copy to line by line
-        FileOutputStream outStream = new FileOutputStream(romeoScript);
-        OutputStreamWriter streamWriter = new OutputStreamWriter(outStream);
-        writer = new BufferedWriter(streamWriter);
-
-        String line = null;
-        while((line = reader.readLine()) != null) { //Iterate all the lines in the old script file and write them to the
-                                                      //new one, fixing any occurences of the invalid "trigger" and "TRIGGER" in the
-                                                    //line, to the new valid names "TRIGGER" and "XFTRIGGER" before writing it.
-          String newLine = line;
-          newLine = Convert.replace(newLine, "trigger", "xfTrigger");
-          newLine = Convert.replace(newLine, "TRIGGER", "XFTRIGGER");
-          writer.write(newLine);
-          writer.write("\n");
-        }
-      } finally {
-        if(reader != null) {
-          reader.close();
-        }
-        if(writer != null) {
-          writer.close();
-        }
-      }
-    } catch(IOException iox) {
-      throw new RuntimeException("Error trying to fix trigger column in database", iox);
-    }
-
-  }
 
 }
