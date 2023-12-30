@@ -157,10 +157,6 @@ public class RomeoContext {
     return _settingsService;
   }
 
-  public IWorldService getWorldService() {
-    return _worldService;
-  }
-
   private void addLogThreadListeners() {
     _worldService.addListener(new LogThreadNameInvocationListener());
     _unitService.addListener(new LogThreadNameInvocationListener());

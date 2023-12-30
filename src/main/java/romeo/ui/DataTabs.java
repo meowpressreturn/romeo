@@ -20,7 +20,6 @@ import javax.swing.table.TableColumnModel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import romeo.Romeo;
 import romeo.players.api.IPlayerService;
 import romeo.players.ui.PlayerFormFactory;
 import romeo.players.ui.PlayerNavigatorRecordSelectionListener;
@@ -74,16 +73,18 @@ public class DataTabs extends JPanel {
       PlayerFormFactory playerFormFactory,
       XFactorFormFactory xFactorFormFactory,
       IXFactorService xFactorService,
-      IUnitService unitService) {
+      IUnitService unitService,
+      IWorldService worldService) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
     Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
     Objects.requireNonNull(unitFormFactory, "unitFormFactory may not be null");
     Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory may not be null");
+    Objects.requireNonNull(unitService, "unitService may not be null");
+    Objects.requireNonNull(worldService, "worldService may not be null");
 
     //prep worlds table
-    IWorldService worldService = Romeo.CONTEXT.getWorldService();
     WorldDataTableModel worldTableModel = new WorldDataTableModel(worldService, settingsService);
 
     _worldTable = new JTable(worldTableModel);

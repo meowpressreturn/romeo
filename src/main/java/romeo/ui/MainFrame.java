@@ -184,7 +184,8 @@ public class MainFrame extends JFrame {
         playerFormFactory,
         xFactorFormFactory,
         xFactorService,
-        unitService);
+        unitService,
+        worldService);
     
     Romeo.incrementSplashProgress("Services");
     _leftTabs.addTab(TAB_NAME_DATA, dataIcon, dataTabs, null);
