@@ -8,9 +8,6 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import romeo.Romeo;
-import romeo.settings.api.ISettings;
-import romeo.settings.api.ISettingsService;
 import romeo.units.api.IUnit;
 import romeo.units.api.IUnitService;
 import romeo.units.api.UnitId;
@@ -33,12 +30,6 @@ public class ScannerCombo extends AbstractRecordCombo implements ListCellRendere
   @Override
   public String toString() {
     return "ScannerCombo@" + System.identityHashCode(this);
-  }
-
-  protected void initDefault() {
-    //ISettingsService settingsService = (ISettingsService)Romeo.CONTEXT.getBean("settingsService",ISettingsService.class);
-    ISettingsService settingsService = Romeo.CONTEXT.getSettingsService();
-    _defaultValue = (int) settingsService.getLong(ISettings.DEFAULT_SCANNER);
   }
 
   @Override

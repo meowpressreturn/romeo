@@ -153,10 +153,6 @@ public class RomeoContext {
         _mainFrameFactory);
   }
 
-  public ISettingsService getSettingsService() {
-    return _settingsService;
-  }
-
   private void addLogThreadListeners() {
     _worldService.addListener(new LogThreadNameInvocationListener());
     _unitService.addListener(new LogThreadNameInvocationListener());
