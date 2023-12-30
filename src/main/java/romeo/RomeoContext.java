@@ -52,11 +52,6 @@ import romeo.xfactors.impl.XFactorServiceImpl;
 import romeo.xfactors.impl.XFactorServiceInitialiser;
 import romeo.xfactors.ui.XFactorFormFactory;
 
-/**
- * Wraps the Spring ApplicationContext and provides specific methods to access the beans Romeo needs.
- * Going forward we are reducing the dependence on Spring with the aim of removing it so this class will
- * take responsbility for creating many of the objects instead.
- */
 public class RomeoContext {
   private final IKeyGen _keyGen;
   private final DataSource _dataSource;

@@ -108,12 +108,7 @@ public class Romeo {
   private static MainFrame _mainFrame;
 
   /**
-   * Global reference that allows access to the various services etc
-   */
-  public static RomeoContext CONTEXT = null;
-  
-  /**
-   * Create the spring context, show the splash screen, obtain an instance of
+   * Create the context, show the splash screen, obtain an instance of
    * Romeo and call its whereForArtThou() entry method. Note that the Romeo
    * instance is obtained from Spring to allow for dependency injection of the
    * initialisers etc.
@@ -126,7 +121,6 @@ public class Romeo {
       Romeo.checkUnitsFileExists();
       Romeo.incrementSplashProgress("Initialise RomeoContext");
       RomeoContext fairVerona = new RomeoContext();
-      Romeo.CONTEXT = fairVerona;
       Romeo romeo = fairVerona.layOurScene();
       romeo.whereforeArtThou();
     } catch(Exception e) {
