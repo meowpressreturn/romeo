@@ -1,9 +1,9 @@
 Romeo
-Copyright (c) 2006-2023 Andrew Hill
+Copyright (c) 2006-2024 Andrew Hill
 
 Romeo is a strategy analysis tool and battle simulator for the game UltraCorps™.
 
-UltraCorps is copyright (c) 1998-2002, 2005-2023 by Steve Jackson Games. 
+UltraCorps is copyright (c) 1998-2002, 2005-2024 by Steve Jackson Games. 
 UltraCorps is a trademark of Steve Jackson Games, which reserves all rights.
 This program was created and distributed by permission of Steve Jackson Games. 
 Conquest is Job One!

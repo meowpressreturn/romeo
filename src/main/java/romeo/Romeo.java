@@ -101,7 +101,7 @@ public class Romeo {
       + "Welcome to Romeo (" + ROMEO_EDITION + " Edition v" + ROMEO_VERSION + ")<br>"
       + "A strategy analysis tool for players of UltraCorps.<br><br>"
 
-      + "UltraCorps is copyright &copy; 1998-2002, 2005-2017 by<br>"
+      + "UltraCorps is copyright &copy; 1998-2002, 2005-2024 by<br>"
       + "Steve Jackson Games. UltraCorps is a trademark of Steve<br>"
       + "Jackson Games, which reserves all rights. This program was<br>"
       + "created and distributed by permission of Steve Jackson Games.<br>" + "Conquest is Job One!<br><br>"
