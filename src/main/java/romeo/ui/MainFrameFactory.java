@@ -110,7 +110,8 @@ public class MainFrameFactory {
       _unitFormFactory,
       _playerFormFactory,
       _xFactorFormFactory,
-      _worldImporterFactory);
+      _worldImporterFactory,
+      _xFactorService);
   }
   
   private GraphsPanel createGraphsPanel() {

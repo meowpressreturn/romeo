@@ -72,7 +72,8 @@ public class DataTabs extends JPanel {
       WorldFormFactory worldFormFactory,
       UnitFormFactory unitFormFactory,
       PlayerFormFactory playerFormFactory,
-      XFactorFormFactory xFactorFormFactory) {
+      XFactorFormFactory xFactorFormFactory,
+      IXFactorService xFactorService) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
@@ -131,12 +132,11 @@ public class DataTabs extends JPanel {
         new BeanTableHeaderRenderer((DefaultTableCellRenderer) unitTable.getTableHeader().getDefaultRenderer()));
 
     //Prep the xFactors table
-    IXFactorService xfService = Romeo.CONTEXT.getXFactorService();
     BeanTableModel.ColumnDef[] xfColumns = new BeanTableModel.ColumnDef[] {
         new BeanTableModel.ColumnDef("name", "Name"), new BeanTableModel.ColumnDef("description", "Descripton"),
 
     };
-    ServiceTableModel xfTableModel = new ServiceTableModel(xfColumns, xfService) {
+    ServiceTableModel xfTableModel = new ServiceTableModel(xfColumns, xFactorService) {
       @Override
       protected List<IXFactor> fetchNewData() {
         return new ArrayList<IXFactor>(((IXFactorService) _service).getXFactors());

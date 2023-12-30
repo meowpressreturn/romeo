@@ -43,6 +43,7 @@ import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 import romeo.utils.INamed;
 import romeo.xfactors.api.IExpressionParser;
+import romeo.xfactors.api.IXFactorService;
 
 public class RomeoForm extends JPanel
     implements ActionListener, ItemListener, IFieldChangeListener, INamed {
@@ -66,6 +67,7 @@ public class RomeoForm extends JPanel
   private boolean _bindingInProgess = false;
   private IExpressionParser _expressionParser = null;
   private IPlayerService _playerService = null;
+  private IXFactorService _xFactorService = null;
 
   public RomeoForm() {
     super();
@@ -76,6 +78,14 @@ public class RomeoForm extends JPanel
       fields = Collections.emptyList();
     }
     _fields = fields;
+  }
+  
+  public IXFactorService getXFactorService() {
+    return _xFactorService;
+  }
+  
+  public void setXFactorService(IXFactorService xFactorService) {
+    _xFactorService = xFactorService;
   }
   
   public IPlayerService getPlayerService() {
@@ -277,7 +287,8 @@ public class RomeoForm extends JPanel
           break;
 
         case FieldDef.TYPE_XFACTOR_COMBO: {
-          XFactorCombo entryField = new XFactorCombo();
+          if(_xFactorService ==null) throw new IllegalStateException("No X-Factor service provided to form");
+          XFactorCombo entryField = new XFactorCombo(_xFactorService);
           entryField.setMandatory(field.isMandatory());
           entryField.setPreferredSize(new Dimension(140, 24));
           Object defaultValue = field.getDefaultValue();
@@ -321,6 +332,7 @@ public class RomeoForm extends JPanel
         }
           break;
 
+          
         case FieldDef.TYPE_PLAYER_COMBO: {
           if(_playerService==null) throw new IllegalStateException("No player service provided to form");
           PlayerCombo entryField = new PlayerCombo(_playerService);

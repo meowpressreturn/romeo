@@ -2,15 +2,14 @@ package romeo.ui.forms;
 
 import java.util.List;
 
-import romeo.Romeo;
 import romeo.xfactors.api.IXFactor;
 import romeo.xfactors.api.IXFactorService;
 import romeo.xfactors.api.XFactorId;
 
 public class XFactorCombo extends AbstractRecordCombo {
 
-  public XFactorCombo() {
-    super(Romeo.CONTEXT.getXFactorService());
+  public XFactorCombo(IXFactorService xFactorService) {
+    super(xFactorService);
   }
 
   @Override

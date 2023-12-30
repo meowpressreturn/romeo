@@ -165,10 +165,6 @@ public class RomeoContext {
     return _worldService;
   }
 
-  public IXFactorService getXFactorService() {
-    return _xFactorService;
-  }
-
   private void addLogThreadListeners() {
     _worldService.addListener(new LogThreadNameInvocationListener());
     _unitService.addListener(new LogThreadNameInvocationListener());

@@ -15,6 +15,8 @@ public class UnitForm extends RomeoForm {
   public UnitForm(IUnitService unitService, IXFactorService xfactorService) {
     Objects.requireNonNull(unitService, "unitService may not be null");
     Objects.requireNonNull(xfactorService, "xfactorService may not be null");
+    
+    setXFactorService(xfactorService); 
     setName("Unit");
     setFormLogic(new UnitFormLogic(unitService, xfactorService));
     List<FieldDef> fields = new ArrayList<FieldDef>();

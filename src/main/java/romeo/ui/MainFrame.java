@@ -56,6 +56,7 @@ import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
 import romeo.worlds.api.WorldAndHistory;
 import romeo.worlds.ui.WorldFormFactory;
+import romeo.xfactors.api.IXFactorService;
 import romeo.xfactors.ui.XFactorFormFactory;
 
 /**
@@ -103,7 +104,8 @@ public class MainFrame extends JFrame {
                    UnitFormFactory unitFormFactory,
                    PlayerFormFactory playerFormFactory,
                    XFactorFormFactory xFactorFormFactory,
-                   WorldImporterFactory worldImporterFactory) {
+                   WorldImporterFactory worldImporterFactory,
+                   IXFactorService xFactorService) {
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");   
@@ -116,6 +118,7 @@ public class MainFrame extends JFrame {
     Objects.requireNonNull(playerFormFactory, "playerFormFactory must not be null");
     Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory must not be null");
     Objects.requireNonNull(worldImporterFactory, "worldImporterFactory must not be null");
+    Objects.requireNonNull(xFactorService, "xFactorService must not be null");
     
     _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap must not be null");
@@ -179,7 +182,8 @@ public class MainFrame extends JFrame {
         worldFormFactory, 
         unitFormFactory,
         playerFormFactory,
-        xFactorFormFactory);
+        xFactorFormFactory,
+        xFactorService);
     
     Romeo.incrementSplashProgress("Services");
     _leftTabs.addTab(TAB_NAME_DATA, dataIcon, dataTabs, null);

@@ -6,6 +6,7 @@ import java.awt.event.ItemListener;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.JComboBox;
 
@@ -32,6 +33,7 @@ public abstract class AbstractRecordCombo extends JComboBox<Object> implements I
   }
 
   public AbstractRecordCombo(IService service) {
+    Objects.requireNonNull(service,"service may not be null");
     init(service);
     prepareOptions();
   }
