@@ -253,14 +253,14 @@ public class Romeo {
 
   
   private final MapCenterer _mapCenterer;
-  private final MainFrameFactory _mainFrameFactory;
+  private final MainFrameFactory _fairVerona;
 
   public Romeo(
       DataSource dataSource, 
       MapCenterer mapCenterer,
       MainFrameFactory mainFrameFactory) {
     _mapCenterer = Objects.requireNonNull(mapCenterer, "mapCenterer may not be null");
-    _mainFrameFactory = Objects.requireNonNull(mainFrameFactory, "mainFrameFactory may not be null");
+    _fairVerona = Objects.requireNonNull(mainFrameFactory, "mainFrameFactory may not be null");
   }
   
   /**
@@ -270,7 +270,7 @@ public class Romeo {
   public void whereforeArtThou() {
     Log log = LogFactory.getLog(this.getClass());
     log.info("wherefore art thou Romeo?");
-    final MainFrame frame = _mainFrameFactory.layOurScene();
+    final MainFrame frame = _fairVerona.layOurScene();
     Romeo.incrementSplashProgress("Open main frame");
     frame.setVisible(true);
     Romeo.setMainFrame(frame);
