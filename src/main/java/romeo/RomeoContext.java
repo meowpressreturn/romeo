@@ -31,7 +31,6 @@ import romeo.ui.IRecordSelectionListener;
 import romeo.ui.MainFrame;
 import romeo.ui.MapCenterer;
 import romeo.ui.NavigatorPanel;
-import romeo.ui.forms.ExpressionField;
 import romeo.units.api.IUnitService;
 import romeo.units.impl.UnitServiceImpl;
 import romeo.units.impl.UnitServiceInitialiser;
@@ -105,7 +104,7 @@ public class RomeoContext {
     _unitFormFactory = new UnitFormFactory(_unitService, _xFactorService);
     _playerFormFactory = new PlayerFormFactory(_playerService, _worldService, _settingsService);
     _worldFormFactory = new WorldFormFactory(_worldService, _settingsService, _playerService, _playerFormFactory);
-    _xFactorFormFactory = new XFactorFormFactory(_xFactorService);
+    _xFactorFormFactory = new XFactorFormFactory(_xFactorService, _expressionParser);
     
     IMapLogic logic = new WorldMapLogic(_worldService, _unitService, _settingsService, _playerService); 
     IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(_navigatorPanel, _worldFormFactory);
@@ -242,15 +241,6 @@ public class RomeoContext {
 		_unitFormFactory,
 		_playerFormFactory,
 		_xFactorFormFactory);
-  }
-
-  /**
-   * Create an {@link ExpressionField} with the necessary service references
-   * injected.
-   * @return
-   */
-  public ExpressionField createExpressionField() {
-    return new ExpressionField(_expressionParser);
   }
 
   private void addLogThreadListeners() {

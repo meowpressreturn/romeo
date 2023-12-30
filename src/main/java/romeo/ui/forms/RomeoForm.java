@@ -41,6 +41,7 @@ import romeo.ui.NavigatorPanel;
 import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 import romeo.utils.INamed;
+import romeo.xfactors.api.IExpressionParser;
 
 public class RomeoForm extends JPanel
     implements ActionListener, ItemListener, IFieldChangeListener, INamed {
@@ -62,6 +63,7 @@ public class RomeoForm extends JPanel
   private boolean _dataValid = true;
   private boolean _forceTwoColumns = false;
   private boolean _bindingInProgess = false;
+  private IExpressionParser _expressionParser = null;
 
   public RomeoForm() {
     super();
@@ -72,6 +74,14 @@ public class RomeoForm extends JPanel
       fields = Collections.emptyList();
     }
     _fields = fields;
+  }
+  
+  public IExpressionParser getExpressionParser() {
+    return _expressionParser;
+  }
+  
+  public void setExpressionParser(IExpressionParser expressionParser) {
+    _expressionParser = expressionParser;
   }
 
   public List<FieldDef> getFields() {
@@ -202,7 +212,8 @@ public class RomeoForm extends JPanel
           JTextArea entryField;
           boolean isExpr = false;
           if(field.getType() == FieldDef.TYPE_EXPRESSION) {
-            entryField = Romeo.CONTEXT.createExpressionField();
+            if(_expressionParser==null) throw new IllegalStateException("No expression parser provided to form");
+            entryField = new ExpressionField(_expressionParser);
             isExpr = true;
             int size = entryField.getFont().getSize();
             Font f = new Font("Monospaced", Font.PLAIN, size);

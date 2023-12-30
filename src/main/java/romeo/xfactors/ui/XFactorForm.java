@@ -6,12 +6,15 @@ import java.util.Objects;
 
 import romeo.ui.forms.FieldDef;
 import romeo.ui.forms.RomeoForm;
+import romeo.xfactors.api.IExpressionParser;
 import romeo.xfactors.api.IXFactorService;
 
 public class XFactorForm extends RomeoForm {
   
-  public XFactorForm(IXFactorService xFactorService) {
+  public XFactorForm(IXFactorService xFactorService, IExpressionParser expressionParser) {
     Objects.requireNonNull(xFactorService, "xFactorService may not be null");
+    Objects.requireNonNull(expressionParser, "expressionParser may not be null");
+    setExpressionParser(expressionParser);
     
     setName("X-Factor");
     setFormLogic(new XFactorFormLogic(xFactorService));
