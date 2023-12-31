@@ -37,7 +37,7 @@ public class WorldFormFactory {
     _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
   }
   
-  public WorldForm newWorldForm(IWorld record, boolean isNewRecord) {
+  public WorldForm newWorldForm(Object record, boolean isNewRecord) {
     return new WorldForm(_initialiser, fields(), logic(), record, isNewRecord);
   }
   

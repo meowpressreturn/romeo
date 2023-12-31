@@ -28,7 +28,7 @@ public class WorldNavigatorRecordSelectionListener extends AbstractNavigatorReco
 
   @Override
   protected RomeoForm newForm(Object record) {
-    return _worldFormFactory.newWorldForm((IWorld)record, false);
+    return _worldFormFactory.newWorldForm(record, false);
   }
   
   @Override
