@@ -145,10 +145,10 @@ public class Romeo {
       Romeo.incrementSplashProgress("In fair Verona, where we lay our scene");
       Romeo romeo = fromForthTheFatalLoins();
       romeo.whereforeArtThou();
-    } catch(Exception e) {
-      Romeo.showStartupError(e);
+    } catch(Throwable t) {
+      Romeo.showStartupError(t);
       Log log = LogFactory.getLog(Romeo.class);
-      log.error("Romeo startup failure", e);
+      log.error("Romeo startup failure", t);
     }
   }
   
@@ -412,14 +412,14 @@ public class Romeo {
    *          The exception that was caught - its message is included in the
    *          text
    */
-  protected static void showStartupError(Exception e) {
+  protected static void showStartupError(Throwable t) {
     if(_splash != null) {
       killSplash();
     }
-    if(e instanceof NoUnitCsvFileException && !((NoUnitCsvFileException)e).isShowErrorDialog()) {
+    if(t instanceof NoUnitCsvFileException && !((NoUnitCsvFileException)t).isShowErrorDialog()) {
       ;
     } else {
-      ErrorDialog dialog = new ErrorDialog("An error occured during startup!", e, true);
+      ErrorDialog dialog = new ErrorDialog("An error occured during startup!", t, true);
       dialog.show();
     }
   }

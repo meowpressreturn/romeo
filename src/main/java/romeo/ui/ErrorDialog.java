@@ -52,16 +52,11 @@ public class ErrorDialog {
    * all be rendered. If the exitOnClose flag is true then when the dialog is
    * closed the application will also be exited. nb: you will need to call
    * show() to make the dialog appear
-   * @param title
-   * @param ex
-   *          optional exception to log the stacktrace for
-   * @param exitOnClose
-   *          if true Romeo will exit when the dialog is closed
    */
-  public ErrorDialog(String title, Exception ex, boolean exitOnClose) {
+  public ErrorDialog(String title, Throwable t, boolean exitOnClose) {
     setExitOnClose(exitOnClose);
     Frame frame = getFrame();
-    String errorText = formatMessage(title, ex);
+    String errorText = formatMessage(title, t);
     _dialog = new JDialog(frame, title, exitOnClose);
     _dialog.getContentPane().setBackground(Color.BLUE);
     _dialog.setResizable(false);
@@ -180,24 +175,24 @@ public class ErrorDialog {
    * @param title
    * @param e
    */
-  private String formatMessage(String title, Exception e) {
-    if(e == null) {
+  private String formatMessage(String title, Throwable t) {
+    if(t == null) {
       return "Unknown error";
-    } else if(e instanceof ApplicationException) { //For ApplicationException just show the message
-      String msg = e.getMessage();
+    } else if(t instanceof ApplicationException) { //For ApplicationException just show the message
+      String msg = t.getMessage();
       msg = Convert.wordWrap(msg, COLUMNS);
       return msg;
     } else { //Extract the stack trace as a string if its not an ApplicationException
-      String msg = e.getMessage();
+      String msg = t.getMessage();
       msg = Convert.wordWrap(msg, COLUMNS) + "\n\n";
-      Throwable root = Convert.rootCause(e);
+      Throwable root = Convert.rootCause(t);
       if(root != null) {
         msg += Convert.wordWrap("Root Cause:" + root.getMessage(), COLUMNS) + "\n";
       }
       msg += "Romeo version=" + Romeo.ROMEO_VERSION + "\n\n";
       StringWriter writer = new StringWriter();
       PrintWriter printWriter = new PrintWriter(writer);
-      e.printStackTrace(printWriter);
+      t.printStackTrace(printWriter);
       msg += writer.getBuffer().toString();
       return msg;
     }
