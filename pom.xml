@@ -26,6 +26,8 @@
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.6.3</version>
         <configuration>
+          <!-- see: https://maven.apache.org/plugins/maven-javadoc-plugin/javadoc-mojo.html -->
+          
           <!-- 1.8 is insanely stricter than previous JDKs so we need to 
                turn off the linter so our crummy old javadocs can build -->
           <doclint>none</doclint>
