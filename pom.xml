@@ -24,11 +24,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
+        <version>3.6.3</version>
         <configuration>
-          <!-- 1.8 is insanely stricter than previous JDKs so we need to turn off the linter
-               so our crummy old javadocs can build -->
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <!-- 1.8 is insanely stricter than previous JDKs so we need to 
+               turn off the linter so our crummy old javadocs can build -->
+          <doclint>none</doclint>
         </configuration>
       </plugin>
 
