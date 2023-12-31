@@ -9,7 +9,6 @@ import romeo.players.ui.PlayerFormFactory;
 import romeo.settings.api.ISettingsService;
 import romeo.ui.forms.FieldDef;
 import romeo.ui.forms.RomeoFormInitialiser;
-import romeo.worlds.api.IWorld;
 import romeo.worlds.api.IWorldService;
 
 /**
