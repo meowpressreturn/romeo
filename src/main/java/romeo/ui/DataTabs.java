@@ -54,14 +54,11 @@ public class DataTabs extends JPanel {
   public static final String TAB_NAME_WORLDS = "Worlds";
   public static final String TAB_NAME_PLAYERS = "Players";
 
-  protected TableNavigatorMediator _worldTnm;
-  protected TableNavigatorMediator _unitTnm;
-  protected TableNavigatorMediator _xFactorTnm;
-  private JTabbedPane _tabs;
-  private JTable _worldTable;
-  private IEventListener _shutdownListener;
+  private final JTabbedPane _tabs;
+  private final JTable _worldTable;
+  private final IEventListener _shutdownListener;
 
-  private ISettingsService _settingsService;
+  private final ISettingsService _settingsService;
 
   public DataTabs(
       ISettingsService settingsService, 
@@ -95,7 +92,12 @@ public class DataTabs extends JPanel {
     }
     worldTableModel.initColumnClickListener(_worldTable);
     _worldTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    _worldTnm = new TableNavigatorMediator(_worldTable, new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory));
+    new TableNavigatorMediator(
+        _worldTable, 
+        new WorldNavigatorRecordSelectionListener(
+            navigatorPanel, 
+            worldFormFactory, 
+            worldService));
     JScrollPane worldsTableScrollPane = new JScrollPane(_worldTable);
     worldsTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon worldIcon = GuiUtils.getImageIcon("/images/world.gif");
@@ -124,7 +126,11 @@ public class DataTabs extends JPanel {
     GuiUtils.setColumnWidths(unitTable, new int[] { 200, 100 });
     unitTableModel.initColumnClickListener(unitTable);
     unitTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    _unitTnm = new TableNavigatorMediator(unitTable, new UnitNavigatorRecordSelectionListener(navigatorPanel, unitFormFactory));
+    new TableNavigatorMediator(
+        unitTable, 
+        new UnitNavigatorRecordSelectionListener(
+            navigatorPanel, 
+            unitFormFactory));
     JScrollPane unitsTableScrollPane = new JScrollPane(unitTable);
     unitsTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon unitIcon = GuiUtils.getImageIcon("/images/unit.gif");
@@ -151,7 +157,11 @@ public class DataTabs extends JPanel {
     xfTcm.getColumn(0).setPreferredWidth(80);
     xfTableModel.initColumnClickListener(xfTable);
     xfTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    _xFactorTnm = new TableNavigatorMediator(xfTable, new XFactorNavigatorRecordSelectionListener(navigatorPanel, xFactorFormFactory));
+    new TableNavigatorMediator(
+        xfTable, 
+        new XFactorNavigatorRecordSelectionListener(
+            navigatorPanel, 
+            xFactorFormFactory));
     JScrollPane xfTableScrollPane = new JScrollPane(xfTable);
     xfTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon xfIcon = GuiUtils.getImageIcon("/images/xFactor.gif");

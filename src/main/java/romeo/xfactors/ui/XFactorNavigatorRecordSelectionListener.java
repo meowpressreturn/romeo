@@ -5,6 +5,7 @@ import java.util.Objects;
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
+import romeo.xfactors.api.IXFactor;
 
 public class XFactorNavigatorRecordSelectionListener extends AbstractNavigatorRecordSelectionListener {
 
@@ -16,8 +17,8 @@ public class XFactorNavigatorRecordSelectionListener extends AbstractNavigatorRe
   }
 
   @Override
-  protected RomeoForm newForm() {
-    return _xFactorFormFactory.newXFactorForm();
+  protected RomeoForm newForm(Object record) {
+    return _xFactorFormFactory.newXFactorForm((IXFactor)record, false);
   }
 
 }

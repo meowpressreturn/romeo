@@ -56,6 +56,7 @@ import romeo.utils.events.ShutdownEvent;
 import romeo.worlds.api.IWorldService;
 import romeo.worlds.api.WorldAndHistory;
 import romeo.worlds.ui.WorldFormFactory;
+import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 import romeo.xfactors.api.IXFactorService;
 import romeo.xfactors.ui.XFactorFormFactory;
 
@@ -250,7 +251,7 @@ public class MainFrame extends JFrame {
     Action newPlayerAction = new NewPlayerAction(navigatorPanel, playerFormFactory);
     Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitService, unitColumns);
     Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns), worldImporterFactory);
-    Action findWorldAction = new FindWorldAction(navigatorPanel, worldFormFactory);
+    Action findWorldAction = new FindWorldAction(new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory, worldService));
 
     JMenuBar menuBar = new JMenuBar();
 

@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
+import romeo.worlds.api.IWorld;
 import romeo.worlds.impl.WorldImpl;
 import romeo.worlds.ui.WorldFormFactory;
 
@@ -23,11 +24,10 @@ public class NewWorldAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return _worldFormFactory.newWorldForm();
+    return _worldFormFactory.newWorldForm(newRecord(), true);
   }
 
-  @Override
-  protected Object newRecord() {
+  private IWorld newRecord() {
     return new WorldImpl(null, "", 0, 0, null, "", 0, 0);
   }
 }

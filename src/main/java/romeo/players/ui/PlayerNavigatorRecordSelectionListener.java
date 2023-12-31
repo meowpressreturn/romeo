@@ -29,8 +29,8 @@ public class PlayerNavigatorRecordSelectionListener extends AbstractNavigatorRec
   }
 
   @Override
-  protected RomeoForm newForm() {
-    return _playerFormFactory.newPlayerForm();
+  protected RomeoForm newForm(Object record) {
+    return _playerFormFactory.newPlayerForm((IPlayer)record, false);
   }
 
   /**

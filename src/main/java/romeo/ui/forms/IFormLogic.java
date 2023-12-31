@@ -4,6 +4,7 @@ import javax.swing.JComponent;
 
 /**
  * Interface for logic of forms displayed in the so-called 'Navigator Panel'.
+ * Note that instances of this are typically stateful and should not be shared between multiple form instances.
  */
 public interface IFormLogic {
 
@@ -42,10 +43,10 @@ public interface IFormLogic {
   public void inputChanged();
 
   /**
-   * Called by the form to allow the logic to initialise custom fields in the
+   * Called during form initialisation to init custom fields, note that this now occurs
+   * during the RomeoForm constructor so work done in a subclass constructor wont have
+   * occured yet.
    * form.
-   * @param field
-   * @return customField
    */
-  public JComponent initCustom(FieldDef field);
+  public JComponent initCustom(RomeoForm form, FieldDef field);
 }

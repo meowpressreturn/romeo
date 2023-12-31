@@ -199,7 +199,7 @@ public class UnitFormLogic implements IFormLogic, IServiceListener {
    * @return null
    */
   @Override
-  public JComponent initCustom(FieldDef field) {
+  public JComponent initCustom(RomeoForm form, FieldDef field) {
     return null;
   }
 

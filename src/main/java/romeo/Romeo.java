@@ -47,6 +47,7 @@ import romeo.settings.impl.SettingsServiceInitialiser;
 import romeo.ui.ErrorDialog;
 import romeo.ui.GenericMap;
 import romeo.ui.GenericMap.IMapLogic;
+import romeo.ui.forms.RomeoFormInitialiser;
 import romeo.ui.IRecordSelectionListener;
 import romeo.ui.MainFrame;
 import romeo.ui.MainFrameFactory;
@@ -186,16 +187,17 @@ public class Romeo {
     IXFactorService xFactorService = new XFactorServiceImpl(dataSource, keyGen, unitService);
     IExpressionParser expressionParser = new ExpressionParserImpl();
     IXFactorCompiler xFactorCompiler = new XFactorCompilerImpl(expressionParser, xFactorService);
+    RomeoFormInitialiser formInitialiser = new RomeoFormInitialiser(playerService, xFactorService, unitService, expressionParser);
     NavigatorPanel navigatorPanel = new NavigatorPanel();    
     IEventHub shutdownNotifier = new EventHubImpl();    
-    UnitFormFactory unitFormFactory = new UnitFormFactory(unitService, xFactorService);
-    PlayerFormFactory playerFormFactory = new PlayerFormFactory(playerService, worldService, settingsService);
-    WorldFormFactory worldFormFactory = new WorldFormFactory(worldService, settingsService, playerService, unitService, playerFormFactory);
-    XFactorFormFactory xFactorFormFactory = new XFactorFormFactory(xFactorService, expressionParser);
+    UnitFormFactory unitFormFactory = new UnitFormFactory(formInitialiser, unitService, xFactorService);
+    PlayerFormFactory playerFormFactory = new PlayerFormFactory(formInitialiser, playerService, worldService, settingsService);
+    WorldFormFactory worldFormFactory = new WorldFormFactory(formInitialiser, worldService, settingsService, playerService, playerFormFactory);
+    XFactorFormFactory xFactorFormFactory = new XFactorFormFactory(formInitialiser, xFactorService);
     WorldImporterFactory worldImporterFactory = new WorldImporterFactory(worldService, playerService, settingsService);
         
     IMapLogic logic = new WorldMapLogic(worldService, unitService, settingsService, playerService); 
-    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory);
+    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory, worldService);
     GenericMap worldsMap = new GenericMap(logic, listener, shutdownNotifier);
     worldsMap.setFont(new java.awt.Font("Arial", 0, 10));
     
@@ -251,7 +253,6 @@ public class Romeo {
   //End of static definitions
   /////////////////////////////////////////////////////////////////////////////
 
-  
   private final MapCenterer _mapCenterer;
   private final MainFrameFactory _fairVerona;
 

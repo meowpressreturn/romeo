@@ -14,12 +14,9 @@ import org.apache.commons.text.similarity.FuzzyScore;
 import romeo.Romeo;
 import romeo.ui.AbstractRomeoAction;
 import romeo.ui.GenericMap;
-import romeo.ui.IRecordSelectionListener;
 import romeo.ui.MainFrame;
-import romeo.ui.NavigatorPanel;
 import romeo.utils.GuiUtils;
 import romeo.worlds.api.WorldAndHistory;
-import romeo.worlds.ui.WorldFormFactory;
 import romeo.worlds.ui.WorldMapLogic;
 import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
 
@@ -33,13 +30,12 @@ import romeo.worlds.ui.WorldNavigatorRecordSelectionListener;
  */
 public class FindWorldAction extends AbstractRomeoAction {
   
-  private final IRecordSelectionListener _recordSelector;
+  private final WorldNavigatorRecordSelectionListener _recordSelector;
 
-  public FindWorldAction(NavigatorPanel navigatorPanel, WorldFormFactory worldFormFactory) {
+  public FindWorldAction(WorldNavigatorRecordSelectionListener recordSelectionListener) {
     super();
-    Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
-    Objects.requireNonNull(worldFormFactory, "worldFormFactory must not be null");
-    _recordSelector = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory);
+    
+    _recordSelector = Objects.requireNonNull(recordSelectionListener, "recordSelectinListener may not be null");
     
     putValue(Action.NAME, "Find on Map");
     putValue(Action.LONG_DESCRIPTION, "Locate a World or Player on the map");

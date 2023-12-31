@@ -30,8 +30,7 @@ public abstract class AbstractNavigatorRecordSelectionListener implements IRecor
    */
   protected void openRecord(Object record) {
     try {
-      RomeoForm form = newForm();
-      form.initialise(record);
+      RomeoForm form = newForm(record);
       _navigatorPanel.display(form);
     } catch(Exception e) {
       ErrorDialog dialog = new ErrorDialog("Internal Error", e, false);
@@ -46,5 +45,5 @@ public abstract class AbstractNavigatorRecordSelectionListener implements IRecor
     openRecord(record);
   }
 
-  protected abstract RomeoForm newForm();
+  protected abstract RomeoForm newForm(Object record);
 }

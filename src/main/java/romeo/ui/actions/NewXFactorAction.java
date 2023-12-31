@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
+import romeo.xfactors.api.IXFactor;
 import romeo.xfactors.impl.XFactorImpl;
 import romeo.xfactors.ui.XFactorFormFactory;
 
@@ -23,11 +24,10 @@ public class NewXFactorAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return _xFactorFormFactory.newXFactorForm();
+    return _xFactorFormFactory.newXFactorForm(newRecord(), true);
   }
 
-  @Override
-  protected Object newRecord() {
+  private IXFactor newRecord() {
     return new XFactorImpl();
   }
 }

@@ -45,10 +45,8 @@ public abstract class AbstractNewRecordAction extends AbstractRomeoAction {
    * @param e
    */
   @Override
-  protected void doActionPerformed(ActionEvent e) {
+  protected void doActionPerformed(ActionEvent e) {    
     RomeoForm form = newForm();
-    Object prototype = newRecord();
-    form.initialise(prototype);
     _navigatorPanel.display(form);
   }
 
@@ -58,11 +56,4 @@ public abstract class AbstractNewRecordAction extends AbstractRomeoAction {
    * @return form
    */
   protected abstract RomeoForm newForm();
-
-  /**
-   * Class must implement to provide a fresh instance of the record to provide
-   * the form with default values.
-   * @return
-   */
-  protected abstract Object newRecord();
 }

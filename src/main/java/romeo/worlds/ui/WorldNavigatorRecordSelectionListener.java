@@ -6,6 +6,8 @@ import java.util.Objects;
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
+import romeo.worlds.api.IWorld;
+import romeo.worlds.api.IWorldService;
 import romeo.worlds.api.WorldAndHistory;
 import romeo.worlds.api.WorldId;
 import romeo.worlds.impl.WorldImpl;
@@ -13,15 +15,20 @@ import romeo.worlds.impl.WorldImpl;
 public class WorldNavigatorRecordSelectionListener extends AbstractNavigatorRecordSelectionListener {
 
   private final WorldFormFactory _worldFormFactory;
+  private final IWorldService _worldService;
   
-  public WorldNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel, WorldFormFactory worldFormFactory) {
+  public WorldNavigatorRecordSelectionListener(
+      NavigatorPanel navigatorPanel, 
+      WorldFormFactory worldFormFactory,
+      IWorldService worldService) {
     super(navigatorPanel);
     _worldFormFactory = Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
+    _worldService = Objects.requireNonNull(worldService, "worldService may not be null");
   }
 
   @Override
-  protected RomeoForm newForm() {
-    return _worldFormFactory.newWorldForm();
+  protected RomeoForm newForm(Object record) {
+    return _worldFormFactory.newWorldForm((IWorld)record, false);
   }
   
   @Override
@@ -38,7 +45,8 @@ public class WorldNavigatorRecordSelectionListener extends AbstractNavigatorReco
       } else {
         throw new ClassCastException("id object in world map is of type " + idObj.getClass().getName() );
       }      
-      openRecord(id);
+      IWorld world = _worldService.getWorld(id);
+      openRecord(world);
     } else {
       throw new UnsupportedOperationException("Only World, WorldImpl or world Map are supported here . Received:" + record);
     }

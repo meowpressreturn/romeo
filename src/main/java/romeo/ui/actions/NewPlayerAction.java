@@ -2,6 +2,7 @@ package romeo.ui.actions;
 
 import java.util.Objects;
 
+import romeo.players.api.IPlayer;
 import romeo.players.impl.PlayerImpl;
 import romeo.players.ui.PlayerFormFactory;
 import romeo.ui.NavigatorPanel;
@@ -27,11 +28,10 @@ public class NewPlayerAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return _playerFormFactory.newPlayerForm();
+    return _playerFormFactory.newPlayerForm(newRecord(), true);
   }
 
-  @Override
-  protected Object newRecord() {
+  private IPlayer newRecord() {
     return new PlayerImpl();
   }
 }

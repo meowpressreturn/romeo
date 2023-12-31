@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
+import romeo.units.api.IUnit;
 import romeo.units.impl.UnitImpl;
 import romeo.units.ui.UnitFormFactory;
 import romeo.units.ui.UnitFormLogic;
@@ -24,11 +25,10 @@ public class NewUnitAction extends AbstractNewRecordAction {
 
   @Override
   protected RomeoForm newForm() {
-    return _unitFormFactory.createUnitForm();
+    return _unitFormFactory.createUnitForm(newRecord(), true);
   }
 
-  @Override
-  protected Object newRecord() {
+  private IUnit newRecord() {
     return new UnitImpl(null, "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
         UnitFormLogic.NEW_UNIT_ACRONYM_TO_CLEAR_WHEN_LOADING_IN_FORM, null);
   }
