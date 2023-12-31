@@ -13,6 +13,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
+/**
+ * A JPanel vertically containing a bunch of checkboxes and supporting a single listener.
+ * You can conveniently get and set the checkboxes via their labels.
+ */
 public class CheckBoxPanel extends JPanel implements ItemListener {
   protected List<JCheckBox> _boxes = new ArrayList<JCheckBox>();
   protected Map<String, JCheckBox> _boxLookup = new TreeMap<String, JCheckBox>();

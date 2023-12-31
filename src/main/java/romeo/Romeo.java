@@ -81,9 +81,7 @@ import romeo.xfactors.impl.XFactorServiceInitialiser;
 import romeo.xfactors.ui.XFactorFormFactory;
 
 /**
- * Contains the main method that creates the ApplicationContext and starts the
- * application by invoking the Romeo object. The ApplicationContext is exposed
- * to classes in the application via the global CONTEXT.
+ * Contains the main method and starts the application by constructing and invoking the Romeo object. 
  */
 public class Romeo {
   static {

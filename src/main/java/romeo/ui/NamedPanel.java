@@ -6,6 +6,10 @@ import javax.swing.JPanel;
 
 import romeo.utils.INamed;
 
+/**
+ * Extends JPanel to implement the {@link INamed} interface giving it a name property.
+ * If you load an {@link INamed} into the {@link NavigatorPanel} will use the name in the display.
+ */
 public class NamedPanel extends JPanel implements INamed {
   protected String _name;
 

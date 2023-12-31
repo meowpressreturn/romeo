@@ -23,6 +23,9 @@ import romeo.model.api.IServiceInitialiser;
 import romeo.utils.Convert;
 import romeo.utils.DbUtils;
 
+/**
+ * Class used to run the service initialisers at startup
+ */
 public class DatabaseInitialiser {
   private final DataSource _dataSource;
   private final List<IServiceInitialiser> _initialisers;

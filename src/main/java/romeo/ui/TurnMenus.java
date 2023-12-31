@@ -18,9 +18,9 @@ import romeo.settings.impl.SettingChangedEvent;
 import romeo.utils.GuiUtils;
 import romeo.worlds.api.IWorldService;
 
+//TODO - extract common impl details between this and TurnControls
 /**
- * Manages the items and actions for the Turn menu TODO - extract common impl
- * details between this and TurnControls
+ * Manages the items and actions for the Turn menu 
  */
 public class TurnMenus implements IServiceListener {
   protected int _currentTurn = -1;

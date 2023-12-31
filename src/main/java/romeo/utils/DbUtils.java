@@ -19,6 +19,9 @@ import org.apache.commons.logging.LogFactory;
 import romeo.persistence.AbstractRecordId;
 import romeo.persistence.IdBean;
 
+/**
+ * Some database related utility methods used by initialisers, test classes, and persistence code
+ */
 public class DbUtils {
   /**
    * In a List of {@link IdBean} find the one with the specified id and return

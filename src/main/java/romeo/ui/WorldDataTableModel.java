@@ -10,6 +10,10 @@ import romeo.settings.api.ISettingsService;
 import romeo.settings.impl.SettingChangedEvent;
 import romeo.worlds.api.IWorldService;
 
+/**
+ * Model for the worlds table
+ * Will fetch appropriate data for the selected turn
+ */
 public class WorldDataTableModel  extends BeanTableModel implements IServiceListener {
 
   private static final ColumnDef[] columns = new BeanTableModel.ColumnDef[] {

@@ -10,6 +10,10 @@ import javax.swing.table.TableModel;
 
 import romeo.utils.GuiUtils;
 
+/**
+ * Renders the table header cells, providing a sort icon when using {@link BeanTableModel}
+ * and tooltip text/
+ */
 public class BeanTableHeaderRenderer implements TableCellRenderer {
   private static final ImageIcon SORTED_ICON = GuiUtils.getImageIcon("/images/sort.gif");
 

@@ -15,7 +15,7 @@ import romeo.worlds.api.IWorldService;
  * Specialised table model for the players data table. In addition to the
  * {@link IPlayerService} it also needs to listen to the {@link IWorldService}
  * for changes to world history that affect the summary information (eg: visible
- * firepower) and the {@link ISettingsService} for chanegs to the currently
+ * firepower) and the {@link ISettingsService} for changes to the currently
  * selected turn.
  */
 public class PlayerDataTableModel extends BeanTableModel implements IServiceListener {

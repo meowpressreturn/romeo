@@ -30,6 +30,10 @@ import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 import romeo.utils.INamed;
 
+/**
+ * A {@link JPanel} containing components created from a list of {@link FieldDef}.
+ * Implements {@link INamed} for display of name when loaded into the {@link NavigatorPanel} .
+ */
 public class RomeoForm extends JPanel
     implements ActionListener, ItemListener, IFieldChangeListener, INamed {
   

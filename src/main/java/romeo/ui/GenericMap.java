@@ -38,6 +38,11 @@ import romeo.utils.events.IEventHub;
 import romeo.utils.events.IEventListener;
 import romeo.utils.events.ShutdownEvent;
 
+/**
+ * 2D map display of things, with zooming and scrolling, and clicking. 
+ * In practice the only things we use this for displaying are worlds 
+ * so the only instance of this class is for the worlds map. 
+ */
 public class GenericMap implements IEventListener {
   
   public static interface IMapLogic {
@@ -92,23 +97,6 @@ public class GenericMap implements IEventListener {
   private Color _backgroundColor = Color.BLACK;
   private Font _font = null;
   private List<IRecordSelectionListener> _selectionListeners = new ArrayList<IRecordSelectionListener>(1);
-
-//  /**
-//   * Convenience constructor that takes a single
-//   * {@link IRecordSelectionListener} instance that will be added to the
-//   * listener list. (This constructor is here because Spring doesnt provide a
-//   * method to do this simply. One would think you could tell it to invoke some
-//   * methods on the object the factory is creating before returning it , but no.
-//   * Only property setters can be called. Not adders. Unless one want to mess
-//   * round with hacky solutions involving MethodInvokingFactoryBean and restrict
-//   * oneself to singletons)
-//   * @param logic
-//   * @param listener
-//   */
-//  public GenericMap(IMapLogic logic, IRecordSelectionListener listener) {
-//    this(logic);
-//    addRecordSelectionListener(listener);
-//  }
 
   /**
    * Constructor.
