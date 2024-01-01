@@ -45,6 +45,7 @@ import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.settings.impl.SettingChangedEvent;
 import romeo.ui.BeanTableModel;
+import romeo.ui.CommonTextActionsMenu;
 import romeo.ui.NumericCellRenderer;
 import romeo.ui.forms.FieldChangeListenerList;
 import romeo.ui.forms.IFieldChangeListener;
@@ -166,6 +167,9 @@ public class FleetField extends JPanel implements IServiceListener {
     _fleetText.setDocument(_model.getDocument());
     _fleetText.setWrapStyleWord(true);
     _fleetText.setLineWrap(true);
+    
+    _fleetText.setComponentPopupMenu(new CommonTextActionsMenu(_fleetText));
+    
     JScrollPane textScroll = new JScrollPane(_fleetText);
     _fleetTextScroll = textScroll;
     textScroll.getVerticalScrollBar().setUnitIncrement(16);

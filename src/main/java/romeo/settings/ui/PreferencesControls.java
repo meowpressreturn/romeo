@@ -27,6 +27,7 @@ import romeo.scenarios.api.IScenarioService;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
 import romeo.settings.impl.SettingChangedEvent;
+import romeo.ui.CommonTextActionsMenu;
 import romeo.ui.NamedPanel;
 import romeo.ui.forms.IValidatingField;
 import romeo.ui.forms.RNumericField;
@@ -76,6 +77,7 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
     JPanel simulatorPrefs = new JPanel();
     simulatorPrefs.setBorder(new TitledBorder("Simulator"));
     _numberOfBattlesField = new RNumericField();
+    _numberOfBattlesField.setComponentPopupMenu(new CommonTextActionsMenu(_numberOfBattlesField));
     _numberOfBattlesField.getDocument().addDocumentListener(this);
     _fields.add(_numberOfBattlesField);
 
@@ -141,6 +143,13 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
     _bClassWorldField.getDocument().addDocumentListener(this);
     _aClassWorldField.getDocument().addDocumentListener(this);
 
+    _fClassWorldField.setComponentPopupMenu(new CommonTextActionsMenu(_fClassWorldField));
+    _eClassWorldField.setComponentPopupMenu(new CommonTextActionsMenu(_eClassWorldField));
+    _dClassWorldField.setComponentPopupMenu(new CommonTextActionsMenu(_dClassWorldField));
+    _cClassWorldField.setComponentPopupMenu(new CommonTextActionsMenu(_cClassWorldField));
+    _bClassWorldField.setComponentPopupMenu(new CommonTextActionsMenu(_bClassWorldField));
+    _aClassWorldField.setComponentPopupMenu(new CommonTextActionsMenu(_aClassWorldField));
+    
     _fields.add(_fClassWorldField);
     _fields.add(_eClassWorldField);
     _fields.add(_dClassWorldField);
@@ -216,6 +225,11 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
     _defcon4Field.getDocument().addDocumentListener(this);
     _defcon3Field.getDocument().addDocumentListener(this);
     _defcon2Field.getDocument().addDocumentListener(this);
+    
+    _defcon5Field.setComponentPopupMenu(new CommonTextActionsMenu(_defcon5Field));
+    _defcon4Field.setComponentPopupMenu(new CommonTextActionsMenu(_defcon4Field));
+    _defcon3Field.setComponentPopupMenu(new CommonTextActionsMenu(_defcon3Field));
+    _defcon2Field.setComponentPopupMenu(new CommonTextActionsMenu(_defcon2Field));
 
     _fields.add(_defcon5Field);
     _fields.add(_defcon4Field);
@@ -263,6 +277,7 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
     mapPrefs.add(worldDefensePrefs, mgbc);
 
     _defaultScanner = new RNumericField();
+    _defaultScanner.setComponentPopupMenu(new CommonTextActionsMenu(_defaultScanner));
     _defaultScanner.getDocument().addDocumentListener(this);
     _fields.add(_defaultScanner);
 
@@ -282,29 +297,6 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
 
     pgbc.gridy++;
     _panel.add(mapPrefs, pgbc);
-
-    //    JPanel importPrefs = new JPanel();
-    //    importPrefs.setBorder( new TitledBorder("Import") );
-    //    GridBagConstraints igbc = GuiUtils.prepGridBag(importPrefs);
-    //    
-    //    _defaultScanner = new RNumericField();
-    //    _defaultScanner.getDocument().addDocumentListener(this);
-    //    _fields.add(_defaultScanner);
-    //    
-    //    importPrefs.add(new JLabel("Visual Range:"),igbc); 
-    //    igbc.gridx++;
-    //    //importPrefs.add(_defaultScanner, igbc);
-    //    importPrefs.add(new JLabel("xxx"),igbc);
-    //    
-    //    igbc.gridy++;
-    //    igbc.gridx=2;
-    //    igbc.weightx=2;
-    //    igbc.weighty=2;
-    //    igbc.fill=GridBagConstraints.BOTH;
-    //    importPrefs.add(new JLabel(""), igbc);
-    //    
-    //    pgbc.gridy++;
-    //    _panel.add(importPrefs, pgbc);
 
     JPanel buttonPanel = new JPanel();
     gbc = GuiUtils.prepGridBag(buttonPanel);

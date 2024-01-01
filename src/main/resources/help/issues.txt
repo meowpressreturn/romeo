@@ -42,8 +42,6 @@ Known issues and feature requests:
 
 #59  New colour picker should let you use arrow keys to select the colour
 
-#62  Request to enable copy/paste via a context menu in the fleet fields. =Requested by Agramer=
-
 #66  Player form layout doesn't utilise space correctly. (Eg: when stretched horizontally labels are separated from 
 their appropriate field by unwanted whitespace)
 
@@ -373,6 +371,8 @@ Addressed in Romeo 0.6.3
 Addressed in Romeo 0.6.4
 
 #50  (FIXED) When selecting a row for an entry in the fleet the source id for that row is not selected in the source combo box. This requires manually changing the value in the combo box too, in order to update the quantity for that source.
+
+#62  (FEATURE ADDED) Request to enable copy/paste via a context menu in the fleet fields. =Requested by Agramer=
 
 
 

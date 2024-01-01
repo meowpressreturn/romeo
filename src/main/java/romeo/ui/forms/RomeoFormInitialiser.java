@@ -22,6 +22,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import romeo.players.api.IPlayerService;
+import romeo.ui.CommonTextActionsMenu;
 import romeo.ui.forms.RomeoForm.Components;
 import romeo.units.api.IUnitService;
 import romeo.utils.GuiUtils;
@@ -97,6 +98,7 @@ public class RomeoFormInitialiser {
       switch (field.getType()){
         case FieldDef.TYPE_INT: {
           JTextField entryField = new RNumericField();
+          entryField.setComponentPopupMenu(new CommonTextActionsMenu(entryField));
           if(field.isMandatory())
             entryField.setBackground(RomeoForm.MANDATORY_COLOR);
           entryField.setText((String) field.getDefaultValue());
@@ -113,6 +115,7 @@ public class RomeoFormInitialiser {
 
         case FieldDef.TYPE_DOUBLE: {
           JTextField entryField = new RNumericField();
+          entryField.setComponentPopupMenu(new CommonTextActionsMenu(entryField));
           if(field.isMandatory())
             entryField.setBackground(RomeoForm.MANDATORY_COLOR);
 
@@ -137,6 +140,7 @@ public class RomeoFormInitialiser {
 
         case FieldDef.TYPE_TEXT: {
           JTextField entryField = new JTextField();
+          entryField.setComponentPopupMenu(new CommonTextActionsMenu(entryField));
           if(field.isMandatory())
             entryField.setBackground(RomeoForm.MANDATORY_COLOR);
           entryField.setText((String) field.getDefaultValue());
@@ -173,6 +177,7 @@ public class RomeoFormInitialiser {
           } else {
             entryField = new JTextArea();
           }
+          entryField.setComponentPopupMenu(new CommonTextActionsMenu(entryField));
           if(field.isMandatory())
             entryField.setBackground(RomeoForm.MANDATORY_COLOR);
           entryField.setTabSize(2);
