@@ -4,8 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
@@ -21,11 +20,17 @@ import romeo.worlds.api.WorldId;
  */
 public class MapCenterer implements Runnable {
   
-  private ISettingsService _settingsService;
-  private IWorldService _worldService;
-  private GenericMap _worldsMap;
+  private final Logger _log;
+  private final ISettingsService _settingsService;
+  private final IWorldService _worldService;
+  private final GenericMap _worldsMap;
   
-  public MapCenterer(ISettingsService settingsService, IWorldService worldService, GenericMap worldsMap) {
+  public MapCenterer(
+      final Logger log,
+      final ISettingsService settingsService, 
+      final IWorldService worldService, 
+      final GenericMap worldsMap) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService may not be null");
     _worldsMap = Objects.requireNonNull(worldsMap, "worldsMap may not be null");
@@ -33,12 +38,10 @@ public class MapCenterer implements Runnable {
 
   @Override
   public void run() {
-    Log log = LogFactory.getLog(this.getClass());
-    
     int x = (int)_settingsService.getLong(ISettings.MAP_X);
     int y = (int)_settingsService.getLong(ISettings.MAP_Y);
     
-    log.trace("Setting visibleMapCentre to " + x + "," + y);
+    _log.trace("Setting visibleMapCentre to " + x + "," + y);
     _worldsMap.setVisibleMapCentre( new Point(x,y) );
     
     String originString = _settingsService.getString(ISettings.MAP_ORIGIN);
@@ -53,13 +56,13 @@ public class MapCenterer implements Runnable {
           //but is needed to construct the object expected by the map
           //(we didnt really need to load an actual history either)
           WorldAndHistory originWah = new WorldAndHistory(originWorld, originHistory, Color.BLACK, 0, "");
-          log.trace("Setting origin to " + originWah);
+          _log.trace("Setting origin to " + originWah);
           _worldsMap.setOrigin( originWah );
         } else {
-          log.debug("Unable to set origin because history not found for " + originWorld + " for turn: " + turn);
+          _log.debug("Unable to set origin because history not found for " + originWorld + " for turn: " + turn);
         }
       } else {
-        log.debug("Unable to set origin because world not found: " + originId);
+        _log.debug("Unable to set origin because world not found: " + originId);
       }
       
     }    

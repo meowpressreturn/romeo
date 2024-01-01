@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.importdata.IWorldFile;
 import romeo.utils.Convert;
@@ -23,11 +22,6 @@ import romeo.utils.Convert;
  * qnd, needs refactoring
  */
 public class CsvWorldFile implements IWorldFile {
-//  public static final String DEFAULT_NAME_COLUMN = "name";
-//  public static final String[] DEFAULT_COLUMNS = new String[] { "worldID", DEFAULT_NAME_COLUMN, "worldX", "worldY",
-//      "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "worldType", "labour", "capital", "firepower", "team"
-//
-//  };
 
   public class ReadException extends Exception {
     private File _file;
@@ -42,6 +36,8 @@ public class CsvWorldFile implements IWorldFile {
     }
   }
   
+  private final Logger _log;
+  
   private String[] _columns;
   private LinkedHashMap<String, Map<String, String>> _rows;
   private String _nameColumn;
@@ -53,7 +49,12 @@ public class CsvWorldFile implements IWorldFile {
    * @param columns
    * @param nameColumn
    */
-  public CsvWorldFile(File file, String[] columns, String nameColumn) throws ReadException {
+  public CsvWorldFile(
+      Logger log,
+      File file, 
+      String[] columns, 
+      String nameColumn) throws ReadException {
+    _log = Objects.requireNonNull(log, "log may not be null");
     Objects.requireNonNull(file, "file may not be null");
     Objects.requireNonNull(columns, "columns may not be null");
     Objects.requireNonNull(nameColumn,"nameColumn may not be null");
@@ -81,10 +82,13 @@ public class CsvWorldFile implements IWorldFile {
    * @param columns
    * @param nameColumn
    */
-  public CsvWorldFile(InputStream stream, String[] columns, String nameColumn) {
-    if(stream == null) {
-      throw new NullPointerException("stream is null");
-    }
+  public CsvWorldFile(
+      Logger log, 
+      InputStream stream, 
+      String[] columns, 
+      String nameColumn) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+    Objects.requireNonNull(stream, "stream may not be null");
     init(columns, nameColumn);
     parseCsv(stream);
   }
@@ -113,8 +117,6 @@ public class CsvWorldFile implements IWorldFile {
    * @param stream
    */
   protected void parseCsv(InputStream stream) {
-    Log log = LogFactory.getLog(this.getClass());
-
     String nameColumn = getNameColumn();
     String[] columns = getColumns();
 
@@ -127,20 +129,20 @@ public class CsvWorldFile implements IWorldFile {
         reader = new BufferedReader(streamReader);
         String line;
         while((line = reader.readLine()) != null) {
-          if(log.isDebugEnabled()) {
-            log.debug("Input Line=" + line);
+          if(_log.isDebugEnabled()) {
+            _log.debug("Input Line=" + line);
           }
           line = line.trim();
           if(line.startsWith("#!COLUMNS=")) {
             line = line.substring(line.indexOf('=') + 1);
             columns = Convert.toStrArray(line, ",");
-            if(log.isDebugEnabled()) {
-              log.debug("New columns list=" + line);
+            if(_log.isDebugEnabled()) {
+              _log.debug("New columns list=" + line);
             }
           } else if(line.startsWith("#!NAMECOLUMN=")) {
             nameColumn = line.substring(line.indexOf('=') + 1);
-            if(log.isDebugEnabled()) {
-              log.debug("New nameColumn=" + nameColumn);
+            if(_log.isDebugEnabled()) {
+              _log.debug("New nameColumn=" + nameColumn);
             }
           } else if("".equals(line) || line.startsWith("#")) {
             ;
@@ -157,8 +159,8 @@ public class CsvWorldFile implements IWorldFile {
             }
             String name = (String) columnValues.get(nameColumn);
             if(name != null) {
-              if(log.isDebugEnabled()) {
-                log.debug("Parsed Record=" + columnValues);
+              if(_log.isDebugEnabled()) {
+                _log.debug("Parsed Record=" + columnValues);
               }
               rowValues.put(name, columnValues);
               _names.add(name);

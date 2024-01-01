@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.model.impl.AbstractService;
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
@@ -11,6 +13,10 @@ import romeo.players.api.PlayerId;
 
 public class MockPlayerService extends AbstractService implements IPlayerService {
 
+  public MockPlayerService() {
+    super(LoggerFactory.getLogger(MockPlayerService.class));
+  }
+  
   /**
    * Notification method made public for testing purposes
    */

@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.importdata.impl.UnitImporterImpl;
 import romeo.model.impl.AbstractService;
 import romeo.units.api.Acronym;
@@ -32,6 +34,7 @@ public class MockUnitService extends AbstractService implements IUnitService {
   private int _nextKey = 0;
   
   public MockUnitService() {
+    super(LoggerFactory.getLogger(MockUnitService.class));
     _unlinkCalls = new ArrayList<>();
     _data = new HashMap<UnitId,IUnit>();
   }

@@ -3,6 +3,8 @@ package romeo.players.ui;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
 import romeo.players.api.PlayerId;
@@ -20,10 +22,11 @@ public class PlayerNavigatorRecordSelectionListener extends AbstractNavigatorRec
   private PlayerFormFactory _playerFormFactory;
 
   public PlayerNavigatorRecordSelectionListener(
+      Logger log,
       NavigatorPanel navigatorPanel, 
       IPlayerService playerService,
       PlayerFormFactory playerFormFactory) {
-    super(navigatorPanel);
+    super(log, navigatorPanel);
     _playerService = Objects.requireNonNull(playerService, "playerService may not be null");
     _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
   }

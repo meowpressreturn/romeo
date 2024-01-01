@@ -13,8 +13,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.importdata.IUnitImportReport;
 import romeo.importdata.IUnitImporter;
@@ -41,10 +41,13 @@ public class ImportUnitsAction extends AbstractRomeoAction {
   private final JFrame _mainFrame;
   private final List<String> _unitColumns;
   
-  public ImportUnitsAction(JFrame mainFrame,
+  public ImportUnitsAction(
+      Logger log,
+      JFrame mainFrame,
       ISettingsService settingsService,
       IUnitService unitService,
       List<String> unitColumns) {
+    super(log);
     _mainFrame = Objects.requireNonNull(mainFrame, "mainFrame may not be null");
     _settingsService = Objects.requireNonNull(settingsService,"settingsService may not be null");
     _unitService = Objects.requireNonNull(unitService, "unitService may not be null");
@@ -93,19 +96,18 @@ public class ImportUnitsAction extends AbstractRomeoAction {
     chooser.setFileFilter(fileFilter);
     int returnVal = chooser.showOpenDialog(_mainFrame);
     if(returnVal == JFileChooser.APPROVE_OPTION) {
-      Log log = LogFactory.getLog(this.getClass());
       File file = chooser.getSelectedFile();
       importFolderPath = file.getParent();
       _settingsService.setString(ISettings.IMPORT_FOLDER, importFolderPath);
       String[] columns = _unitColumns.toArray(new String[]{});
-      if(log.isDebugEnabled()) {
-        log.debug("Preparing to import from file " + file.getName());
-        log.debug("CSV Columns=" + Convert.toCsv( Arrays.asList(columns) ));
+      if(_log.isDebugEnabled()) {
+        _log.debug("Preparing to import from file " + file.getName());
+        _log.debug("CSV Columns=" + Convert.toCsv( Arrays.asList(columns) ));
       }
       String nameColumn = "name"; //we no longer support changing this via context
-      CsvUnitFile unitFile = new CsvUnitFile(file, columns, nameColumn);
+      CsvUnitFile unitFile = new CsvUnitFile(LoggerFactory.getLogger(CsvUnitFile.class), file, columns, nameColumn);
       
-      IUnitImporter unitImporter = new UnitImporterImpl(_unitService);
+      IUnitImporter unitImporter = new UnitImporterImpl(LoggerFactory.getLogger(UnitImporterImpl.class),_unitService);
       IUnitImportReport report = null;
       try {
         Map<String, Map<String, String>> adjustments = null; //we only adjust at startup currently. Later may be an option?
@@ -115,7 +117,7 @@ public class ImportUnitsAction extends AbstractRomeoAction {
           throw report.getException();
         }
       } catch(Exception ex) {
-        log.error("Import Error:", ex);
+        _log.error("Import Error:", ex);
         ErrorDialog dialog = new ErrorDialog("Unit Import Error", ex, false);
         dialog.show();
       }
@@ -128,6 +130,5 @@ public class ImportUnitsAction extends AbstractRomeoAction {
             JOptionPane.INFORMATION_MESSAGE);
       }
     }
-
   }
 }

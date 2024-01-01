@@ -11,6 +11,8 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import org.slf4j.Logger;
+
 import romeo.model.api.IServiceListener;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
@@ -33,7 +35,7 @@ public class TurnMenus implements IServiceListener {
   protected JMenuItem _nextItem;
   protected JMenuItem _lastItem;
 
-  public TurnMenus(ISettingsService settingsService, IWorldService worldService) {
+  public TurnMenus(Logger log, ISettingsService settingsService, IWorldService worldService) {
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService must not be null");
     _settingsService.addListener(this);
@@ -42,7 +44,7 @@ public class TurnMenus implements IServiceListener {
     _menu.setText("Turn");
     _menu.setMnemonic('t');
 
-    Action firstAction = new AbstractRomeoAction() {
+    Action firstAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         _settingsService.setLong(ISettings.CURRENT_TURN, 1);
@@ -56,7 +58,7 @@ public class TurnMenus implements IServiceListener {
     _firstItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_K, ActionEvent.CTRL_MASK));
     _firstItem.setText("First (1)");
 
-    Action prevAction = new AbstractRomeoAction() {
+    Action prevAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         if(_currentTurn > 1) {
@@ -71,7 +73,7 @@ public class TurnMenus implements IServiceListener {
     _prevItem = _menu.add(prevAction);
     _prevItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, ActionEvent.CTRL_MASK));
 
-    Action nextAction = new AbstractRomeoAction() {
+    Action nextAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         _settingsService.setLong(ISettings.CURRENT_TURN, _currentTurn + 1);
@@ -84,7 +86,7 @@ public class TurnMenus implements IServiceListener {
     _nextItem = _menu.add(nextAction);
     _nextItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, ActionEvent.CTRL_MASK));
 
-    Action lastAction = new AbstractRomeoAction() {
+    Action lastAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         _settingsService.setLong(ISettings.CURRENT_TURN, _maxTurn);

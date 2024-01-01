@@ -2,6 +2,8 @@ package romeo.ui.actions;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 import romeo.worlds.api.IWorld;
@@ -12,8 +14,11 @@ public class NewWorldAction extends AbstractNewRecordAction {
   
   private final WorldFormFactory _worldFormFactory;
   
-  public NewWorldAction(NavigatorPanel navigatorPanel, WorldFormFactory worldFormFactory) {
-    super(navigatorPanel);
+  public NewWorldAction(
+      Logger log,
+      NavigatorPanel navigatorPanel, 
+      WorldFormFactory worldFormFactory) {
+    super(log, navigatorPanel);
     
     _worldFormFactory = Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
     

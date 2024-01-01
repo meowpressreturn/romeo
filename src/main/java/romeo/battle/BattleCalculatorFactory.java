@@ -2,6 +2,8 @@ package romeo.battle;
 
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.battle.impl.BattleCalculatorImpl;
 import romeo.xfactors.api.IXFactorCompiler;
 
@@ -19,7 +21,9 @@ public class BattleCalculatorFactory {
   }
   
   public IBattleCalculator newBattleCalculator() {
-    return new BattleCalculatorImpl(_xfactorCompiler);
+    return new BattleCalculatorImpl(
+        LoggerFactory.getLogger(BattleCalculatorImpl.class), 
+        _xfactorCompiler);
   }
 
 }

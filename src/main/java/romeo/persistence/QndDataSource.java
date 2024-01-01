@@ -5,11 +5,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import romeo.ApplicationException;
 
@@ -26,6 +25,9 @@ import romeo.ApplicationException;
  * distro even more!)
  */
 public class QndDataSource implements DataSource {
+  
+  private final static org.slf4j.Logger LOG = LoggerFactory.getLogger(QndDataSource.class);
+  
   private String _driver = null;
   private String _database = null;
   private int _loginTimeout = 0;
@@ -78,7 +80,7 @@ public class QndDataSource implements DataSource {
       //at org.hsqldb.jdbc.Util.sqlException(Unknown Source)
       String msg = (sqlE.getMessage() == null) ? "" : sqlE.getMessage();
       if(msg.startsWith("Database lock acquisition failure")) {
-        LogFactory.getLog(this.getClass()).error(sqlE);
+        LOG.error("", sqlE);
         String txt = "Unable to open the database.\n"
             + "This may be because another instance of Romeo is already running?\n\n\n" + "Exception message:" + msg;
         throw new ApplicationException(txt, sqlE);
@@ -161,9 +163,12 @@ public class QndDataSource implements DataSource {
     _driver = string;
   }
 
+  /**
+   * Returns null
+   */
   @Override
-  public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-    return null;
+  public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+    return null; //TODO - should it throw SQLFeatureNotSupportedException ?
   }
 
   @Override

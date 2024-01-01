@@ -19,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import romeo.model.api.InvalidTurnException;
 import romeo.persistence.DuplicateRecordException;
@@ -62,7 +63,7 @@ public class TestPlayerServiceImpl {
     __keyGen = new KeyGenImpl();
     TestUtils.initDatabaseSettings(__dataSource);
     
-    __initialiser = new PlayerServiceInitialiser(__keyGen);
+    __initialiser = new PlayerServiceInitialiser(LoggerFactory.getLogger(PlayerServiceInitialiser.class), __keyGen);
     TestUtils.applyServiceInitialiser(__dataSource, __initialiser);
   }
   
@@ -82,7 +83,7 @@ public class TestPlayerServiceImpl {
   public void setup() {
     _settingsService = new MockSettingsService();
     _settingsService.setLong(ISettings.DEFAULT_SCANNER, 25);
-    _playerService = new PlayerServiceImpl(__dataSource, __keyGen);
+    _playerService = new PlayerServiceImpl(LoggerFactory.getLogger(PlayerServiceImpl.class), __dataSource, __keyGen);
     _listener = new ServiceListenerChecker();
     _playerService.addListener(_listener);
     try (Connection connection = __dataSource.getConnection()) {
@@ -106,15 +107,15 @@ public class TestPlayerServiceImpl {
   @Test
   public void testConstructor() {
     
-    new PlayerServiceImpl(__dataSource, __keyGen);
+    new PlayerServiceImpl(LoggerFactory.getLogger(PlayerServiceImpl.class),__dataSource, __keyGen);
     
     try{
-      new PlayerServiceImpl(null, __keyGen);
+      new PlayerServiceImpl(LoggerFactory.getLogger(PlayerServiceImpl.class), null, __keyGen);
       fail("expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try{
-      new PlayerServiceImpl(__dataSource, null);
+      new PlayerServiceImpl(LoggerFactory.getLogger(PlayerServiceImpl.class), __dataSource, null);
       fail("expected NullPointerException");
     } catch(NullPointerException expected) {}    
   }
@@ -177,7 +178,7 @@ public class TestPlayerServiceImpl {
     
     //Test getting when the table is empty (should return empty list)
     deleteAllPlayers();
-    PlayerServiceImpl cleanService = new PlayerServiceImpl(__dataSource, __keyGen);
+    PlayerServiceImpl cleanService = new PlayerServiceImpl(LoggerFactory.getLogger(PlayerServiceImpl.class), __dataSource, __keyGen);
     for(int t = 0; t < N; t++) {
       List<IPlayer> players = cleanService.getPlayers();
       assertNotNull(players);
@@ -318,7 +319,8 @@ public class TestPlayerServiceImpl {
     //Special setup for the summary test
     //It also requires the worlds tables to be setup    
     
-    WorldServiceInitialiser worldServiceInitialiser = new WorldServiceInitialiser(__keyGen, _settingsService);
+    WorldServiceInitialiser worldServiceInitialiser 
+      = new WorldServiceInitialiser(LoggerFactory.getLogger(WorldServiceInitialiser.class), __keyGen, _settingsService);
     try(Connection connection = __dataSource.getConnection()) {
       Set<String> tables = DbUtils.getTableNames(connection);
       worldServiceInitialiser.init(tables, connection);

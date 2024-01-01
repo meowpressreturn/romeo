@@ -2,7 +2,7 @@ package romeo.players.api;
 
 import java.awt.Color;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.LoggerFactory;
 
 import romeo.utils.Convert;
 import romeo.worlds.impl.WorldServiceImpl;
@@ -20,7 +20,7 @@ public class PlayerUtils {
     try {
       c = new Color(255, 204, 102);
     } catch(Exception e) {
-      LogFactory.getLog(WorldServiceImpl.class).error("Failed to correctly set NOBODY_COLOR", e);
+      LoggerFactory.getLogger(WorldServiceImpl.class).error("Failed to correctly set NOBODY_COLOR", e);
     } finally {
       NOBODY_COLOR = c; //ugly hack is ugly
     }
@@ -35,7 +35,7 @@ public class PlayerUtils {
     try {
       c = new Color(255, 0, 0);
     } catch(Exception e) {
-      LogFactory.getLog(WorldServiceImpl.class).error("Failed to correctly set SOMEBODY_COLOR", e);
+      LoggerFactory.getLogger(WorldServiceImpl.class).error("Failed to correctly set SOMEBODY_COLOR", e);
     } finally {
       SOMEBODY_COLOR = c;
     }
@@ -61,7 +61,7 @@ public class PlayerUtils {
       c[6] = new Color(204, 153, 0); //khakiesque
       c[7] = new Color(153, 153, 102); //grayish, kinda
     } catch(Exception e) {
-      LogFactory.getLog(WorldServiceImpl.class).error("Failed to correctly set TEAM_COLORS", e);
+      LoggerFactory.getLogger(WorldServiceImpl.class).error("Failed to correctly set TEAM_COLORS", e);
     } finally {
       TEAM_COLORS = c;
     }

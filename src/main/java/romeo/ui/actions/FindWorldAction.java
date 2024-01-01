@@ -10,6 +10,7 @@ import javax.swing.Action;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.text.similarity.FuzzyScore;
+import org.slf4j.Logger;
 
 import romeo.Romeo;
 import romeo.ui.AbstractRomeoAction;
@@ -32,8 +33,8 @@ public class FindWorldAction extends AbstractRomeoAction {
   
   private final WorldNavigatorRecordSelectionListener _recordSelector;
 
-  public FindWorldAction(WorldNavigatorRecordSelectionListener recordSelectionListener) {
-    super();
+  public FindWorldAction(Logger log, WorldNavigatorRecordSelectionListener recordSelectionListener) {
+    super(log);
     
     _recordSelector = Objects.requireNonNull(recordSelectionListener, "recordSelectinListener may not be null");
     

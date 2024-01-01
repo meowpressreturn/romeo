@@ -11,6 +11,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.scenarios.api.IScenario;
 import romeo.scenarios.api.IScenarioService;
 import romeo.utils.GuiUtils;
@@ -24,7 +26,12 @@ public class ScenarioPanel extends JPanel {
     Objects.requireNonNull(battleFleetsManager, "battleFleetsManager may not be null");
 
     final ScenarioCombo scenarioCombo = new ScenarioCombo(scenarioService);
-    final JButton saveButton = new JButton(new SaveScenarioAction(scenarioService, battleFleetsManager, scenarioCombo));
+    final JButton saveButton = new JButton(
+        new SaveScenarioAction(
+            LoggerFactory.getLogger(SaveScenarioAction.class),
+            scenarioService, 
+            battleFleetsManager, 
+            scenarioCombo));
     saveButton.setText("");
     final JButton deleteButton = new JButton(DELETE_ICON);
     deleteButton.setEnabled(false);

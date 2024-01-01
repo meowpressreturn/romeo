@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.importdata.IUnitFile;
 import romeo.importdata.IUnitImportReport;
@@ -36,6 +36,8 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
    */
   public static final String UNITS_FILE_RESOURCE_PATH = "unit.csv";
 
+  private final Logger _log;
+  
   private AdjustmentsFileReader _adjustmentsReader;
   private List<String> _columnNames;
   private IUnitImporter _importer;
@@ -43,8 +45,8 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
   /**
    * Constructor. Will not import any default units and adjustments.
    */
-  public UnitServiceInitialiser() {
-    this(null, null, null);
+  public UnitServiceInitialiser(Logger log) {    
+    this(log, null, null, null);
   }
   
   /**
@@ -53,7 +55,12 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
    * @param columnNames maps columns in the csv file to unit properties
    * @param reader default adjustments reader
    */
-  public UnitServiceInitialiser(IUnitImporter importer, List<String> columnNames, AdjustmentsFileReader reader) {
+  public UnitServiceInitialiser(
+      final Logger log, 
+      final IUnitImporter importer, 
+      final List<String> columnNames, 
+      final AdjustmentsFileReader reader) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _importer = importer;
     _columnNames = columnNames;
     _adjustmentsReader = reader;
@@ -70,7 +77,6 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
   @Override
   public void init(Set<String> tableNames, Connection connection) {
     boolean createUnits = false;
-    Log log = LogFactory.getLog(this.getClass());
     Set<String> columnNames;
     if(!tableNames.contains("UNITS")) {
       final String sql = "CREATE TABLE UNITS (" 
@@ -91,7 +97,7 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
           + ",xFactor VARCHAR" //nb: xfactor stays nullable as one day it will be a FK
           + ");";
 
-      log.info("Creating UNITS table");
+      _log.info("Creating UNITS table");
       DbUtils.writeQuery(sql, null, connection);
       //If an importer was provided we will want to import initial unit data
       //Note that this only happpens for a new install (ie: if we had to create the units table here now)
@@ -100,21 +106,21 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
     } else {
       columnNames = DbUtils.getColumnNames(connection, "UNITS");
       if(DbUtils.fixEmptyColumn("UNITS", "name", "Untitled", connection)) {
-        log.info("Changed empty names to 'Untitled'");
+        _log.info("Changed empty names to 'Untitled'");
       }
       
       //Ensure all the names are trimmed and unique. (We found that UC actually has some nobody world names with extra whitespace and that
       //it allows this for player homeworld names too)
       if( DbUtils.ensureTrimmed("UNITS", "name", connection) ) {
-        log.info("Trimmed whitespace from names");
+        _log.info("Trimmed whitespace from names");
       }
       if( DbUtils.fixDuplicates("UNITS", "name", connection) ) {
-        log.info("Fixed duplicate values in names");
+        _log.info("Fixed duplicate values in names");
       }
     }
     
     Set<String> nullableColumns = DbUtils.getNullableColumnNames(connection, "UNITS");
-    log.debug("Existing columns in UNITS table=" + columnNames);
+    _log.debug("Existing columns in UNITS table=" + columnNames);
     updateColumns(connection, columnNames, nullableColumns);
 
     if(createUnits) {
@@ -123,11 +129,9 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
   }
 
   private void updateColumns(Connection connection, Set<String> columnNames, Set<String> nullableColumns) {
-    Log log = LogFactory.getLog(this.getClass());
-    
     boolean addedAcronym = false;
     if(!columnNames.contains("ACRONYM")) {
-      log.info("Adding acronym column to UNITS table");
+      _log.info("Adding acronym column to UNITS table");
       DbUtils.writeQuery("ALTER TABLE UNITS ADD COLUMN acronym VARCHAR DEFAULT '' NOT NULL", null, connection);
       addedAcronym = true;
       
@@ -136,7 +140,7 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
     } 
 
     if(!columnNames.contains("XFACTOR")) {
-      log.info("Adding xfactor column to UNITS table");
+      _log.info("Adding xfactor column to UNITS table");
       DbUtils.writeQuery("ALTER TABLE UNITS ADD COLUMN xfactor VARCHAR", null, connection); //nb: may be null
       //nb: we can't import xFactors for existing units in an old database here because we haven't run the
       //    XFactors service initialiser yet, and will need to convert the xf name in the adjustments into
@@ -156,12 +160,12 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
     //As of 0.6.3 we don't allow null values in units columns other than the optional xfactor 
     //(at some point xfactor may become an actual foreign key so will need to stay nullable)
     if(addedAcronym || nullableColumns.contains("ACRONYM")) {
-      log.debug("Making acronym and name columns NOT NULL");
+      _log.debug("Making acronym and name columns NOT NULL");
       DbUtils.makeNonNull("UNITS", "''", connection, 
           "acronym", "name");
     }
     if(nullableColumns.contains("ATTACKS")) {
-      log.debug("Making stats columns NOT NULL");
+      _log.debug("Making stats columns NOT NULL");
       DbUtils.makeNonNull("UNITS", "0", connection, 
           "attacks","offense","defense","pd","speed","carry","cost","complexity","scanner","license");
     }
@@ -169,7 +173,7 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
     if(!columnNames.contains("NAMELOOKUP")) {
       //Like the similar column over in worlds, this is mainly just here to enforce unique names
       //in a case-insensitive manner
-      log.info("Creating unique uppercase nameLookup column");
+      _log.info("Creating unique uppercase nameLookup column");
       DbUtils.writeQuery(
           "ALTER TABLE UNITS ADD COLUMN nameLookup VARCHAR GENERATED ALWAYS AS (UCASE(name)) UNIQUE", null, connection);
 //      DbUtils.writeQuery("ALTER TABLE PLAYERS ALTER COLUMN nameLookup SET DEFAULT ''", null, connection);
@@ -177,20 +181,20 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
     }
     
     if(!columnNames.contains("ACRONYMLOOKUP")) {
-      if(log.isTraceEnabled()) {
-        log.trace("existing acronym values:" + DbUtils.readRow("UNITS", "acronym", connection));
+      if(_log.isTraceEnabled()) {
+        _log.trace("existing acronym values:" + DbUtils.readRow("UNITS", "acronym", connection));
       }
       //As of 0.6.3 acronyms are required and may not be unique. We need to cleanup existing blanks and whitespace
       //in the acronym column and provide a placeholder acronym for any unit that doesnt have one yet.
       if(DbUtils.ensureTrimmed("UNITS", "acronym", connection)) {
-        log.info("Trimmed whitespace from acronym");
+        _log.info("Trimmed whitespace from acronym");
       }
       provideAcronyms(connection);
       if(DbUtils.fixDuplicates("UNITS", "acronym", connection)) {
-        log.info("Fixed duplicate values in acronym");
+        _log.info("Fixed duplicate values in acronym");
       }     
       //This will enforce case-insensitive uniqueness of acronyms
-      log.info("Creating unique uppercase acronymLookup column");
+      _log.info("Creating unique uppercase acronymLookup column");
       DbUtils.writeQuery(
           "ALTER TABLE UNITS ADD COLUMN acronymLookup VARCHAR GENERATED ALWAYS AS (UCASE(acronym)) UNIQUE", null, connection);
     }
@@ -203,7 +207,6 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
    */
   @Override
   public void reset(Connection connection) {
-    LogFactory.getLog(this.getClass()).debug("Deleting data in UNITS table");
     DbUtils.writeQuery("DELETE FROM UNITS;", null, connection);
     if(_importer != null) {
       createDefaultUnits(connection);
@@ -218,17 +221,16 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
 
     Objects.requireNonNull(_importer, "_importer may not be null here");
     
-    Log log = LogFactory.getLog(this.getClass());
-    log.info("Inserting default unit data into the database");
+    _log.info("Inserting default unit data into the database");
 
     IUnitFile unitFile = null;
 
     try {
       ClassPathFile defUnitsCsv = new ClassPathFile(UNITS_FILE_RESOURCE_PATH);
       InputStream stream = defUnitsCsv.getInputStream();
-      log.debug("CSV Columns=" + _columnNames);
+      _log.debug("CSV Columns=" + _columnNames);
       final String nameColumn = "name"; //No longer support setting this in context
-      unitFile = new CsvUnitFile(stream, Convert.toStrArray(_columnNames), nameColumn);
+      unitFile = new CsvUnitFile(LoggerFactory.getLogger(CsvUnitFile.class), stream, Convert.toStrArray(_columnNames), nameColumn);
     } catch(Exception e) {
       throw new RuntimeException("Error reading default unit data file", e);
     }
@@ -237,14 +239,14 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
       Map<String, Map<String, String>> adjustmentsMap;
       if(_adjustmentsReader != null ) {
         adjustmentsMap = _adjustmentsReader.read();
-        log.info("Using adjustment map containing " + adjustmentsMap.size() + " definitions");
+        _log.info("Using adjustment map containing " + adjustmentsMap.size() + " definitions");
       } else {
-        log.debug("No adjustments reader provided");
+        _log.debug("No adjustments reader provided");
         adjustmentsMap = null;
       }
       
       IUnitImportReport report = _importer.importData(unitFile, adjustmentsMap, false); //the initial import of units
-      log.info("Imported default data for " + report.getImportedUnitsCount() + " units");
+      _log.info("Imported default data for " + report.getImportedUnitsCount() + " units");
       if(report.getException() != null) {
         throw report.getException();
       }
@@ -264,9 +266,8 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
    * @param property name of the property to copy from the adjustments map
    */
   public void applyDefaultAdjustmentFor(Connection connection, String property) {
-    Log log = LogFactory.getLog(this.getClass());
     if(_adjustmentsReader==null) {
-      log.debug("Unable to apply default adjustments for specific property " + property + " as no adjustments reader provided");
+      _log.debug("Unable to apply default adjustments for specific property " + property + " as no adjustments reader provided");
       return;
     }
     Map<String, UnitId> unitIds = getUnitSignatureMap(connection);
@@ -283,7 +284,7 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
         if(id!=null) {
           String value = adjustments.get(signature).get(property);
           if(value != null) {
-            log.info("Applying specific " + property + " adjustment to unit " + id + " with value " + value);
+            _log.info("Applying specific " + property + " adjustment to unit " + id + " with value " + value);
             DbUtils.writeQuery("UPDATE UNITS SET " + property + "=? WHERE id=?", new Object[] { value, id }, connection);
           }
         }
@@ -323,7 +324,6 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
    */
   private void provideAcronyms(Connection connection) {
     try {
-      Log log = LogFactory.getLog(this.getClass());
       PreparedStatement ps = connection.prepareStatement("UPDATE UNITS SET acronym=? WHERE id=?");
       ResultSet rs = DbUtils.readQuery("SELECT id,name FROM UNITS WHERE acronym='' OR acronym IS NULL", null, connection);
       while(rs.next()) {
@@ -334,7 +334,7 @@ public class UnitServiceInitialiser implements IServiceInitialiser {
         ps.setObject(2,id);
         ps.execute();
         if(ps.getUpdateCount()>0) {
-          log.info("Created placeholder acronym \"" + acronym + "\" for existing unit " + id);
+          _log.info("Created placeholder acronym \"" + acronym + "\" for existing unit " + id);
         } else {
           throw new RuntimeException("Failed to update acronym for unit " + id);
         }

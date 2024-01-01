@@ -21,8 +21,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.model.api.IServiceListener;
 import romeo.model.api.MapInfo;
@@ -53,6 +53,9 @@ public class WorldMapLogic extends AbstractMapLogic implements GenericMap.IObjec
   protected static final Stroke DEFCON2_STROKE = new BasicStroke(3.0f);
   protected static final Stroke DEFCON1_STROKE = new BasicStroke(4.0f);
 
+  private final Logger _log;
+  
+  //todo - make below private, and final where possible
   protected IWorldService _worldService;
   protected IUnitService _unitService;
   protected ISettingsService _settingsService;
@@ -84,10 +87,13 @@ public class WorldMapLogic extends AbstractMapLogic implements GenericMap.IObjec
   protected long _defcon3;
   protected long _defcon2;
 
-  public WorldMapLogic(IWorldService worldService,
-                       IUnitService unitService,
-                       ISettingsService settingsService,
-                       IPlayerService playerService) {
+  public WorldMapLogic(
+    Logger log,
+    IWorldService worldService,
+    IUnitService unitService,
+    ISettingsService settingsService,
+    IPlayerService playerService) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService must not be null");
     _unitService = Objects.requireNonNull(unitService, "unitService must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
@@ -166,7 +172,10 @@ public class WorldMapLogic extends AbstractMapLogic implements GenericMap.IObjec
     _showCapital = new JCheckBox("Capital", _settingsService.isFlagSet(ISettings.MAP_SHOW_CAPITAL));
     _showCapital.addItemListener(itemListener);
 
-    TurnControls turnControls = new TurnControls(_settingsService, _worldService);
+    TurnControls turnControls = new TurnControls(
+        LoggerFactory.getLogger(TurnControls.class),
+        _settingsService, 
+        _worldService);
 
     GridBagConstraints gbc = GuiUtils.prepGridBag(panel);
     gbc.insets = new Insets(2, 2, 2, 2);
@@ -227,27 +236,25 @@ public class WorldMapLogic extends AbstractMapLogic implements GenericMap.IObjec
 
   @Override
   public Set<WorldAndHistory> getData() {
-    Log log = LogFactory.getLog(this.getClass());
-
     if(_mapInfo == null) {
       getMapInfo();
     }
 
     if(_currentTurn > _mapInfo.getMaxTurn()) {
-      if(log.isTraceEnabled()) {
-        log.trace("getData() called, returning empty list for turn " + _currentTurn);
+      if(_log.isTraceEnabled()) {
+        _log.trace("getData() called, returning empty list for turn " + _currentTurn);
       }
       return Collections.emptySet(); //No data for this turn, user will need to import some
     }
 
     if(_worldData == null) {
-      if(log.isTraceEnabled()) {
-        log.trace("getData() called, and invoking worldService to load history for turn " + _currentTurn);
+      if(_log.isTraceEnabled()) {
+        _log.trace("getData() called, and invoking worldService to load history for turn " + _currentTurn);
       }
       _worldData = _worldService.getWorldHistory(_currentTurn);
     } else {
-      if(log.isTraceEnabled()) {
-        log.trace("getData() called, and returning cached history for turn " + _currentTurn);
+      if(_log.isTraceEnabled()) {
+        _log.trace("getData() called, and returning cached history for turn " + _currentTurn);
       }
     }
     return _worldData;
@@ -602,7 +609,7 @@ public class WorldMapLogic extends AbstractMapLogic implements GenericMap.IObjec
 
   @Override
   public void closing(GenericMap map) {
-    LogFactory.getLog(this.getClass()).debug("Saving world map settings");
+    _log.debug("Saving world map settings");
     //From the parent GenericMap
     Point mapCentre = map.getVisibleMapCentre();
     _settingsService.setLong(ISettings.MAP_X, (int) mapCentre.getX());

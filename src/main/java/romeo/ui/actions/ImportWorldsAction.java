@@ -15,8 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.importdata.impl.WorldImporterFactory;
 import romeo.settings.api.ISettings;
@@ -45,11 +44,13 @@ public class ImportWorldsAction extends AbstractRomeoAction {
    * @param columns
    */
   public ImportWorldsAction(
+      Logger log,
       JFrame mainFrame,
       ISettingsService settingsService,
       IWorldService worldService,
       String[] columns,
       WorldImporterFactory worldImporterFactory) {
+    super(log);
     _mainFrame = Objects.requireNonNull(mainFrame, "mainFrame may not be null");
     _settingsService = Objects.requireNonNull(settingsService,"settingsService may not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService may not be null");
@@ -148,8 +149,7 @@ public class ImportWorldsAction extends AbstractRomeoAction {
   }
 
   private void importDirectory(File directory) {
-    Log log = LogFactory.getLog(this.getClass());
-    log.debug("Preparing to import from directory " + directory.getName());
+    _log.debug("Preparing to import from directory " + directory.getName());
     Map<Integer, File> turnFiles = findFiles(directory);
     int fileCount = turnFiles.size();
     if(fileCount == 0) {

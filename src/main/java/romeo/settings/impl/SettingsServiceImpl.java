@@ -8,6 +8,8 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+
 import romeo.persistence.AbstractPersistenceService;
 import romeo.settings.api.ISettingsService;
 import romeo.settings.api.SettingNotFoundException;
@@ -49,8 +51,8 @@ public class SettingsServiceImpl extends AbstractPersistenceService implements I
   private Map<String, Double> _doubleCache;
   private Map<String, Boolean> _flagCache;
 
-  public SettingsServiceImpl(DataSource dotaSource, IKeyGen keyGen) {
-    super(dotaSource, keyGen);
+  public SettingsServiceImpl(Logger log, DataSource dotaSource, IKeyGen keyGen) {
+    super(log, dotaSource, keyGen);
     flushCache();
   }
 

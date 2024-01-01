@@ -1,26 +1,31 @@
 package romeo.scenarios.impl;
 
 import java.sql.Connection;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.IServiceInitialiser;
 import romeo.utils.DbUtils;
 
 public class ScenarioServiceInitialiser implements IServiceInitialiser {
 
+  private final Logger _log;
+  
+  public ScenarioServiceInitialiser(Logger log) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+  }
+  
   @Override
   public void init(Set<String> tableNames, Connection connection) {
-    Log log = LogFactory.getLog(this.getClass());
     if(!tableNames.contains("SCENARIOS")) {
       String sql = "CREATE TABLE SCENARIOS (id VARCHAR NOT NULL PRIMARY KEY" + ",name VARCHAR DEFAULT '' NOT NULL"
           + ",fleetsCsv VARCHAR DEFAULT '' NOT NULL);";
-      log.info("Creating SCENARIOS table");
+      _log.info("Creating SCENARIOS table");
       DbUtils.writeQuery(sql, null, connection);
     } else {
-      log.info("SCENARIOS table exists - skipping initalisation");
+      _log.info("SCENARIOS table exists - skipping initalisation");
     }
   }
 

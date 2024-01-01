@@ -17,8 +17,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.players.api.IPlayerService;
 import romeo.players.ui.PlayerFormFactory;
@@ -54,13 +54,14 @@ public class DataTabs extends JPanel {
   public static final String TAB_NAME_WORLDS = "Worlds";
   public static final String TAB_NAME_PLAYERS = "Players";
 
+  private final Logger _log;
   private final JTabbedPane _tabs;
   private final JTable _worldTable;
   private final IEventListener _shutdownListener;
-
   private final ISettingsService _settingsService;
 
   public DataTabs(
+      Logger log,
       ISettingsService settingsService, 
       IPlayerService playerService,
       NavigatorPanel navigatorPanel,
@@ -72,6 +73,7 @@ public class DataTabs extends JPanel {
       IXFactorService xFactorService,
       IUnitService unitService,
       IWorldService worldService) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService may not be null");
     Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
     Objects.requireNonNull(shutDownNotifier, "shutdownNotifier may not be null");
@@ -95,6 +97,7 @@ public class DataTabs extends JPanel {
     new TableNavigatorMediator(
         _worldTable, 
         new WorldNavigatorRecordSelectionListener(
+            LoggerFactory.getLogger(WorldNavigatorRecordSelectionListener.class),
             navigatorPanel, 
             worldFormFactory, 
             worldService));
@@ -129,6 +132,7 @@ public class DataTabs extends JPanel {
     new TableNavigatorMediator(
         unitTable, 
         new UnitNavigatorRecordSelectionListener(
+            LoggerFactory.getLogger(UnitNavigatorRecordSelectionListener.class),
             navigatorPanel, 
             unitFormFactory));
     JScrollPane unitsTableScrollPane = new JScrollPane(unitTable);
@@ -160,6 +164,7 @@ public class DataTabs extends JPanel {
     new TableNavigatorMediator(
         xfTable, 
         new XFactorNavigatorRecordSelectionListener(
+            LoggerFactory.getLogger(XFactorNavigatorRecordSelectionListener.class),
             navigatorPanel, 
             xFactorFormFactory));
     JScrollPane xfTableScrollPane = new JScrollPane(xfTable);
@@ -182,7 +187,11 @@ public class DataTabs extends JPanel {
     playerTableModel.initColumnClickListener(playerTable);
     playerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     new TableNavigatorMediator(playerTable,
-        new PlayerNavigatorRecordSelectionListener(navigatorPanel, playerService, playerFormFactory));
+        new PlayerNavigatorRecordSelectionListener(
+            LoggerFactory.getLogger(PlayerNavigatorRecordSelectionListener.class),
+            navigatorPanel, 
+            playerService, 
+            playerFormFactory));
     JScrollPane playerTableScrollPane = new JScrollPane(playerTable);
     playerTableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     ImageIcon playerIcon = GuiUtils.getImageIcon("/images/player.gif");
@@ -190,7 +199,10 @@ public class DataTabs extends JPanel {
         new BeanTableHeaderRenderer((DefaultTableCellRenderer) playerTable.getTableHeader().getDefaultRenderer()));
 
     
-    TurnControls turnControls = new TurnControls(settingsService, worldService);
+    TurnControls turnControls = new TurnControls(
+        LoggerFactory.getLogger(TurnControls.class),
+        settingsService, 
+        worldService);
     JPanel turnPanel = new JPanel();
     turnPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
     turnPanel.add(turnControls.getFirstButton());
@@ -218,10 +230,9 @@ public class DataTabs extends JPanel {
       @Override
       public void onEvent(EventObject event) {
         if(event instanceof ShutdownEvent) {
-          Log log = LogFactory.getLog(this.getClass());
           String selectedDataTab = GuiUtils.getSelectedTab(_tabs);
           _settingsService.setString(ISettings.SELECTED_DATA_TAB, selectedDataTab);
-          log.debug("Saved selectedDataTab: " + selectedDataTab);
+          _log.debug("Saved selectedDataTab: " + selectedDataTab);
         }
       }
     };

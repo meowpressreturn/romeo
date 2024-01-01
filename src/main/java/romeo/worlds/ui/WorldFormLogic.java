@@ -16,6 +16,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.Romeo;
 import romeo.model.api.IServiceListener;
 import romeo.players.api.IPlayer;
@@ -151,7 +153,11 @@ public class WorldFormLogic implements IFormLogic, IServiceListener {
 
       //Make it so clicking on a row in the table , opens the relevant player's form
       NavigatorPanel navigatorPanel = Romeo.getMainFrame().getNavigatorPanel();
-      WorldFormHistoryTableListener listener = new WorldFormHistoryTableListener(navigatorPanel, _playerService, _playerFormFactory);
+      WorldFormHistoryTableListener listener = new WorldFormHistoryTableListener(
+          LoggerFactory.getLogger(WorldFormHistoryTableListener.class),
+          navigatorPanel, 
+          _playerService, 
+          _playerFormFactory);
       ((WorldForm)form).setHistoryTnm( new TableNavigatorMediator(table, listener) );
 
       return scrollPane;

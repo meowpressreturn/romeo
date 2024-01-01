@@ -10,8 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.importdata.IUnitFile;
 import romeo.importdata.IUnitImportReport;
@@ -32,7 +31,8 @@ import romeo.utils.Convert;
  */
 public class UnitImporterImpl implements IUnitImporter {
 
-  private IUnitService _unitService;
+  private final Logger _log;
+  private final IUnitService _unitService;
 
   /**
    * Constructor
@@ -40,7 +40,8 @@ public class UnitImporterImpl implements IUnitImporter {
    * @param enableUpdate Sets whether update of existing units is allowed (Initial unit import would have this set to false)
    * @param excludeNonComs
    */
-  public UnitImporterImpl(IUnitService unitService) {
+  public UnitImporterImpl(Logger log, IUnitService unitService) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _unitService = Objects.requireNonNull(unitService, "unitService may not be null");
   }
 
@@ -66,7 +67,6 @@ public class UnitImporterImpl implements IUnitImporter {
       String nameColumn = unitFile.getNameColumn();
       boolean enableImport = true;
       Iterator<Map<String, String>> unitFileIterator = unitFile.iterator();
-      Log log = LogFactory.getLog(this.getClass());
       //Build a lookup table of units keyed by name
       List<IUnit> existingUnits = _unitService.getUnits();
       Map<String, IUnit> unitLookup = new TreeMap<String, IUnit>();
@@ -80,7 +80,7 @@ public class UnitImporterImpl implements IUnitImporter {
       //Now perform the importing
       while(unitFileIterator.hasNext()) {
         Map<String, String> unitData = unitFileIterator.next();
-        log.debug("Analysing data:" + unitData);
+        _log.debug("Analysing data:" + unitData);
         String name = (String) unitData.get(nameColumn);
         try {
           String key = name.toUpperCase(Locale.US);
@@ -88,7 +88,7 @@ public class UnitImporterImpl implements IUnitImporter {
           if(unit == null) {
             if(enableImport) {
               unit = createUnit(unitData, name, adjustments);
-              log.debug("Importing new unit:" + unit.getName());
+              _log.debug("Importing new unit:" + unit.getName());
               importUnits.add(unit); 
             }
           } else {
@@ -98,7 +98,7 @@ public class UnitImporterImpl implements IUnitImporter {
               unit = updateUnit(unitData, unit); //writes changes to existing object
               unitLookup.put(unit.getName().toUpperCase(Locale.US), unit);
               updateUnits.add(unit);
-              log.debug("Updating existing unit unit:" + unit.getName());
+              _log.debug("Updating existing unit unit:" + unit.getName());
             }
           }
         } catch(Exception e) {
@@ -109,9 +109,9 @@ public class UnitImporterImpl implements IUnitImporter {
       List<IUnit> units = new ArrayList<>(updateUnits.size() + importUnits.size());
       units.addAll(updateUnits);
       units.addAll(importUnits);
-      log.info("Saving imported and updated unit data");
+      _log.info("Saving imported and updated unit data");
       List<UnitId> ids = _unitService.saveUnits(units);
-      log.info("Changes saved for " + ids.size() + " records");
+      _log.info("Changes saved for " + ids.size() + " records");
       
       
       //TODO having just modified the report to no longer hold the actual records imported, the logic

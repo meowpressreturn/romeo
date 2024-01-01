@@ -25,8 +25,8 @@ import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.Romeo;
 import romeo.battle.ui.BattlePanel;
@@ -73,6 +73,8 @@ public class MainFrame extends JFrame {
 
   ////////////////////////////////////////////////////////////////////////////
 
+  private final Logger _log;
+  
   //Need to keep reference for the getters still used by some other classes
   private final  NavigatorPanel _navigatorPanel;
   private final  GenericMap _worldsMap;
@@ -87,26 +89,29 @@ public class MainFrame extends JFrame {
   /**
    * Constructor. All dependendencies must be provided.
    */
-  public MainFrame(NavigatorPanel navigatorPanel,
-                   GenericMap worldsMap,
-                   UnitGraphsPanel unitGraphsPanel,
-                   GraphsPanel graphsPanel,
-                   BattlePanel battlePanel,
-                   ISettingsService settingsService,
-                   IPlayerService playerService,
-                   IWorldService worldService,
-                   IUnitService unitService,
-                   IEventHub shutdownNotifier,
-                   List<String> worldColumns,
-                   List<String> unitColumns,
-                   IScenarioService scenarioService,
-                   DataSource dataSource,
-                   WorldFormFactory worldFormFactory,
-                   UnitFormFactory unitFormFactory,
-                   PlayerFormFactory playerFormFactory,
-                   XFactorFormFactory xFactorFormFactory,
-                   WorldImporterFactory worldImporterFactory,
-                   IXFactorService xFactorService) {
+  public MainFrame(
+    Logger log,
+    NavigatorPanel navigatorPanel,
+    GenericMap worldsMap,
+    UnitGraphsPanel unitGraphsPanel,
+    GraphsPanel graphsPanel,
+    BattlePanel battlePanel,
+    ISettingsService settingsService,
+    IPlayerService playerService,
+    IWorldService worldService,
+    IUnitService unitService,
+    IEventHub shutdownNotifier,
+    List<String> worldColumns,
+    List<String> unitColumns,
+    IScenarioService scenarioService,
+    DataSource dataSource,
+    WorldFormFactory worldFormFactory,
+    UnitFormFactory unitFormFactory,
+    PlayerFormFactory playerFormFactory,
+    XFactorFormFactory xFactorFormFactory,
+    WorldImporterFactory worldImporterFactory,
+    IXFactorService xFactorService) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     Objects.requireNonNull(unitGraphsPanel, "unitGraphsPanel must not be null");
     Objects.requireNonNull(battlePanel, "battlePanel must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");   
@@ -176,6 +181,7 @@ public class MainFrame extends JFrame {
 
     //Data tab
     DataTabs dataTabs = new DataTabs(
+        LoggerFactory.getLogger(DataTabs.class),
         settingsService, 
         playerService, 
         navigatorPanel, 
@@ -214,7 +220,11 @@ public class MainFrame extends JFrame {
     setLocationRelativeTo(null); //center it
     //and finally nudge the panes into position (need to use a callback for this)
     int splitPaneWidth = (int) settingsService.getLong(ISettings.LEFT_PANE_WIDTH);
-    SwingUtilities.invokeLater(new SplitPaneMover(_mainSplitPane, splitPaneWidth));
+    SwingUtilities.invokeLater(
+        new SplitPaneMover(
+            LoggerFactory.getLogger(SplitPaneMover.class),
+            _mainSplitPane, 
+            splitPaneWidth));
     
     //nb: initial centering of the map is now done by the MapCenterer object
     //    which Romeo.whereforeArtThou invokes on the event thread after the
@@ -244,14 +254,46 @@ public class MainFrame extends JFrame {
       XFactorFormFactory xFactorFormFactory,
       WorldImporterFactory worldImporterFactory) {
     
-    Action prefsAction = new OpenPreferencesAction(navigatorPanel, settingsService, scenarioService);
-    Action newWorldAction = new NewWorldAction(navigatorPanel, worldFormFactory);
-    Action newUnitAction = new NewUnitAction(navigatorPanel, unitFormFactory);
-    Action newXFactorAction = new NewXFactorAction(navigatorPanel, xFactorFormFactory);
-    Action newPlayerAction = new NewPlayerAction(navigatorPanel, playerFormFactory);
-    Action importUnitsAction = new ImportUnitsAction(this, settingsService, unitService, unitColumns);
-    Action importMapAction = new ImportWorldsAction(this, settingsService, worldService, Convert.toStrArray(worldColumns), worldImporterFactory);
-    Action findWorldAction = new FindWorldAction(new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory, worldService));
+    Action prefsAction = new OpenPreferencesAction(
+        LoggerFactory.getLogger(OpenPreferencesAction.class),
+        navigatorPanel, 
+        settingsService, 
+        scenarioService);
+    Action newWorldAction = new NewWorldAction(
+        LoggerFactory.getLogger(NewWorldAction.class),
+        navigatorPanel, 
+        worldFormFactory);
+    Action newUnitAction = new NewUnitAction(
+        LoggerFactory.getLogger(NewUnitAction.class),
+        navigatorPanel, 
+        unitFormFactory);
+    Action newXFactorAction = new NewXFactorAction(
+        LoggerFactory.getLogger(NewXFactorAction.class),
+        navigatorPanel, 
+        xFactorFormFactory);
+    Action newPlayerAction = new NewPlayerAction(
+        LoggerFactory.getLogger(NewPlayerAction.class),
+        navigatorPanel, 
+        playerFormFactory);
+    Action importUnitsAction = new ImportUnitsAction(
+        LoggerFactory.getLogger(ImportUnitsAction.class),
+        this, 
+        settingsService, 
+        unitService, unitColumns);
+    Action importMapAction = new ImportWorldsAction(
+        LoggerFactory.getLogger(ImportWorldsAction.class),
+        this, 
+        settingsService,
+        worldService, 
+        Convert.toStrArray(worldColumns), 
+        worldImporterFactory);
+    Action findWorldAction = new FindWorldAction(
+        LoggerFactory.getLogger(FindWorldAction.class),
+        new WorldNavigatorRecordSelectionListener(
+            LoggerFactory.getLogger(WorldNavigatorRecordSelectionListener.class),
+            navigatorPanel, 
+            worldFormFactory, 
+            worldService));
 
     JMenuBar menuBar = new JMenuBar();
 
@@ -265,7 +307,10 @@ public class MainFrame extends JFrame {
     menuMap.setMnemonic('m');
     menuBar.add(menuMap);
 
-    TurnMenus turnMenus = new TurnMenus(settingsService, worldService);
+    TurnMenus turnMenus = new TurnMenus(
+        LoggerFactory.getLogger(TurnMenus.class),
+        settingsService, 
+        worldService);
     JMenu menuTurn = turnMenus.getMenu();
     menuBar.add(menuTurn);
 
@@ -357,8 +402,7 @@ public class MainFrame extends JFrame {
    * we ought to have them listen and persist it themselves instead.
    */
   private void onClose() {
-    Log log = LogFactory.getLog(this.getClass());
-    log.info("onClose() invoked");
+    _log.info("onClose() invoked");
 
     //Inform shutdown listeners of impending shutdown
     _shutdownNotifier.notifyListeners(new ShutdownEvent(this));
@@ -372,7 +416,7 @@ public class MainFrame extends JFrame {
     _settingsService.setLong(ISettings.WINDOW_WIDTH, windowWidth);
     _settingsService.setLong(ISettings.WINDOW_HEIGHT, windowHeight);
     _settingsService.setLong(ISettings.LEFT_PANE_WIDTH, leftPaneWidth);
-    log.debug("Saved window settings: " + windowWidth + "," + windowHeight + "," + leftPaneWidth);
+    _log.debug("Saved window settings: " + windowWidth + "," + windowHeight + "," + leftPaneWidth);
 
     Point mapCentre = _worldsMap.getVisibleMapCentre();
     int mapX = (int) mapCentre.getX();
@@ -382,26 +426,26 @@ public class MainFrame extends JFrame {
     WorldAndHistory origin = (WorldAndHistory)_worldsMap.getOrigin();
     String originId = (origin == null) ? "" : origin.getWorld().getId().toString();
     _settingsService.setString(ISettings.MAP_ORIGIN, originId);
-    log.debug("Saved world map position: " + mapX + "," + mapY + "," + originId);
+    _log.debug("Saved world map position: " + mapX + "," + mapY + "," + originId);
 
     String tabName = GuiUtils.getSelectedTab(_leftTabs);
     _settingsService.setString(ISettings.SELECTED_TAB, tabName);
-    log.debug("Saved tab selection: " + tabName);
+    _log.debug("Saved tab selection: " + tabName);
 
     //nb: database shutdown should occur last so it shouldnt be called as a listener
     //    where there are no guarantees of order called.
     try {
       Connection connection = _dataSource.getConnection();
       try {
-        log.debug("Shutting down database engine");
+        _log.debug("Shutting down database engine");
         DbUtils.writeQuery("SHUTDOWN", null, connection);
       } finally {
         connection.close();
-        log.info("Exiting Romeo");
+        _log.info("Exiting Romeo");
         System.exit(0);
       }
     } catch(Exception e) {
-      log.error(e);
+      _log.error("Exception shutting down database",e);
     }
   }
 

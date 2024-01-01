@@ -25,8 +25,8 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.ApplicationException;
 import romeo.Romeo;
@@ -39,6 +39,8 @@ import romeo.utils.GuiUtils;
  */
 public class ErrorDialog {
   private static final int COLUMNS = 90;
+  
+  private final Logger _log;
 
   private JDialog _dialog;
   private JTextArea _textArea;
@@ -51,9 +53,13 @@ public class ErrorDialog {
    * types of exception, the message, the romeo version, and the stacktrace will
    * all be rendered. If the exitOnClose flag is true then when the dialog is
    * closed the application will also be exited. nb: you will need to call
-   * show() to make the dialog appear
+   * show() to make the dialog appear.
    */
-  public ErrorDialog(String title, Throwable t, boolean exitOnClose) {
+  public ErrorDialog(
+      String title, 
+      Throwable t, 
+      boolean exitOnClose) {
+    _log = LoggerFactory.getLogger(ErrorDialog.class);
     setExitOnClose(exitOnClose);
     Frame frame = getFrame();
     String errorText = formatMessage(title, t);
@@ -164,8 +170,7 @@ public class ErrorDialog {
     _dialog.dispose();
 
     if(_exitOnClose) {
-      Log log = LogFactory.getLog(Romeo.class);
-      log.info("Romeo application is now exiting abnormally.");
+      _log.info("Romeo application is now exiting abnormally.");
       System.exit(-1);
     }
   }

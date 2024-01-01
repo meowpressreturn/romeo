@@ -12,6 +12,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import org.slf4j.Logger;
+
 import romeo.model.api.IServiceListener;
 import romeo.settings.api.ISettings;
 import romeo.settings.api.ISettingsService;
@@ -31,7 +33,7 @@ public class TurnControls implements IServiceListener {
   protected long _currentTurn = -1;
   protected int _maxTurn;
 
-  public TurnControls(ISettingsService settingsService, IWorldService worldService) {
+  public TurnControls(Logger log, ISettingsService settingsService, IWorldService worldService) {
     Objects.requireNonNull(settingsService, "settingsService must not be null");
     Objects.requireNonNull(worldService, "worldService must not be null");
     _settingsService = settingsService;
@@ -42,7 +44,8 @@ public class TurnControls implements IServiceListener {
 
     Dimension buttonSize = new Dimension(24, 24);
 
-    Action firstAction = new AbstractRomeoAction() {
+    Action firstAction = new AbstractRomeoAction(log) {
+      
       @Override
       public void doActionPerformed(ActionEvent e) {
         _settingsService.setLong(ISettings.CURRENT_TURN, 1);
@@ -58,7 +61,7 @@ public class TurnControls implements IServiceListener {
     _firstButton.setMinimumSize(buttonSize);
     _firstButton.setMaximumSize(buttonSize);
 
-    Action prevAction = new AbstractRomeoAction() {
+    Action prevAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         if(_currentTurn > 1) {
@@ -76,7 +79,7 @@ public class TurnControls implements IServiceListener {
     _prevButton.setMinimumSize(buttonSize);
     _prevButton.setMaximumSize(buttonSize);
 
-    Action nextAction = new AbstractRomeoAction() {
+    Action nextAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         _settingsService.setLong(ISettings.CURRENT_TURN, _currentTurn + 1);
@@ -92,7 +95,7 @@ public class TurnControls implements IServiceListener {
     _nextButton.setMinimumSize(buttonSize);
     _nextButton.setMaximumSize(buttonSize);
 
-    Action lastAction = new AbstractRomeoAction() {
+    Action lastAction = new AbstractRomeoAction(log) {
       @Override
       public void doActionPerformed(ActionEvent e) {
         _settingsService.setLong(ISettings.CURRENT_TURN, _maxTurn);

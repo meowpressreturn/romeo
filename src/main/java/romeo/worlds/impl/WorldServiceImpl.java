@@ -19,8 +19,7 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.ApplicationException;
 import romeo.model.api.IServiceListener;
@@ -70,12 +69,14 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
    * @param unitService
    * @param settingsService
    */
-  public WorldServiceImpl(DataSource dataSource,
-                          IKeyGen keyGen,
-                          IPlayerService playerService,
-                          IUnitService unitService,
-                          ISettingsService settingsService) {
-    super(dataSource, keyGen);
+  public WorldServiceImpl(
+    Logger log,
+    DataSource dataSource,
+    IKeyGen keyGen,
+    IPlayerService playerService,
+    IUnitService unitService,
+    ISettingsService settingsService) {
+    super(log, dataSource, keyGen);
     Objects.requireNonNull(playerService, "playerService must not be null");
     Objects.requireNonNull(unitService, "unitService must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
@@ -488,9 +489,8 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
      * of WorldHistoryStruct, which simply duct tapes together a World,History,
      * and Color under the one reference.
      */
-    Log log = LogFactory.getLog(this.getClass());
-    if(log.isDebugEnabled()) {
-      log.trace("Loading world data into cache");
+    if(_log.isDebugEnabled()) {
+      _log.trace("Loading world data into cache");
     }
     long startTime = System.currentTimeMillis();
     int defaultScannerRange = (int) _settingsService.getLong(ISettings.DEFAULT_SCANNER);
@@ -536,8 +536,8 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
           currentWorld = world;
           _worldsById.put(worldId, world);
           _worldsByName.put(name.toUpperCase(Locale.US), world); //doesn't actually bother with using nameLookup
-          if(log.isTraceEnabled()) {
-            log.trace("Loaded world:" + world);
+          if(_log.isTraceEnabled()) {
+            _log.trace("Loaded world:" + world);
           }
         } else { //This row refers to the same world as the previous one so refer to the same object
           ; // currentWorld remains unchanged from the previous row
@@ -575,15 +575,15 @@ public class WorldServiceImpl extends AbstractPersistenceService implements IWor
         //Store the initialised WorldHistoryStruct in our cache
         WorldAndHistory worldAndHistory = new WorldAndHistory(currentWorld, history, color, scannerRange, team);
         _data.get(turn).put(worldId, worldAndHistory);
-        if(log.isTraceEnabled()) {
-          log.trace("Loaded history:" + history);
+        if(_log.isTraceEnabled()) {
+          _log.trace("Loaded history:" + history);
         }
       }
     } catch(Exception e) {
       throw new RuntimeException("Error loading world and history data", e);
     }
     long endTime = System.currentTimeMillis();
-    log.debug("initialised world service cache in " + (endTime-startTime) + " milliseconds");
+    _log.debug("initialised world service cache in " + (endTime-startTime) + " milliseconds");
   }
   
   private void saveHistoryInternal(Connection connection, IHistory history) {

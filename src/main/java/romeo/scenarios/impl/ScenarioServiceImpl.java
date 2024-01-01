@@ -12,7 +12,7 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.persistence.AbstractPersistenceService;
 import romeo.scenarios.api.IScenario;
@@ -27,8 +27,11 @@ public class ScenarioServiceImpl extends AbstractPersistenceService implements I
   private List<IScenario> _scenariosCache;
   private Map<ScenarioId, IScenario> _scenariosById;
 
-  public ScenarioServiceImpl(DataSource dataSource, IKeyGen keyGen) {
-    super(dataSource, keyGen);
+  public ScenarioServiceImpl(
+      Logger log,
+      DataSource dataSource, 
+      IKeyGen keyGen) {
+    super(log, dataSource, keyGen);
   }
 
   @Override
@@ -102,13 +105,12 @@ public class ScenarioServiceImpl extends AbstractPersistenceService implements I
   }
   
   private void flushCache() {
-    LogFactory.getLog(this.getClass()).debug("Flushing scenarios cache");
+    _log.debug("Flushing scenarios cache");
     _scenariosCache = null;
     _scenariosById = null;
   }
 
   private void initCache() {
-    LogFactory.getLog(this.getClass()).debug("Initialising scenarios cache");
     List<IScenario> results = new ArrayList<>();
     try(Connection connection = _dataSource.getConnection()) {
       final String sql = "SELECT id, name, fleetsCsv" + " FROM SCENARIOS ORDER BY UCASE(name) ASC";

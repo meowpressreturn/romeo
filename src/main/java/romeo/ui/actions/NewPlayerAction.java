@@ -2,6 +2,8 @@ package romeo.ui.actions;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.players.api.IPlayer;
 import romeo.players.impl.PlayerImpl;
 import romeo.players.ui.PlayerFormFactory;
@@ -16,8 +18,11 @@ public class NewPlayerAction extends AbstractNewRecordAction {
   
   private final PlayerFormFactory _playerFormFactory;
   
-  public NewPlayerAction(NavigatorPanel navigatorPanel, PlayerFormFactory playerFormFactory) {
-    super(navigatorPanel);
+  public NewPlayerAction(
+      Logger log,
+      NavigatorPanel navigatorPanel, 
+      PlayerFormFactory playerFormFactory) {
+    super(log, navigatorPanel);
     
     _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
     

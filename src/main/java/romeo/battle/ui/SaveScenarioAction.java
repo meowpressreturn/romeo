@@ -8,6 +8,8 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+
 import romeo.Romeo;
 import romeo.scenarios.api.IScenario;
 import romeo.scenarios.api.IScenarioService;
@@ -24,9 +26,12 @@ public class SaveScenarioAction extends AbstractRomeoAction {
   private BattleFleetsManager _battleFleetsManager;
   private ScenarioCombo _scenarioCombo;
 
-  public SaveScenarioAction(IScenarioService scenarioService,
-                            BattleFleetsManager battleFleetsManager,
-                            ScenarioCombo scenarioCombo) {
+  public SaveScenarioAction(
+    Logger log,
+    IScenarioService scenarioService,
+    BattleFleetsManager battleFleetsManager,
+    ScenarioCombo scenarioCombo) {
+    super(log);
     _scenarioService = Objects.requireNonNull(scenarioService, "scenarioService may not be null");
     _battleFleetsManager = Objects.requireNonNull(battleFleetsManager, "battleFleetsManager may not be null");
     _scenarioCombo = Objects.requireNonNull(scenarioCombo, "scenarioCombo may not be null");

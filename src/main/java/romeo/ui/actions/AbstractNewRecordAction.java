@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.swing.Action;
 
+import org.slf4j.Logger;
+
 import romeo.ui.AbstractRomeoAction;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
@@ -19,10 +21,11 @@ public abstract class AbstractNewRecordAction extends AbstractRomeoAction {
 
   /**
    * Constructor
+   * @param log use the concrete class's logger
    * @param navigatorPanel
    */
-  public AbstractNewRecordAction(NavigatorPanel navigatorPanel) {
-    super();
+  public AbstractNewRecordAction(Logger log, NavigatorPanel navigatorPanel) {
+    super(log);
     Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     _navigatorPanel = navigatorPanel;
   }

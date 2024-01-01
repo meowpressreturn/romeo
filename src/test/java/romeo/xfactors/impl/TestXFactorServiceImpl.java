@@ -14,6 +14,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import romeo.persistence.DuplicateRecordException;
 import romeo.persistence.HsqldbSettingsInitialiser;
@@ -41,9 +42,13 @@ public class TestXFactorServiceImpl {
     ds.setDatabase("jdbc:hsqldb:mem:scenarioTestDb");
     __dataSource = ds;
     
-    __initialiser = new XFactorServiceInitialiser(new MockUnitService(), null, new KeyGenImpl());
+    __initialiser = new XFactorServiceInitialiser(
+        LoggerFactory.getLogger(XFactorServiceInitialiser.class), 
+        new MockUnitService(), 
+        null, 
+        new KeyGenImpl());
     //Setup the same hsqldb settings we use in romeo (eg: no precision on varchars etc)
-    HsqldbSettingsInitialiser hsqldbSetup = new HsqldbSettingsInitialiser();
+    HsqldbSettingsInitialiser hsqldbSetup = new HsqldbSettingsInitialiser(LoggerFactory.getLogger(HsqldbSettingsInitialiser.class));
     try (Connection connection = ds.getConnection()) {      
       Set<String> tableNames = DbUtils.getTableNames(connection);
       hsqldbSetup.init(tableNames, connection);
@@ -88,7 +93,7 @@ public class TestXFactorServiceImpl {
 
     IKeyGen keyGen = new KeyGenImpl();
     _mockUnitService = new MockUnitService();
-    _xFactorService = new XFactorServiceImpl(__dataSource, keyGen , _mockUnitService);
+    _xFactorService = new XFactorServiceImpl(LoggerFactory.getLogger(XFactorServiceImpl.class), __dataSource, keyGen , _mockUnitService);
     _listener = new ServiceListenerChecker();
     _xFactorService.addListener(_listener);
   }
@@ -108,20 +113,20 @@ public class TestXFactorServiceImpl {
   public void testConstructor() {
     
     IKeyGen keyGen = new KeyGenImpl();
-    new XFactorServiceImpl(__dataSource, keyGen , _mockUnitService);
+    new XFactorServiceImpl(LoggerFactory.getLogger(XFactorServiceImpl.class), __dataSource, keyGen , _mockUnitService);
     
     try{
-      new XFactorServiceImpl(null, keyGen , _mockUnitService);
+      new XFactorServiceImpl(LoggerFactory.getLogger(XFactorServiceImpl.class), null, keyGen , _mockUnitService);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try{
-      new XFactorServiceImpl(__dataSource, null , _mockUnitService);
+      new XFactorServiceImpl(LoggerFactory.getLogger(XFactorServiceImpl.class), __dataSource, null , _mockUnitService);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try{
-      new XFactorServiceImpl(__dataSource, keyGen , null);
+      new XFactorServiceImpl(LoggerFactory.getLogger(XFactorServiceImpl.class), __dataSource, keyGen , null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
   }

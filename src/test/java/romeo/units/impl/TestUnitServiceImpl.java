@@ -15,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import romeo.persistence.DuplicateRecordException;
 import romeo.test.ServiceListenerChecker;
@@ -47,7 +48,7 @@ public class TestUnitServiceImpl {
     
     __keyGen = new KeyGenImpl();
     
-    __initialiser = new UnitServiceInitialiser();
+    __initialiser = new UnitServiceInitialiser(LoggerFactory.getLogger(UnitServiceInitialiser.class));
     TestUtils.applyServiceInitialiser(__dataSource, __initialiser);
   }
   
@@ -89,7 +90,7 @@ public class TestUnitServiceImpl {
   
   @Before
   public void setup() {
-    _unitService = new UnitServiceImpl(__dataSource, __keyGen);
+    _unitService = new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), __dataSource, __keyGen);
     _listener = new ServiceListenerChecker();
     _unitService.addListener(_listener);
     
@@ -118,15 +119,15 @@ public class TestUnitServiceImpl {
   @Test
   public void testConstructor() {
     
-    new UnitServiceImpl(__dataSource, __keyGen);
+    new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), __dataSource, __keyGen);
     
     try {
-      new UnitServiceImpl(null, __keyGen);
+      new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), null, __keyGen);
       fail("Expected NullPointerExpception");
     } catch(NullPointerException expected) {}
     
     try {
-      new UnitServiceImpl(__dataSource, null);
+      new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), __dataSource, null);
       fail("Expected NullPointerExpception");
     } catch(NullPointerException expected) {}
     
@@ -340,7 +341,7 @@ public class TestUnitServiceImpl {
     }
     deleteAllUnits();    
     //Explicitly use a clean service for this, created after the table was wiped
-    UnitServiceImpl cleanUnitService = new UnitServiceImpl(__dataSource, __keyGen);
+    UnitServiceImpl cleanUnitService = new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), __dataSource, __keyGen);
     for(int t=0;t<N;t++) {
       assertArrayEquals(new int[] {0}, cleanUnitService.getSpeeds());
     }
@@ -392,7 +393,7 @@ public class TestUnitServiceImpl {
     }    
     //Test if no units it returns an empty list and not null
     deleteAllUnits();
-    _unitService = new UnitServiceImpl(__dataSource, __keyGen);
+    _unitService = new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), __dataSource, __keyGen);
     for(int t=0; t<N; t++) {      
       List<IUnit> scanners = _unitService.getScanners();
       assertNotNull(scanners);

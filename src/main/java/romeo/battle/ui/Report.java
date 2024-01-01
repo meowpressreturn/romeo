@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.battle.IBattleMetrics;
 import romeo.battle.PlayerSummary;
 import romeo.utils.Charts;
@@ -29,7 +31,7 @@ public class Report extends JPanel implements INamed {
     List<PlayerSummary> summary = metrics.createSummary();
 
     JPanel notesPanel = new ReportNotesPanel(metrics.getNotes());
-    JPanel summaryPanel = new ReportSummaryPanel(metrics, summary);
+    JPanel summaryPanel = new ReportSummaryPanel(LoggerFactory.getLogger(ReportSummaryPanel.class),  metrics, summary);
     JPanel survivorsPanel = new ReportUnitsPanel(metrics, summary);
     JPanel roundsPanel = new ReportRoundsPanel(metrics);
     JPanel firepowerPanel = new ReportFirepowerPanel(metrics);

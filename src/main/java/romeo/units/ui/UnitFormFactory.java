@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.ui.forms.FieldDef;
 import romeo.ui.forms.NumericFieldConstraint;
 import romeo.ui.forms.RomeoForm;
@@ -28,7 +30,13 @@ public class UnitFormFactory {
   }
   
   public RomeoForm createUnitForm(IUnit record, boolean isNewRecord) {    
-    return new UnitForm(_initialiser, fields(), logic(), record, isNewRecord);
+    return new UnitForm(
+        LoggerFactory.getLogger(UnitForm.class),
+        _initialiser, 
+        fields(), 
+        logic(), 
+        record, 
+        isNewRecord);
   }
   
   private UnitFormLogic logic() {

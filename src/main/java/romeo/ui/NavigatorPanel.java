@@ -15,7 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.Romeo;
 import romeo.ui.forms.RomeoForm;
@@ -29,6 +30,31 @@ import romeo.utils.INamed;
  * the close button remains now, and only one form at a time will be shown).
  */
 public class NavigatorPanel extends JPanel {
+  
+  private class NavigatorPanelCloseAction extends AbstractRomeoAction {
+    
+    private final NavigatorPanel _navigatorPanel;
+    
+    public NavigatorPanelCloseAction(
+        final Logger log, 
+        final NavigatorPanel navigatorPanel) {
+      super(log);
+      _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel may not be null");
+      putValue(Action.NAME, "Dismiss");
+      putValue(Action.SHORT_DESCRIPTION, "Dismiss Form");
+      putValue(Action.SMALL_ICON, GuiUtils.getImageIcon("/images/close.gif"));
+    }
+    
+    @Override
+    public void doActionPerformed(ActionEvent e) {
+      _navigatorPanel.close();
+    }
+  }
+  
+  /////////////////////////////////////////////////////////////////////////////
+  
+  private final Logger _log;
+  
   protected JLabel _nameLabel;
   protected JButton _closebutton;
   protected JScrollPane _formScrollPane;
@@ -36,21 +62,15 @@ public class NavigatorPanel extends JPanel {
 
   protected JButton _closeButton;
 
-  public NavigatorPanel() {
+  public NavigatorPanel(Logger log) {
     super();
+    _log = Objects.requireNonNull(log, "log may not be null");
     setLayout(new BorderLayout());
 
     final NavigatorPanel navigatorPanel = this;
 
-    Action closeAction = new AbstractRomeoAction() {
-      @Override
-      public void doActionPerformed(ActionEvent e) {
-        navigatorPanel.close();
-      }
-    };
-    closeAction.putValue(Action.NAME, "Dismiss");
-    closeAction.putValue(Action.SHORT_DESCRIPTION, "Dismiss Form");
-    closeAction.putValue(Action.SMALL_ICON, GuiUtils.getImageIcon("/images/close.gif"));
+    Action closeAction = new NavigatorPanelCloseAction(LoggerFactory.getLogger(NavigatorPanelCloseAction.class), navigatorPanel);
+    
     _closeButton = new JButton(closeAction);
     _closeButton.setHideActionText(true);
 
@@ -103,7 +123,7 @@ public class NavigatorPanel extends JPanel {
   }
 
   protected void updatePanel(JPanel panel) {
-    LogFactory.getLog(this.getClass()).debug("updatePanel invoked. Current Panel=" + getLbl(_currentPanel));
+    _log.debug("updatePanel invoked. Current Panel=" + getLbl(_currentPanel));
     if(panel == null) {
       panel = new JPanel();
       panel.add(mkRomeoLabel());

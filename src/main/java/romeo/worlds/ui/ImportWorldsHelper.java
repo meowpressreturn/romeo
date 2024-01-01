@@ -23,8 +23,8 @@ import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.Romeo;
 import romeo.importdata.IWorldImportReport;
@@ -37,6 +37,8 @@ import romeo.ui.actions.ImportWorldsAction;
 import romeo.utils.GuiUtils;
 
 public class ImportWorldsHelper {
+  
+  
   /**
    * Create a Runnable to execute the imports and a ProgressMonitor to display
    * the progress of the task, and begin the task. Typically this would be
@@ -46,7 +48,12 @@ public class ImportWorldsHelper {
    */
   public static void importWorlds(String[] columnNames, Map<Integer, File> turnFiles, WorldImporterFactory worldImporterFactory) {
     ImportWorldsProgressor progressor = new ImportWorldsProgressor(turnFiles);
-    ImportWorldsTask task = new ImportWorldsTask(columnNames, turnFiles, progressor, worldImporterFactory);
+    ImportWorldsTask task = new ImportWorldsTask(
+        LoggerFactory.getLogger(ImportWorldsTask.class),
+        columnNames, 
+        turnFiles, 
+        progressor, 
+        worldImporterFactory);
     progressor.executeTask(task);
   }
 
@@ -318,19 +325,20 @@ public class ImportWorldsHelper {
     private final ImportWorldsProgressor _progressor;
     private final Map<Integer, File> _turnFiles;
     private final String[] _columnNames;
-    private final Log _log;
+    private final Logger _log;
     private final WorldImporterFactory _worldImporterFactory;
 
     private ImportWorldsTask(
+        Logger log,
         String[] columnNames, 
         Map<Integer, File> turnFiles, 
         ImportWorldsProgressor progressor,
         WorldImporterFactory worldImporterFactory) {
+      _log = Objects.requireNonNull(log, "log may not be null");
       _columnNames = Objects.requireNonNull(columnNames, "columnNames, may not be null");
       _turnFiles = Objects.requireNonNull(turnFiles, "turnFiles may not be null");
       _progressor = progressor; //optional
       _worldImporterFactory = Objects.requireNonNull(worldImporterFactory, "worldImporter may not be null");
-      _log = LogFactory.getLog(this.getClass());
     }
 
     /**
@@ -370,7 +378,7 @@ public class ImportWorldsHelper {
         _log.info("Preparing to import data for turn " + turn + " from " + turnFile.getValue().getName());
         IWorldImporter importer = _worldImporterFactory.newInstance(); //use a fresh importer for each file
         try {
-          CsvWorldFile worldFile = new CsvWorldFile(file, _columnNames, "name");
+          CsvWorldFile worldFile = new CsvWorldFile(LoggerFactory.getLogger(CsvWorldFile.class), file, _columnNames, "name");
           IWorldImportReport report = importer.importData(worldFile, turn);
           reports.put(turn, report);
         } catch(final Exception ex) {

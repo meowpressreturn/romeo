@@ -16,6 +16,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import romeo.persistence.HsqldbSettingsInitialiser;
 import romeo.persistence.QndDataSource;
@@ -60,9 +61,9 @@ public class TestScenarioServiceImpl {
     ds.setDatabase("jdbc:hsqldb:mem:scenarioTestDb");
     __dataSource = ds;
     
-    __initialiser = new ScenarioServiceInitialiser();
+    __initialiser = new ScenarioServiceInitialiser(LoggerFactory.getLogger(ScenarioServiceInitialiser.class));
     //Setup the same hsqldb settings we use in romeo (eg: no precision on varchars etc)
-    HsqldbSettingsInitialiser hsqldbSetup = new HsqldbSettingsInitialiser();
+    HsqldbSettingsInitialiser hsqldbSetup = new HsqldbSettingsInitialiser(LoggerFactory.getLogger(HsqldbSettingsInitialiser.class));
     try (Connection connection = ds.getConnection()) {      
       Set<String> tableNames = DbUtils.getTableNames(connection);
       hsqldbSetup.init(tableNames, connection);
@@ -105,7 +106,7 @@ public class TestScenarioServiceImpl {
       throw new RuntimeException("setup failure!", e);
     }
 
-    _scenarioService = new ScenarioServiceImpl(__dataSource, new KeyGenImpl());
+    _scenarioService = new ScenarioServiceImpl(LoggerFactory.getLogger(ScenarioServiceImpl.class), __dataSource, new KeyGenImpl());
     _listener = new ServiceListenerChecker();
     _scenarioService.addListener(_listener);
   }
@@ -127,15 +128,15 @@ public class TestScenarioServiceImpl {
   @Test
   public void testConstructor() {
     
-    new ScenarioServiceImpl(__dataSource, new KeyGenImpl());
+    new ScenarioServiceImpl(LoggerFactory.getLogger(ScenarioServiceImpl.class), __dataSource, new KeyGenImpl());
     
     try {
-      new ScenarioServiceImpl(null, new KeyGenImpl());
+      new ScenarioServiceImpl(LoggerFactory.getLogger(ScenarioServiceImpl.class), null, new KeyGenImpl());
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     
     try {
-      new ScenarioServiceImpl(__dataSource,null);
+      new ScenarioServiceImpl(LoggerFactory.getLogger(ScenarioServiceImpl.class), __dataSource,null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     

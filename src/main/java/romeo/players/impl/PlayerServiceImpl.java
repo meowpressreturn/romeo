@@ -17,6 +17,8 @@ import java.util.TreeMap;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+
 import romeo.model.api.InvalidTurnException;
 import romeo.persistence.AbstractPersistenceService;
 import romeo.persistence.DuplicateRecordException;
@@ -45,8 +47,8 @@ public class PlayerServiceImpl extends AbstractPersistenceService implements IPl
    * @param keyGen
    *          required
    */
-  public PlayerServiceImpl(DataSource dataSource, IKeyGen keyGen) {
-    super(dataSource, keyGen);
+  public PlayerServiceImpl(Logger log, DataSource dataSource, IKeyGen keyGen) {
+    super(log, dataSource, keyGen);
   }
 
   /**

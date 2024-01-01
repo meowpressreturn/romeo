@@ -14,8 +14,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
-import org.apache.commons.logging.LogFactory;
-
 import romeo.battle.impl.RoundContext;
 import romeo.battle.ui.BattleFleetsManager;
 import romeo.fleet.model.FleetContents;
@@ -305,7 +303,9 @@ public class FleetFieldModel {
         _totalPd = _fleetContents.getFleetPd();
         _totalCarry = (int) _fleetContents.getCarry();
       } else {
-        LogFactory.getLog(this.getClass()).error("No xfactor compiler");
+        //LogFactory.getLog(this.getClass()).error("No xfactor compiler");
+        throw new IllegalStateException("no xFactor compiler");
+        //TODO - can we make it a required constructor arg?
       }
       //....
 

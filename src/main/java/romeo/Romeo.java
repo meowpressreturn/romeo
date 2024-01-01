@@ -20,12 +20,11 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.StandardChartTheme;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
+import org.slf4j.LoggerFactory;
 
 import romeo.battle.BattleCalculatorFactory;
 import romeo.importdata.impl.AdjustmentsFileReader;
@@ -145,8 +144,7 @@ public class Romeo {
       romeo.whereforeArtThou();
     } catch(Throwable t) {
       Romeo.showStartupError(t);
-      Log log = LogFactory.getLog(Romeo.class);
-      log.error("Romeo startup failure", t);
+      LoggerFactory.getLogger(Romeo.class).error("Romeo startup failure", t);
     }
   }
   
@@ -160,46 +158,75 @@ public class Romeo {
     
     //Minimal bunch of objects we need to run all the db initialisers
     IKeyGen keyGen = new KeyGenImpl();    
-    IUnitService unitService = new UnitServiceImpl(dataSource, keyGen);
-    ISettingsService settingsService = new SettingsServiceImpl(dataSource, keyGen);
-    IPlayerService playerService = new PlayerServiceImpl(dataSource, keyGen);
-    IWorldService worldService = new WorldServiceImpl(dataSource, keyGen, playerService, unitService, settingsService);
+    IUnitService unitService = new UnitServiceImpl(LoggerFactory.getLogger(UnitServiceImpl.class), dataSource, keyGen);
+    ISettingsService settingsService = new SettingsServiceImpl(LoggerFactory.getLogger(ScenarioServiceImpl.class),dataSource, keyGen);
+    IPlayerService playerService = new PlayerServiceImpl(LoggerFactory.getLogger(PlayerServiceImpl.class), dataSource, keyGen);
+    IWorldService worldService = new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), dataSource, keyGen, playerService, unitService, settingsService);
     List<String> unitColumns = Arrays.asList("name", "firepower", "maximum","offense", "defense", "attacks", "pd", "carry", "speed", "complexity", "basePrice", "cost", "license", "unitId", "turnAvailable", "stealth", "scanner");
     
     //Initialisers should be run as early as feasibly possible because until the database is in the correct state
     //code that tries to use it will fail, so we need to do this before anything does try.
     new DatabaseInitialiser(
+        LoggerFactory.getLogger(DatabaseInitialiser.class),
         dataSource, 
         Arrays.asList(
-          new HsqldbSettingsInitialiser(),
-          new SettingsServiceInitialiser(),
-          new WorldServiceInitialiser(keyGen, settingsService),
-          new UnitServiceInitialiser(new UnitImporterImpl(unitService), unitColumns, new AdjustmentsFileReader()),
-          new XFactorServiceInitialiser(unitService, new XFactorFileReader(), keyGen),
-          new PlayerServiceInitialiser(keyGen),
-          new ScenarioServiceInitialiser()))
+          new HsqldbSettingsInitialiser(LoggerFactory.getLogger(HsqldbSettingsInitialiser.class)),
+          new SettingsServiceInitialiser(LoggerFactory.getLogger(SettingsServiceInitialiser.class)),
+          new WorldServiceInitialiser(
+              LoggerFactory.getLogger(WorldServiceInitialiser.class),
+              keyGen, 
+              settingsService),
+          new UnitServiceInitialiser(
+              LoggerFactory.getLogger(UnitServiceInitialiser.class),
+              new UnitImporterImpl(LoggerFactory.getLogger(UnitImporterImpl.class), unitService), 
+              unitColumns, 
+              new AdjustmentsFileReader()),
+          new XFactorServiceInitialiser(
+              LoggerFactory.getLogger(XFactorServiceInitialiser.class),
+              unitService,
+              new XFactorFileReader(), 
+              keyGen),
+          new PlayerServiceInitialiser(LoggerFactory.getLogger(PlayerServiceInitialiser.class), keyGen),
+          new ScenarioServiceInitialiser(LoggerFactory.getLogger(ScenarioServiceInitialiser.class))))
     .runInitialisers();
     
     //Now that the db is ready we are safe to start constructing all the rest of the stuff
-    IScenarioService scenarioService = new ScenarioServiceImpl(dataSource, keyGen);
-    IXFactorService xFactorService = new XFactorServiceImpl(dataSource, keyGen, unitService);
+    IScenarioService scenarioService = new ScenarioServiceImpl(LoggerFactory.getLogger(ScenarioServiceImpl.class), dataSource, keyGen);
+    IXFactorService xFactorService = new XFactorServiceImpl(LoggerFactory.getLogger(XFactorServiceImpl.class), dataSource, keyGen, unitService);
     IExpressionParser expressionParser = new ExpressionParserImpl();
     IXFactorCompiler xFactorCompiler = new XFactorCompilerImpl(expressionParser, xFactorService);
     RomeoFormInitialiser formInitialiser = new RomeoFormInitialiser(playerService, xFactorService, unitService, expressionParser);
-    NavigatorPanel navigatorPanel = new NavigatorPanel();    
-    IEventHub shutdownNotifier = new EventHubImpl();    
+    NavigatorPanel navigatorPanel = new NavigatorPanel(LoggerFactory.getLogger(NavigatorPanel.class));    
+    IEventHub shutdownNotifier = new EventHubImpl(LoggerFactory.getLogger(EventHubImpl.class));    
     UnitFormFactory unitFormFactory = new UnitFormFactory(formInitialiser, unitService, xFactorService);
     PlayerFormFactory playerFormFactory = new PlayerFormFactory(formInitialiser, playerService, worldService, settingsService);
     WorldFormFactory worldFormFactory = new WorldFormFactory(formInitialiser, worldService, settingsService, playerService, playerFormFactory);
     XFactorFormFactory xFactorFormFactory = new XFactorFormFactory(formInitialiser, xFactorService);
     WorldImporterFactory worldImporterFactory = new WorldImporterFactory(worldService, playerService, settingsService);
         
-    IMapLogic logic = new WorldMapLogic(worldService, unitService, settingsService, playerService); 
-    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(navigatorPanel, worldFormFactory, worldService);
-    GenericMap worldsMap = new GenericMap(logic, listener, shutdownNotifier);
+    IMapLogic logic = new WorldMapLogic(
+        LoggerFactory.getLogger(WorldMapLogic.class),
+        worldService, 
+        unitService, 
+        settingsService, 
+        playerService); 
+    IRecordSelectionListener listener = new WorldNavigatorRecordSelectionListener(
+        LoggerFactory.getLogger(WorldNavigatorRecordSelectionListener.class),
+        navigatorPanel, 
+        worldFormFactory, 
+        worldService);
+    GenericMap worldsMap = new GenericMap(
+        LoggerFactory.getLogger(GenericMap.class),
+        logic, 
+        listener, 
+        shutdownNotifier);
     worldsMap.setFont(new java.awt.Font("Arial", 0, 10));
     
-    MapCenterer mapCenterer = new MapCenterer(settingsService, worldService, worldsMap);
+    MapCenterer mapCenterer = new MapCenterer(
+        LoggerFactory.getLogger(MapCenterer.class),
+        settingsService, 
+        worldService, 
+        worldsMap);
     List<String> worldColumns = Arrays.asList("worldID", "name", "worldX", "worldY", "worldEi", "worldRer", "ownerID", "owner", "ownerRace", "class", "labour", "capital", "firepower", "team");
     BattleCalculatorFactory battleCalculatorFactory = new BattleCalculatorFactory(xFactorCompiler);
     
@@ -224,13 +251,13 @@ public class Romeo {
         xFactorCompiler, 
         battleCalculatorFactory);
     
-    //add log thread listeners
-    worldService.addListener(new LogThreadNameInvocationListener());
-    unitService.addListener(new LogThreadNameInvocationListener());
-    xFactorService.addListener(new LogThreadNameInvocationListener());
-    playerService.addListener(new LogThreadNameInvocationListener());
-    scenarioService.addListener(new LogThreadNameInvocationListener());
-    settingsService.addListener(new LogThreadNameInvocationListener()); 
+    //add log thread listeners (use the service category for the logger)
+    worldService.addListener(new LogThreadNameInvocationListener(LoggerFactory.getLogger(worldService.getClass())));
+    unitService.addListener(new LogThreadNameInvocationListener(LoggerFactory.getLogger(unitService.getClass())));
+    xFactorService.addListener(new LogThreadNameInvocationListener(LoggerFactory.getLogger(xFactorService.getClass())));
+    playerService.addListener(new LogThreadNameInvocationListener(LoggerFactory.getLogger(playerService.getClass())));
+    scenarioService.addListener(new LogThreadNameInvocationListener(LoggerFactory.getLogger(scenarioService.getClass())));
+    settingsService.addListener(new LogThreadNameInvocationListener(LoggerFactory.getLogger(settingsService.getClass()))); 
     
     return new Romeo(
         dataSource,
@@ -267,8 +294,7 @@ public class Romeo {
    * (which needs to be done after the initialisers have all been run).
    */
   public void whereforeArtThou() {
-    Log log = LogFactory.getLog(this.getClass());
-    log.info("wherefore art thou Romeo?");
+    LoggerFactory.getLogger(Romeo.class).info("wherefore art thou Romeo?");
     final MainFrame frame = _fairVerona.layOurScene();
     Romeo.incrementSplashProgress("Open main frame");
     frame.setVisible(true);
@@ -303,8 +329,7 @@ public class Romeo {
       _splash.setLocationRelativeTo(null); // Do after sizing
       _splash.setVisible(true);
     } catch(Exception e) {
-      Log log = LogFactory.getLog(Romeo.class);
-      log.error("Error showing splash screen", e);
+      LoggerFactory.getLogger(Romeo.class).error("Error showing splash screen", e);
       killSplash();
     }
   }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.players.api.IPlayerService;
 import romeo.players.ui.PlayerFormFactory;
 import romeo.settings.api.ISettingsService;
@@ -37,7 +39,13 @@ public class WorldFormFactory {
   }
   
   public WorldForm newWorldForm(Object record, boolean isNewRecord) {
-    return new WorldForm(_initialiser, fields(), logic(), record, isNewRecord);
+    return new WorldForm(
+        LoggerFactory.getLogger(WorldForm.class),
+        _initialiser, 
+        fields(), 
+        logic(), 
+        record, 
+        isNewRecord);
   }
   
   private WorldFormLogic logic() {

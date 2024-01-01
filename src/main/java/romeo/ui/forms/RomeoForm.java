@@ -19,8 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.Romeo;
 import romeo.persistence.DuplicateRecordException;
@@ -62,6 +61,8 @@ public class RomeoForm extends JPanel
 
   ////////////////////////////////////////////////////////////////////////////
 
+  protected final Logger _log;
+  
   private final List<FieldDef> _fields;
   private final Components _components;
   private final IFormLogic _formLogic;
@@ -74,6 +75,7 @@ public class RomeoForm extends JPanel
   private boolean _bindingInProgess = false;
 
   public RomeoForm(
+      Logger log,
       RomeoFormInitialiser initialiser,
       List<FieldDef> fields,
       IFormLogic logic,
@@ -81,6 +83,7 @@ public class RomeoForm extends JPanel
       Object record,
       boolean isNewRecord) {
     super();
+    _log = Objects.requireNonNull(log, "log may not be null");
     Objects.requireNonNull(initialiser, "initialiser may not be null");
     _fields = Objects.requireNonNull(fields, "fields may not be null");
     _formLogic = Objects.requireNonNull(logic, "logic may not be null");
@@ -113,8 +116,7 @@ public class RomeoForm extends JPanel
 
   @Override
   public void actionPerformed(ActionEvent e) {
-    Log log = LogFactory.getLog(this.getClass());
-    log.trace("in actionPerformed(), actionEvent=" + e);
+    _log.trace("in actionPerformed(), actionEvent=" + e);
     try {
       if(e.getSource() == _components.saveButton) {
         _bindingInProgess = true;
@@ -139,18 +141,18 @@ public class RomeoForm extends JPanel
       //Thrown by services, usually because the name is not unique
       String message = Convert.wordWrap(dre.getMessage(), 80);
       JOptionPane.showMessageDialog(Romeo.getMainFrame(), message, "Duplicate Not Permitted", JOptionPane.ERROR_MESSAGE);
-      log.error("Duplicate Record Exception:" + dre.getMessage() );
+      _log.error("Duplicate Record Exception:" + dre.getMessage() );
     } catch(Exception ex) {
       ErrorDialog dialog = new ErrorDialog("Form action error", ex, false);
       dialog.show();
-      log.error("Form action error", ex);
+      _log.error("Form action error", ex);
     }
     updateButtons();
   }
 
   protected void updateButtons() {
     
-    LogFactory.getLog(this.getClass()).trace("updateButtons()");
+    _log.trace("updateButtons()");
     
     _formLogic.inputChanged();
     updateValidity();
@@ -162,8 +164,7 @@ public class RomeoForm extends JPanel
   }
 
   protected void updateValidity() {
-    Log log = LogFactory.getLog(this.getClass());
-    log.trace("Checking validity of fields in form at " + new Date() );
+    _log.trace("Checking validity of fields in form at " + new Date() );
     Iterator<FieldDef> i = _fields.iterator();
     while(i.hasNext()) {
       FieldDef def = (FieldDef) i.next();
@@ -172,10 +173,10 @@ public class RomeoForm extends JPanel
       if(field != null) {
         if(field instanceof IValidatingField) {
           boolean fieldValid = ((IValidatingField) field).isFieldValid();
-          log.trace("Field '" + fieldName + "' valid=" +  fieldValid);
+          _log.trace("Field '" + fieldName + "' valid=" +  fieldValid);
           if(!fieldValid) {
             setDataValid(false);
-            log.trace("Form fails validation");
+            _log.trace("Form fails validation");
             return; //short circuit return if we find any that are invalid
           }
         }
@@ -183,10 +184,10 @@ public class RomeoForm extends JPanel
           if(field instanceof JTextComponent) {
             String text = ((JTextComponent) field).getText();
             text = text.trim();
-            log.trace("Mandatory field '" + fieldName + "' trimmed value=\"" + text + "\""); 
+            _log.trace("Mandatory field '" + fieldName + "' trimmed value=\"" + text + "\""); 
             if(text.isEmpty()) {
               setDataValid(false);
-              log.trace("Form fails validation");
+              _log.trace("Form fails validation");
               return; //short circuit return if any mandatory field is empty
             }
           }
@@ -194,7 +195,7 @@ public class RomeoForm extends JPanel
         }
       }
     }
-    log.trace("Form is valid as no invalid fields found");
+    _log.trace("Form is valid as no invalid fields found");
     setDataValid(true);
   }
 
@@ -221,7 +222,7 @@ public class RomeoForm extends JPanel
 
   @Override
   public void valueChanged(Object field) {
-    LogFactory.getLog(this.getClass()).trace("valueChanged() _bindingInProgress=" + _bindingInProgess + ", field=" + field);
+    _log.trace("valueChanged() _bindingInProgress=" + _bindingInProgess + ", field=" + field);
     if(!_bindingInProgess) {
       setDirty(true);
       updateButtons();

@@ -8,8 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.battle.IBattleCalculator;
 import romeo.battle.IBattleMetrics;
@@ -23,6 +22,9 @@ import romeo.xfactors.api.IXFactorCompiler;
  * This is the implementation of the battle simulator logic.
  */
 public class BattleCalculatorImpl implements IBattleCalculator {
+  
+  private final Logger _log;
+  
   protected Random _rnd = new Random();
   protected int _numberOfBattles = 1;
   protected IProgressor _progressor;
@@ -39,9 +41,9 @@ public class BattleCalculatorImpl implements IBattleCalculator {
    * @param compiler
    *          an xFactor compiler
    */
-  public BattleCalculatorImpl(IXFactorCompiler compiler) {
-    Objects.requireNonNull(compiler, "compiler must not be null");
-    _compiler = compiler;
+  public BattleCalculatorImpl(Logger log, IXFactorCompiler compiler) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+    _compiler = Objects.requireNonNull(compiler, "compiler must not be null");
   }
 
   /**
@@ -75,11 +77,10 @@ public class BattleCalculatorImpl implements IBattleCalculator {
    */
   @Override
   public synchronized void run() {
-    Log log = LogFactory.getLog(this.getClass());
     try {
-      runInternal(log);
+      runInternal();
     } catch(Exception e) {
-      log.error("Error running simulation", e);
+      _log.error("Error running simulation", e);
       ErrorDialog dialog = new ErrorDialog("Simulation error", e, false);
       dialog.show();
     }
@@ -89,22 +90,22 @@ public class BattleCalculatorImpl implements IBattleCalculator {
    * Runs the battle. Called by run().
    * @param log
    */
-  private void runInternal(Log log) {
+  private void runInternal() {
     if(_fleets.size() < 2) { //Validate we have at least two fleets set
       String msg = "There are only " + _fleets.size() + " fleets set";
-      log.error(msg);
+      _log.error(msg);
       throw new IllegalStateException(msg);
     }
 
     if(_defenderName == null || _defenderName.length() == 0) { //Validate that defenderName was set
       String msg = "Defender not specified";
-      log.error(msg);
+      _log.error(msg);
       throw new IllegalStateException(msg);
     }
 
     if(_fleets.get(_defenderName) == null) { //Validate that defenderName refers to one of the set fleets
       String msg = "Defender \"" + _defenderName + "\" fleet not set";
-      log.error(msg);
+      _log.error(msg);
       throw new IllegalStateException(msg);
     }
 
@@ -399,7 +400,7 @@ public class BattleCalculatorImpl implements IBattleCalculator {
     _metrics.calculateAverages(sumOfRounds);
 
     String notesString = notes.toString();
-    log.info(notesString); //20080213
+    _log.info(notesString); //20080213
     _metrics.setNotes(notesString);
 
     _metrics.setTime(System.currentTimeMillis() - startTime);

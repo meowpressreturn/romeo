@@ -5,6 +5,8 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.battle.BattleCalculatorFactory;
 import romeo.battle.ui.BattlePanel;
 import romeo.importdata.impl.WorldImporterFactory;
@@ -92,6 +94,7 @@ public class MainFrameFactory {
   
   public MainFrame layOurScene() {
     return new MainFrame(
+      LoggerFactory.getLogger(MainFrame.class),
       _navigatorPanel,
       _worldsMap, 
       new UnitGraphsPanel(_unitService), 

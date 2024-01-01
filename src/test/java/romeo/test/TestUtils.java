@@ -11,6 +11,8 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.model.api.IServiceInitialiser;
 import romeo.persistence.HsqldbSettingsInitialiser;
 import romeo.persistence.QndDataSource;
@@ -54,7 +56,7 @@ public class TestUtils {
    * @param dataSource
    */
   public static void initDatabaseSettings(DataSource dataSource) {
-    HsqldbSettingsInitialiser hsqldbSetup = new HsqldbSettingsInitialiser();
+    HsqldbSettingsInitialiser hsqldbSetup = new HsqldbSettingsInitialiser(LoggerFactory.getLogger(HsqldbSettingsInitialiser.class));
     applyServiceInitialiser(dataSource, hsqldbSetup);
   }
   

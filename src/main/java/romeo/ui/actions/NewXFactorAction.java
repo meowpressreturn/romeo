@@ -2,6 +2,8 @@ package romeo.ui.actions;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 import romeo.xfactors.api.IXFactor;
@@ -12,8 +14,11 @@ public class NewXFactorAction extends AbstractNewRecordAction {
   
   private final XFactorFormFactory _xFactorFormFactory;
   
-  public NewXFactorAction(NavigatorPanel navigatorPanel, XFactorFormFactory xFactorFormFactory) {
-    super(navigatorPanel);
+  public NewXFactorAction(
+      Logger log,
+      NavigatorPanel navigatorPanel, 
+      XFactorFormFactory xFactorFormFactory) {
+    super(log, navigatorPanel);
     
     _xFactorFormFactory = Objects.requireNonNull(xFactorFormFactory, "xFactorFormFactory may not be null");
     

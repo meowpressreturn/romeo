@@ -2,6 +2,8 @@ package romeo.importdata.impl;
 
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.importdata.IWorldImporter;
 import romeo.players.api.IPlayerService;
 import romeo.settings.api.ISettingsService;
@@ -27,6 +29,6 @@ public class WorldImporterFactory {
   }
   
   public IWorldImporter newInstance() {
-    return new WorldImporterImpl(_worldService, _playerService, _settingsService);
+    return new WorldImporterImpl(LoggerFactory.getLogger(WorldImporterImpl.class), _worldService, _playerService, _settingsService);
   }
 }

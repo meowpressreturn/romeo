@@ -16,8 +16,7 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.IServiceInitialiser;
 import romeo.utils.Convert;
@@ -27,10 +26,13 @@ import romeo.utils.DbUtils;
  * Class used to run the service initialisers at startup
  */
 public class DatabaseInitialiser {
+  
+  private final Logger _log;
   private final DataSource _dataSource;
   private final List<IServiceInitialiser> _initialisers;
   
-  public DatabaseInitialiser(DataSource dataSource, List<IServiceInitialiser> initialisers) {
+  public DatabaseInitialiser(Logger logger, DataSource dataSource, List<IServiceInitialiser> initialisers) {
+    _log = Objects.requireNonNull(logger, "logger may not be null");
     _dataSource = Objects.requireNonNull(dataSource, "dataSource may not be null");
     _initialisers = Objects.requireNonNull(initialisers, "initialisers may not be null");
   }
@@ -42,7 +44,6 @@ public class DatabaseInitialiser {
    * from older versions of Romeo.
    */
   public void runInitialisers() {
-    Log log = LogFactory.getLog(this.getClass());
     try {
       Romeo.incrementSplashProgress("Start database");
       Connection connection = null;
@@ -52,7 +53,7 @@ public class DatabaseInitialiser {
         String msg = connEx.getMessage();
         if("error in script file line: 4 unexpected token: TRIGGER".equalsIgnoreCase(msg)
             || msg.toLowerCase().contains("unexpected token: trigger")) { //I can fix it!
-          log.info("Fixing invalid use of TRIGGER keyword in database created with an older Romeo and HSQLDB version");
+          _log.info("Fixing invalid use of TRIGGER keyword in database created with an older Romeo and HSQLDB version");
           updateTriggerField();
           connection = _dataSource.getConnection(); //retry after fix
         } else { //Ralph wrecked it
@@ -63,14 +64,14 @@ public class DatabaseInitialiser {
       try {
         long startTime = System.currentTimeMillis();
         Set<String> tableNames = DbUtils.getTableNames(connection);
-        log.info("Executing service initialisers");
+        _log.info("Executing service initialisers");
         for(IServiceInitialiser initialiser : _initialisers) {
           Romeo.incrementSplashProgress("Run " + initialiser.getClass().getName());
-          log.info("Executing service initialiser:" + initialiser);
+          _log.info("Executing service initialiser:" + initialiser);
           initialiser.init(tableNames, connection);
         }
         long endTime = System.currentTimeMillis();
-        log.info("Executed service initialisers in " + (endTime-startTime) + " ms");
+        _log.info("Executed service initialisers in " + (endTime-startTime) + " ms");
       } finally {
         connection.close();
       }

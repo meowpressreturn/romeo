@@ -13,8 +13,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import romeo.persistence.AbstractRecordId;
 import romeo.persistence.IdBean;
@@ -23,6 +23,9 @@ import romeo.persistence.IdBean;
  * Some database related utility methods used by initialisers, test classes, and persistence code
  */
 public class DbUtils {
+  
+  private static final Logger LOG = LoggerFactory.getLogger(DbUtils.class);
+  
   /**
    * In a List of {@link IdBean} find the one with the specified id and return
    * it, or null if not found.
@@ -233,8 +236,7 @@ public class DbUtils {
   @Deprecated
   protected static void logSqlInfo(String info) {
     try {
-      Log log = LogFactory.getLog(DbUtils.class);
-      log.info(info);
+      LOG.info(info);
     } catch(Exception e) {
       ; //IGNORE. Sorry. This goes on within error logging. We dont want more
       //minor errors cluttering it all up!
@@ -242,8 +244,7 @@ public class DbUtils {
   }
   
   protected static void logUtilsSqlError(String method, String sql, String parametersSet, Exception e) {
-    Log log = LogFactory.getLog(DbUtils.class);
-    log.error(method + " error -- query=" + sql + " -- " + parametersSet, e);
+    LOG.error(method + " error -- query=" + sql + " -- " + parametersSet, e);
   }
 
   /**
@@ -385,7 +386,6 @@ public class DbUtils {
     Objects.requireNonNull(table,"table may not be null");
     Objects.requireNonNull(column,"column may not be null");
     Objects.requireNonNull(connection,"connection may not be null");
-    Log log = LogFactory.getLog(DbUtils.class);
     //First we explicitly make sure all the existing name values in the old data are trimmed
     
     try {
@@ -403,8 +403,8 @@ public class DbUtils {
         while(instancesRs.next()) {
           Object id = instancesRs.getObject("id");
           String newValue = instancesRs.getString(column) + " #" + d++;
-          if(log.isDebugEnabled()) {
-            log.debug("Resolving duplicate " +column+ " conflict in " +table+ " for " + id 
+          if(LOG.isDebugEnabled()) {
+            LOG.debug("Resolving duplicate " +column+ " conflict in " +table+ " for " + id 
                 + " by setting " +column+ " to " + newValue);
           }
           DbUtils.writeQuery("UPDATE " +table+ " SET " +column+ "=? WHERE id=?",new Object[] { newValue, id }, connection);
@@ -436,7 +436,7 @@ public class DbUtils {
       if(updated>0) {
         return true;
       } else {
-        LogFactory.getLog(DbUtils.class).debug("Found no empty values in column " +column+ " of " + table);
+        LOG.debug("Found no empty values in column " +column+ " of " + table);
         return false;  
       }
     } catch(SQLException e) {

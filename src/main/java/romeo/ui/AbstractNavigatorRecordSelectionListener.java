@@ -2,8 +2,7 @@ package romeo.ui;
 
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.ui.forms.RomeoForm;
 
@@ -12,16 +11,20 @@ import romeo.ui.forms.RomeoForm;
  * the specified record in the {@link NavigatorPanel}.
  */
 public abstract class AbstractNavigatorRecordSelectionListener implements IRecordSelectionListener {
-  private NavigatorPanel _navigatorPanel;
+  
+  protected final Logger _log;
+  
+  private final NavigatorPanel _navigatorPanel;
 
   /**
    * Constructor
+   * @param logger you should use the logger category for the concrete subclass
    * @param navigatorPanel
    * @param formName
    */
-  public AbstractNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel) {
-    Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
-    _navigatorPanel = navigatorPanel;
+  public AbstractNavigatorRecordSelectionListener(Logger log, NavigatorPanel navigatorPanel) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+    _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
   }
 
   /**
@@ -35,8 +38,7 @@ public abstract class AbstractNavigatorRecordSelectionListener implements IRecor
     } catch(Exception e) {
       ErrorDialog dialog = new ErrorDialog("Internal Error", e, false);
       dialog.show();
-      Log log = LogFactory.getLog(this.getClass());
-      log.error("Unable to display form", e);
+      _log.error("Unable to display form", e);
     }
   }
 

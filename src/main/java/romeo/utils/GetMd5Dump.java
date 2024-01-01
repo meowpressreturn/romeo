@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.importdata.impl.CsvUnitFile;
 
 /**
@@ -48,7 +50,7 @@ public class GetMd5Dump {
   
   public String readFile() {
     InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(_resource);
-    CsvUnitFile uf = new CsvUnitFile(stream, _columns, NAME);
+    CsvUnitFile uf = new CsvUnitFile(LoggerFactory.getLogger(CsvUnitFile.class), stream, _columns, NAME);
     Iterator<Map<String,String>> i = uf.iterator();
     StringBuilder builder = new StringBuilder();
     ArrayList<String> values = new ArrayList<>(2);

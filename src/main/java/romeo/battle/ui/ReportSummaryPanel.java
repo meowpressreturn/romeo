@@ -12,8 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -24,6 +22,7 @@ import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
+import org.slf4j.Logger;
 
 import romeo.battle.IBattleMetrics;
 import romeo.battle.PlayerSummary;
@@ -35,7 +34,11 @@ import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 
 public class ReportSummaryPanel extends JPanel {
-  public ReportSummaryPanel(IBattleMetrics metrics, List<PlayerSummary> summary) {
+  
+  public ReportSummaryPanel(
+      Logger log,
+      IBattleMetrics metrics, 
+      List<PlayerSummary> summary) {
     String[] players = metrics.getPlayers();
 
     Dimension chartSize = Report.getChartSize(players.length);
@@ -77,9 +80,9 @@ public class ReportSummaryPanel extends JPanel {
 
     //20080213 - Quick hack to dump the survivors to the console
     //           to provide all digits of the stats as requested by JoelHalpern
-    Log log = LogFactory.getLog(this.getClass());
+    //TODO - move this to the calculator perhaps, then we can drop the log dependency here
     String[] playerNames = metrics.getPlayers();
-    if(log.isInfoEnabled()) {
+    if(log != null && log.isInfoEnabled()) {
       for(int p = playerNames.length - 1; p >= 0; p--) {
         String player = playerNames[p];
         FleetContents averageSurvivors = metrics.getAverageSurvivors(player, false);

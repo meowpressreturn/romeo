@@ -1,6 +1,7 @@
 package romeo.ui.forms;
 
 import java.awt.Color;
+import java.util.Objects;
 
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
@@ -8,7 +9,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.PlainDocument;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.xfactors.api.IExpressionParser;
 
@@ -34,12 +35,15 @@ public class ExpressionField extends JTextArea implements IValidatingField {
 
   }
 
+  private final Logger _log;
+  
   protected boolean _valid = true;
   protected IExpressionParser _parser;
   protected Color _normalBg;
   protected String _initStuffYet = "Yes";
 
-  public ExpressionField(IExpressionParser parser) {
+  public ExpressionField(Logger log, IExpressionParser parser) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _normalBg = getBackground();
     _parser = parser;
     ExpressionDocument document = new ExpressionDocument();
@@ -59,7 +63,7 @@ public class ExpressionField extends JTextArea implements IValidatingField {
       public void run() {
         String text = ExpressionField.this.getText();
         text = text.trim();
-        LogFactory.getLog(this.getClass()).trace("checkExpression() \"" + text + "\"");
+        _log.trace("checkExpression() \"" + text + "\"");
         if(text.isEmpty()) {
           ExpressionField.this._valid = true;
         } else {

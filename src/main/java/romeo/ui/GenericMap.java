@@ -29,8 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.MapInfo;
 import romeo.utils.Convert;
@@ -85,6 +84,8 @@ public class GenericMap implements IEventListener {
 
   /////////////////////////////////////////////////////////////////////////////
 
+  private final Logger _log;
+  
   private JPanel _panel;
   private JPanel _controls;
   private JPanel _map;
@@ -106,7 +107,12 @@ public class GenericMap implements IEventListener {
    * @param listener may be null
    * @param shutdownNotifier required
    */
-  public GenericMap(IMapLogic logic, IRecordSelectionListener listener, IEventHub shutdownNotifier) {
+  public GenericMap(
+      Logger log,
+      IMapLogic logic, 
+      IRecordSelectionListener listener, 
+      IEventHub shutdownNotifier) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _logic = Objects.requireNonNull(logic, "logic may not be null");
     
     logic.addListener(this);    
@@ -215,11 +221,10 @@ public class GenericMap implements IEventListener {
     _zoomSlider.addChangeListener(new ChangeListener() {
       @Override
       public void stateChanged(ChangeEvent event) {
-        Log log = LogFactory.getLog(this.getClass());
         Point centre = getVisibleMapCentre();
         _zoom = _zoomSlider.getValue() / (double) SLIDER_RATIO;
         if(log.isTraceEnabled()) {
-          log.trace("State changed, centre=" + centre.getX() + "," + centre.getY() + " _zoom=" + _zoom);
+          _log.trace("State changed, centre=" + centre.getX() + "," + centre.getY() + " _zoom=" + _zoom);
         }
         updateSize(centre);
         _zoomSlider.setToolTipText("" + _zoom);
@@ -263,9 +268,8 @@ public class GenericMap implements IEventListener {
    * @param visibleCentre
    */
   public void setVisibleMapCentre(Point visibleCentre) {
-    Log log = LogFactory.getLog(this.getClass());
-    if(log.isTraceEnabled()) {
-      log.trace("setVisibleMapCentre(" + visibleCentre + ") called on thread " + Thread.currentThread().getName());
+    if(_log.isTraceEnabled()) {
+      _log.trace("setVisibleMapCentre(" + visibleCentre + ") called on thread " + Thread.currentThread().getName());
     }
 
     int spWidth = _scrollPane.getWidth();
@@ -274,20 +278,20 @@ public class GenericMap implements IEventListener {
     if(spWidth == 0 || spHeight == 0) { 
       //Hack to make Swing actually initialise the width and height properly
       //however this no longer seems to work (if it ever did). We still get 0 width and height afterwards!
-      if(log.isTraceEnabled()) {
-        log.trace("before hack scrollPane width=" + _scrollPane.getWidth() + ", height=" + _scrollPane.getHeight()
+      if(_log.isTraceEnabled()) {
+        _log.trace("before hack scrollPane width=" + _scrollPane.getWidth() + ", height=" + _scrollPane.getHeight()
             + " : setting scrollbar values to 1");
       }
       _scrollPane.getHorizontalScrollBar().setValue(1);
       _scrollPane.getVerticalScrollBar().setValue(1);
       //Now lets try that again shall we...
-      if(log.isTraceEnabled()) {
-        log.trace("after hack scrollPane width=" + _scrollPane.getWidth() + ", height=" + _scrollPane.getHeight());
+      if(_log.isTraceEnabled()) {
+        _log.trace("after hack scrollPane width=" + _scrollPane.getWidth() + ", height=" + _scrollPane.getHeight());
       }
       spWidth = _scrollPane.getWidth();
       spHeight = _scrollPane.getHeight();
     } else {
-      log.trace("spWidth=" + spWidth + ", spHeight=" + spHeight + " so not applying hack");
+      _log.trace("spWidth=" + spWidth + ", spHeight=" + spHeight + " so not applying hack");
     }
 
     int centreX = toScreenX((int) visibleCentre.getX());
@@ -299,8 +303,8 @@ public class GenericMap implements IEventListener {
     //Scrolls to this spot provided that it is not already visible.
     //This works when we are trying to set the initial location (assuming its not visible)
     //unlike the next method we apply below...
-    if(log.isTraceEnabled()) {
-      log.trace("Scrolling to " + scrollX + "," + scrollY);
+    if(_log.isTraceEnabled()) {
+      _log.trace("Scrolling to " + scrollX + "," + scrollY);
     }
     _map.scrollRectToVisible(new Rectangle(scrollX, scrollY, 0, 0));
 
@@ -310,8 +314,8 @@ public class GenericMap implements IEventListener {
     _scrollPane.getHorizontalScrollBar().setValue(scrollX);
     _scrollPane.getVerticalScrollBar().setValue(scrollY);
 
-    if(log.isTraceEnabled()) {
-      log.trace("setVisibleMapCentre(" + visibleCentre.getX() + "," + visibleCentre.getY() + ") : scrolled to scrollX=" + scrollX
+    if(_log.isTraceEnabled()) {
+      _log.trace("setVisibleMapCentre(" + visibleCentre.getX() + "," + visibleCentre.getY() + ") : scrolled to scrollX=" + scrollX
           + ", scrollY=" + scrollY + ", ScrollPane spWidth=" + spWidth + ", spHeight=" + spHeight + ", leftBorder="
           + _logic.getMapInfo().getLeftBorder() + ", zoom=" + _zoom + ", Visible screen centreX=" + centreX + ", centreY=" + centreY
           + ", actual horizontalScrollBar.value=" + _scrollPane.getHorizontalScrollBar().getValue()
@@ -505,7 +509,7 @@ public class GenericMap implements IEventListener {
   }
 
   public void setOrigin(Object origin) {
-    LogFactory.getLog(this.getClass()).debug("SetOrigin called with " + origin);
+    _log.debug("SetOrigin called with " + origin);
     _originObject = origin;
     refresh();
   }

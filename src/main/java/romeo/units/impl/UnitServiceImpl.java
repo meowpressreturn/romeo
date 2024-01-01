@@ -21,7 +21,7 @@ import java.util.TreeSet;
 import javax.sql.DataSource;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.persistence.AbstractPersistenceService;
 import romeo.persistence.DuplicateRecordException;
@@ -49,8 +49,11 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
   private int[] _speeds;
   private Map<String, double[]> _ranges; //no, not scanner, but min max of stats
 
-  public UnitServiceImpl(DataSource dataSource, IKeyGen keyGen) {
-    super(dataSource, keyGen);
+  public UnitServiceImpl(
+      final Logger log, 
+      final DataSource dataSource, 
+      final IKeyGen keyGen) {
+    super(log, dataSource, keyGen);
   }
 
   /**
@@ -154,7 +157,7 @@ public class UnitServiceImpl extends AbstractPersistenceService implements IUnit
     Objects.requireNonNull(xFactorId, "xFactorId may not be null");
     try (Connection connection = _dataSource.getConnection() ) {
       final String sql = "UPDATE UNITS SET xfactor='' WHERE xfactor=?";
-      LogFactory.getLog(this.getClass()).debug("Unlinking units with X-Factor " + xFactorId);
+      _log.debug("Unlinking units with X-Factor " + xFactorId);
       DbUtils.writeQuery(sql, new Object[] { xFactorId }, connection);      
     } catch(Exception e) {
       throw new RuntimeException("Error unlinking units with X-Factor " + xFactorId,e);

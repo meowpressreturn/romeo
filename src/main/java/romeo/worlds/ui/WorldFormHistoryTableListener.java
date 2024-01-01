@@ -2,6 +2,8 @@ package romeo.worlds.ui;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
 import romeo.players.ui.PlayerFormFactory;
@@ -16,10 +18,11 @@ public class WorldFormHistoryTableListener extends AbstractNavigatorRecordSelect
   private final PlayerFormFactory _playerFormFactory;
 
   public WorldFormHistoryTableListener(
+      Logger log,
       NavigatorPanel navigatorPanel, 
       IPlayerService playerService, 
       PlayerFormFactory playerFormFactory) {
-    super(navigatorPanel);
+    super(log, navigatorPanel);
     _playerService = Objects.requireNonNull(playerService, "playerService may not be null");
     _playerFormFactory = Objects.requireNonNull(playerFormFactory, "playerFormFactory may not be null");
   }

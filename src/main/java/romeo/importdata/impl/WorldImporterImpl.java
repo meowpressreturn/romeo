@@ -9,8 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.importdata.IWorldFile;
 import romeo.importdata.IWorldImportReport;
@@ -35,7 +34,7 @@ public class WorldImporterImpl implements IWorldImporter {
   protected final IWorldService _worldService;
   protected final IPlayerService _playerService;
   protected final ISettingsService _settingsService;
-  private final Log _log = LogFactory.getLog(WorldImporterImpl.class); 
+  private final Logger _log;
 
   //State (used during import process)
   protected Map<String, IPlayer> _players; //Used to lookup players we already imported.
@@ -50,9 +49,12 @@ public class WorldImporterImpl implements IWorldImporter {
    * @param settingsService
    * @param ignoreNullsFor
    */
-  public WorldImporterImpl(IWorldService worldService,
-                           IPlayerService playerService,
-                           ISettingsService settingsService) {
+  public WorldImporterImpl(
+    Logger log,    
+    IWorldService worldService,
+    IPlayerService playerService,
+    ISettingsService settingsService) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService must not be null");
     _playerService = Objects.requireNonNull(playerService, "playerService must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");

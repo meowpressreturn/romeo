@@ -3,6 +3,8 @@ package romeo.worlds.ui;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
@@ -18,10 +20,11 @@ public class WorldNavigatorRecordSelectionListener extends AbstractNavigatorReco
   private final IWorldService _worldService;
   
   public WorldNavigatorRecordSelectionListener(
+      Logger log,
       NavigatorPanel navigatorPanel, 
       WorldFormFactory worldFormFactory,
       IWorldService worldService) {
-    super(navigatorPanel);
+    super(log, navigatorPanel);
     _worldFormFactory = Objects.requireNonNull(worldFormFactory, "worldFormFactory may not be null");
     _worldService = Objects.requireNonNull(worldService, "worldService may not be null");
   }

@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.swing.JTable;
 
+import org.slf4j.Logger;
+
 import romeo.ui.TableNavigatorMediator;
 import romeo.ui.forms.FieldDef;
 import romeo.ui.forms.IFormLogic;
@@ -16,12 +18,13 @@ public class WorldForm extends RomeoForm  {
   private TableNavigatorMediator historyTnm;
 
   public WorldForm(
+      Logger log,
       RomeoFormInitialiser initialiser,
       List<FieldDef> fields,
       IFormLogic logic,
       Object record,
       boolean isNewRecord)  {
-    super(initialiser, fields, logic, true, record, isNewRecord);
+    super(log, initialiser, fields, logic, true, record, isNewRecord);
     setName("World");
     
     /**

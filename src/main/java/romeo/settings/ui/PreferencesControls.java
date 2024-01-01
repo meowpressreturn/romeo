@@ -19,7 +19,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.Romeo;
 import romeo.model.api.IServiceListener;
@@ -35,6 +35,7 @@ import romeo.utils.Convert;
 import romeo.utils.GuiUtils;
 
 public class PreferencesControls implements IServiceListener, DocumentListener, ItemListener, ActionListener {
+  
   protected NamedPanel _panel;
   protected ISettingsService _settingsService;
 
@@ -62,10 +63,15 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
   protected boolean _dirty;
 
   protected List<IValidatingField> _fields;
+  
+  private final Logger _log;
 
-  public PreferencesControls(final ISettingsService settingsService, final IScenarioService scenarioService) {
-    Objects.requireNonNull(settingsService, "settingsService must not be null");
-    _settingsService = settingsService;
+  public PreferencesControls(
+      final Logger log,
+      final ISettingsService settingsService, 
+      final IScenarioService scenarioService) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+    _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");;
     settingsService.addListener(this);
 
     _fields = new ArrayList<IValidatingField>();
@@ -468,7 +474,7 @@ public class PreferencesControls implements IServiceListener, DocumentListener, 
   }
 
   public void valueChanged(Object field) {
-    LogFactory.getLog(this.getClass()).debug("valueChanged");
+    _log.debug("valueChanged");
     _dirty = true;
     updateButtons();
   }

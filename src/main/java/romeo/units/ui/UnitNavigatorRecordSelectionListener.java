@@ -2,6 +2,8 @@ package romeo.units.ui;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.ui.AbstractNavigatorRecordSelectionListener;
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
@@ -11,8 +13,11 @@ public class UnitNavigatorRecordSelectionListener extends AbstractNavigatorRecor
 
   private final UnitFormFactory _unitFormFactory;
   
-  public UnitNavigatorRecordSelectionListener(NavigatorPanel navigatorPanel, UnitFormFactory unitFormFactory) {
-    super(navigatorPanel);
+  public UnitNavigatorRecordSelectionListener(
+      Logger log,
+      NavigatorPanel navigatorPanel, 
+      UnitFormFactory unitFormFactory) {
+    super(log, navigatorPanel);
     _unitFormFactory = Objects.requireNonNull(unitFormFactory, "unitFormFactory may not be null");
   }
 

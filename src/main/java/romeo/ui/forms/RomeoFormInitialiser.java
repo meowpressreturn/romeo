@@ -21,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.players.api.IPlayerService;
 import romeo.ui.CommonTextActionsMenu;
 import romeo.ui.forms.RomeoForm.Components;
@@ -169,7 +171,7 @@ public class RomeoFormInitialiser {
           JTextArea entryField;
           boolean isExpr = false;
           if(field.getType() == FieldDef.TYPE_EXPRESSION) {
-            entryField = new ExpressionField(_expressionParser);
+            entryField = new ExpressionField(LoggerFactory.getLogger(ExpressionField.class), _expressionParser);
             isExpr = true;
             int size = entryField.getFont().getSize();
             Font f = new Font("Monospaced", Font.PLAIN, size);

@@ -3,10 +3,10 @@ package romeo.settings.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.IServiceInitialiser;
 import romeo.settings.api.ISettings;
@@ -31,33 +31,37 @@ public class SettingsServiceInitialiser implements IServiceInitialiser {
   
   ////////////////////////////////////////////////////////////////////////////
 
+  private final Logger _log;
+  
+  public SettingsServiceInitialiser(Logger log) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+  }
+  
   @Override
   public void init(Set<String> tableNames, Connection connection) {
-    Log log = LogFactory.getLog(this.getClass());
-    
     //Note: the value columns are nullable, but the names certainly are not
     
     if(!tableNames.contains("SETTINGS_LONG")) {
       String sql = "CREATE TABLE SETTINGS_LONG (" + "name VARCHAR DEFAULT '' NOT NULL PRIMARY KEY" + ",value BIGINT" + ");";
-      log.info("Creating SETTINGS_LONG table");
+      _log.info("Creating SETTINGS_LONG table");
       DbUtils.writeQuery(sql, null, connection);
     }
 
     if(!tableNames.contains("SETTINGS_STRING")) {
       String sql = "CREATE TABLE SETTINGS_STRING (" + "name VARCHAR DEFAULT '' NOT NULL PRIMARY KEY" + ",value VARCHAR" + ");";
-      log.info("Creating SETTINGS_STRING table");
+      _log.info("Creating SETTINGS_STRING table");
       DbUtils.writeQuery(sql, null, connection);
     }
 
     if(!tableNames.contains("SETTINGS_DOUBLE")) {
       String sql = "CREATE TABLE SETTINGS_DOUBLE (" + "name VARCHAR DEFAULT '' NOT NULL PRIMARY KEY" + ",value DOUBLE" + ");";
-      log.info("Creating SETTINGS_DOUBLE table");
+      _log.info("Creating SETTINGS_DOUBLE table");
       DbUtils.writeQuery(sql, null, connection);
     }
 
     if(!tableNames.contains("SETTINGS_FLAG")) {
       String sql = "CREATE TABLE SETTINGS_FLAG (" + "name VARCHAR DEFAULT '' NOT NULL PRIMARY KEY" + ",value BOOLEAN" + ");";
-      log.info("Creating SETTINGS_FLAG table");
+      _log.info("Creating SETTINGS_FLAG table");
       DbUtils.writeQuery(sql, null, connection);
     }
 
@@ -65,8 +69,7 @@ public class SettingsServiceInitialiser implements IServiceInitialiser {
   }
 
   protected void initSettings(Connection connection) {
-    Log log = LogFactory.getLog(this.getClass());
-    log.info("Preparing initial settings values");
+    _log.info("Preparing initial settings values");
     initSetting(connection, ISettings.WINDOW_WIDTH, SettingType.LONG, 1024, false);
     initSetting(connection, ISettings.WINDOW_HEIGHT, SettingType.LONG, 650, false);
     initSetting(connection, ISettings.LEFT_PANE_WIDTH, SettingType.LONG, 527, false); //was 435
@@ -133,9 +136,9 @@ public class SettingsServiceInitialiser implements IServiceInitialiser {
       ps.execute();
       int count = ps.getUpdateCount();
       if(count > 0) {
-        LogFactory.getLog(this.getClass()).info("Initialised setting " + name + " with value " + value);
+        _log.info("Initialised setting " + name + " with value " + value);
       } else {
-        LogFactory.getLog(this.getClass()).debug("Setting " + name + " exists and was not modified" );
+        _log.debug("Setting " + name + " exists and was not modified" );
       }
     } catch(SQLException e) {
       throw new RuntimeException("Error initialising setting " + name,e);

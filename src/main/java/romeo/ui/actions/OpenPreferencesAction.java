@@ -5,6 +5,9 @@ import java.util.Objects;
 
 import javax.swing.Action;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import romeo.scenarios.api.IScenarioService;
 import romeo.settings.api.ISettingsService;
 import romeo.settings.ui.PreferencesControls;
@@ -22,10 +25,11 @@ public class OpenPreferencesAction extends AbstractRomeoAction {
    * @param navigatorPanel
    */
   public OpenPreferencesAction(
+      final Logger log,
       final NavigatorPanel navigatorPanel,
       final ISettingsService settingsService,
       final IScenarioService scenarioService) {
-    super();
+    super(log);
     _navigatorPanel = Objects.requireNonNull(navigatorPanel, "navigatorPanel must not be null");
     _settingsService = Objects.requireNonNull(settingsService, "settingsService must not be null");
     _scenarioService= Objects.requireNonNull(scenarioService, "scenarioService must not be null");
@@ -41,6 +45,11 @@ public class OpenPreferencesAction extends AbstractRomeoAction {
    */
   @Override
   protected void doActionPerformed(ActionEvent e) {
-    _navigatorPanel.display(new PreferencesControls(_settingsService, _scenarioService).getPanel());
+    _navigatorPanel.display(
+        new PreferencesControls(
+            LoggerFactory.getLogger(PreferencesControls.class), 
+            _settingsService, 
+            _scenarioService)
+        .getPanel());
   }
 }

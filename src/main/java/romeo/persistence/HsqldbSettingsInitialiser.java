@@ -1,10 +1,10 @@
 package romeo.persistence;
 
 import java.sql.Connection;
+import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.IServiceInitialiser;
 import romeo.utils.DbUtils;
@@ -14,6 +14,13 @@ import romeo.utils.DbUtils;
  * Sets some db-wide settings (such as WRITE_DELAY)
  */
 public class HsqldbSettingsInitialiser implements IServiceInitialiser {
+  
+  private final Logger _log;
+  
+  public HsqldbSettingsInitialiser(Logger log) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+  }
+  
   /**
    * If the WORLDS table hasnt been created assume the db is being freshly set
    * up and set the WRITE_DELAY to 0.
@@ -22,7 +29,6 @@ public class HsqldbSettingsInitialiser implements IServiceInitialiser {
    */
   @Override
   public void init(Set<String> tableNames, Connection connection) {
-    Log log = LogFactory.getLog(this.getClass());
     if(!tableNames.contains("WORLDS")) {
 
 //      log.info("Initialising HSQLDB database settings");
@@ -35,10 +41,10 @@ public class HsqldbSettingsInitialiser implements IServiceInitialiser {
       //first time we are running. If it is we need to change the write delay to avoid
       //losing data on application shutdown. (HSQLDB by default wouldnt write to the db
       //immediately for performance reasons).
-      log.info("Initialising HSQLDB database settings");
+      _log.info("Initialising HSQLDB database settings");
       DbUtils.initDatabase(connection);
     } else {
-      log.debug("Skipping Hsqldb settings initialisation");
+      _log.debug("Skipping Hsqldb settings initialisation");
     }
   }
 

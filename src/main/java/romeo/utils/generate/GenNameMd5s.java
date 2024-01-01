@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.importdata.impl.CsvUnitFile;
 import romeo.utils.Convert;
 
@@ -20,7 +22,7 @@ public class GenNameMd5s {
   public static void main(String[] args) {
     try {
       File file = new File("c:/dev/romeo/resources/unit.csv");
-      CsvUnitFile csvFile = new CsvUnitFile(file, DEFAULT_COLUMNS, DEFAULT_NAME_COLUMN);
+      CsvUnitFile csvFile = new CsvUnitFile(LoggerFactory.getLogger(CsvUnitFile.class), file, DEFAULT_COLUMNS, DEFAULT_NAME_COLUMN);
       Iterator<String> i = csvFile.getNames().iterator();
       while(i.hasNext()) {
         String name = (String) i.next();

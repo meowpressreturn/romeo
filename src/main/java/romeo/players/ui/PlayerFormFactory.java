@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.players.api.IPlayer;
 import romeo.players.api.IPlayerService;
 import romeo.settings.api.ISettingsService;
@@ -30,7 +32,13 @@ public class PlayerFormFactory {
   }
   
   public PlayerForm newPlayerForm(IPlayer record, boolean isNewRecord) {
-    return new PlayerForm(_initialiser, fields(), logic(), record, isNewRecord);
+    return new PlayerForm(
+        LoggerFactory.getLogger(PlayerForm.class),
+        _initialiser, 
+        fields(), 
+        logic(), 
+        record, 
+        isNewRecord);
   }
   
   private PlayerFormLogic logic() {

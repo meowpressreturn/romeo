@@ -12,6 +12,8 @@ import java.util.Objects;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+
 import romeo.persistence.AbstractPersistenceService;
 import romeo.persistence.DuplicateRecordException;
 import romeo.units.api.IUnitService;
@@ -34,8 +36,8 @@ public class XFactorServiceImpl extends AbstractPersistenceService implements IX
   
   private IUnitService _unitService;
 
-  public XFactorServiceImpl(DataSource dataSource, IKeyGen keyGen, IUnitService unitService) {
-    super(dataSource, keyGen);
+  public XFactorServiceImpl(Logger log, DataSource dataSource, IKeyGen keyGen, IUnitService unitService) {    
+    super(log, dataSource, keyGen);
     _unitService = Objects.requireNonNull(unitService, "unitService may not be null");
   }
 

@@ -2,6 +2,8 @@ package romeo.ui.actions;
 
 import java.util.Objects;
 
+import org.slf4j.Logger;
+
 import romeo.ui.NavigatorPanel;
 import romeo.ui.forms.RomeoForm;
 import romeo.units.api.IUnit;
@@ -13,8 +15,11 @@ public class NewUnitAction extends AbstractNewRecordAction {
   
   private final UnitFormFactory _unitFormFactory;
   
-  public NewUnitAction(NavigatorPanel navigatorPanel, UnitFormFactory unitFormFactory) {
-    super(navigatorPanel);
+  public NewUnitAction(
+      Logger log,
+      NavigatorPanel navigatorPanel, 
+      UnitFormFactory unitFormFactory) {
+    super(log, navigatorPanel);
     
     _unitFormFactory = Objects.requireNonNull(unitFormFactory, "unitFormFactory may not be null");
     

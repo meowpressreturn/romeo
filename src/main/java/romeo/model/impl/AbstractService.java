@@ -6,8 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.IService;
 import romeo.model.api.IServiceListener;
@@ -19,10 +18,16 @@ import romeo.persistence.AbstractPersistenceService;
  * Most services will probably extend the subclass of this {@link AbstractPersistenceService} instead.
  */
 public class AbstractService implements IService {
+    
+    protected final Logger _log;  
     protected List<IServiceListener> _listeners = new ArrayList<IServiceListener>();
 
-    public AbstractService() {
-      ;
+    /**
+     * Constructor
+     * @param log logger, you should use the implementation class as the category
+     */
+    public AbstractService(Logger log) {
+      _log = Objects.requireNonNull(log, "log may not be null");
     }
 
     /**
@@ -32,7 +37,7 @@ public class AbstractService implements IService {
     @Override
     public void addListener(IServiceListener listener) {
       if(!_listeners.contains(listener)) {
-        LogFactory.getLog(this.getClass()).trace("Adding listener " + listener);
+        _log.trace("Adding listener " + listener);
         _listeners.add(listener);
       }
     }
@@ -44,7 +49,7 @@ public class AbstractService implements IService {
     @Override
     public void removeListener(IServiceListener listener) {
       if(_listeners.contains(listener)) {
-        LogFactory.getLog(this.getClass()).trace("Removing listener " + listener);
+        _log.trace("Removing listener " + listener);
         _listeners.remove(listener);
       }
     }
@@ -58,16 +63,15 @@ public class AbstractService implements IService {
      */
     protected void notifyDataChanged(EventObject event) {
       Objects.requireNonNull(event, "event may not be null");
-      Log log = LogFactory.getLog(this.getClass());
-      log.trace("notifyDataChanged: " + event);
+      _log.trace("notifyDataChanged: " + event);
       List<IServiceListener> safeCopy = new ArrayList<IServiceListener>(_listeners);
       for(Iterator<IServiceListener> i = safeCopy.iterator(); i.hasNext();) {
         IServiceListener listener = (IServiceListener) i.next();
         try {
-          log.trace("Notifying listener " + listener);
+          _log.trace("Notifying listener " + listener);
           listener.dataChanged(event);
         } catch(Exception e) {
-          log.error("Listener " + listener + " threw exception handling data change notification from " + this, e);
+          _log.error("Listener " + listener + " threw exception handling data change notification from " + this, e);
           throw new RuntimeException("Service listener threw exception:" + e.getMessage(),e);
         }
       }

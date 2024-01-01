@@ -129,11 +129,36 @@
       <version>1.0.23</version>
     </dependency>
 
+    <!-- Romoes own code doesnt use clogging anymore, but some of the dependencies
+         such as beanutils for example will pull in an older version transitively.
+         I prefer to have them use a later version. 
+         Since I dont use it, it can be marked as a runtime dependency now -->
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.3.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>2.0.10</version>
       <scope>compile</scope>
+    </dependency>
+    
+    <!--<dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>2.0.10</version>
+      <scope>runtime</scope>
+    </dependency>-->
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.10</version>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>

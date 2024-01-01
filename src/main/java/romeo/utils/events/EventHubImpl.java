@@ -8,19 +8,22 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 /**
  * Implements the IEventHub interface. This implementation is not synchronized.
  */
 public class EventHubImpl implements IEventHub {
+  
+  protected final Logger _log;
+  
   //The listener list may cotain either raw IEventListener (for strong references) or Reference
   //for the WeakReferences. (Java doesn't provide a StrongReference directly, not let us subclass
   //Reference to create our own.)
   protected List<Object> _listeners;
 
-  public EventHubImpl() {
+  public EventHubImpl(Logger log) {
+    _log = Objects.requireNonNull(log, "log may not be null");
     _listeners = new LinkedList<Object>();
   }
 
@@ -91,17 +94,16 @@ public class EventHubImpl implements IEventHub {
   @Override
   public void notifyListeners(EventObject event) {
     Objects.requireNonNull(event, "event must not be null");
-    Log log = LogFactory.getLog(this.getClass());
-    log.debug("Notifying listeners of event: " + event);
+    _log.debug("Notifying listeners of event: " + event);
     for(Object listEntry : _listeners.toArray()) {
       IEventListener listener = listenerReference(listEntry);
       if(listener != null) {
-        log.debug("Notifying " + listener.getClass().getName());
+        _log.debug("Notifying " + listener.getClass().getName());
         listener.onEvent(event);
       }
       if(listener == null) {
         //Remove dead reference - happens when a weak reference had been dropped
-        log.debug("Removing a dead listener from the list");
+        _log.debug("Removing a dead listener from the list");
         _listeners.remove(listEntry);
       }
     }

@@ -1,8 +1,9 @@
 package romeo.utils;
 
 import java.util.EventObject;
+import java.util.Objects;
 
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.model.api.IServiceListener;
 
@@ -10,6 +11,12 @@ import romeo.model.api.IServiceListener;
  * Service listener that just logs (at debug level) the name of the thread it was called on.
  */
 public class LogThreadNameInvocationListener implements IServiceListener {
+  
+  private final Logger _log;
+  
+  public LogThreadNameInvocationListener(Logger log) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+  }
 
   @Override
   public void dataChanged(EventObject event) {
@@ -18,10 +25,8 @@ public class LogThreadNameInvocationListener implements IServiceListener {
       source = "unknown";
     }
     Thread currentThread = Thread.currentThread();
-    LogFactory.getLog(this.getClass()).debug("dataChanged() called on thread " + currentThread.getName() + " by " + source);
-    
+    _log.debug("dataChanged() called on thread " + currentThread.getName() + " by " + source);  
   }
-
 }
 
 

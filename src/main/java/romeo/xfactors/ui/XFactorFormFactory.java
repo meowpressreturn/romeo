@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.ui.forms.FieldDef;
 import romeo.ui.forms.RomeoFormInitialiser;
 import romeo.xfactors.api.IXFactor;
@@ -22,7 +24,13 @@ public class XFactorFormFactory {
   }
 
   public XFactorForm newXFactorForm(IXFactor record, boolean isNewRecord) {
-    return new XFactorForm(_initialiser, fields(), logic(), record, isNewRecord);
+    return new XFactorForm(
+        LoggerFactory.getLogger(XFactorForm.class),
+        _initialiser, 
+        fields(), 
+        logic(), 
+        record, 
+        isNewRecord);
   }
   
   private XFactorFormLogic logic() {

@@ -15,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
 
 import romeo.model.api.InvalidTurnException;
 import romeo.model.api.MapInfo;
@@ -60,7 +61,7 @@ public class TestWorldServiceImpl {
     __keyGen = new KeyGenImpl();
     TestUtils.initDatabaseSettings(__dataSource);
     
-    UnitServiceInitialiser unitInitialiser = new UnitServiceInitialiser();
+    UnitServiceInitialiser unitInitialiser = new UnitServiceInitialiser(LoggerFactory.getLogger(UnitServiceInitialiser.class));
     TestUtils.applyServiceInitialiser(__dataSource, unitInitialiser);
     
     try (Connection connection = __dataSource.getConnection()) {
@@ -70,10 +71,10 @@ public class TestWorldServiceImpl {
       throw new RuntimeException(e);
     }
     
-    PlayerServiceInitialiser playerInitialiser = new PlayerServiceInitialiser(__keyGen);
+    PlayerServiceInitialiser playerInitialiser = new PlayerServiceInitialiser(LoggerFactory.getLogger(PlayerServiceInitialiser.class), __keyGen);
     TestUtils.applyServiceInitialiser(__dataSource, playerInitialiser);
     
-    __initialiser = new WorldServiceInitialiser(__keyGen, __settingsService);
+    __initialiser = new WorldServiceInitialiser(LoggerFactory.getLogger(WorldServiceInitialiser.class), __keyGen, __settingsService);
     TestUtils.applyServiceInitialiser(__dataSource, __initialiser);
   }
   
@@ -184,7 +185,7 @@ public class TestWorldServiceImpl {
     _mockUnitService = new MockUnitService();
     _mockPlayerService = new MockPlayerService();
     _mockSettingsService = new MockSettingsService();
-    _worldService = new WorldServiceImpl(__dataSource, __keyGen, _mockPlayerService, _mockUnitService, _mockSettingsService);
+    _worldService = new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), __dataSource, __keyGen, _mockPlayerService, _mockUnitService, _mockSettingsService);
     _listener = new ServiceListenerChecker();
     _worldService.addListener(_listener);
     
@@ -210,26 +211,26 @@ public class TestWorldServiceImpl {
   @Test
   public void testConstructor() {
     
-    new WorldServiceImpl(__dataSource, __keyGen, _mockPlayerService, _mockUnitService, _mockSettingsService);
+    new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), __dataSource, __keyGen, _mockPlayerService, _mockUnitService, _mockSettingsService);
     
     try{
-      new WorldServiceImpl(null, __keyGen, _mockPlayerService, _mockUnitService, _mockSettingsService);
+      new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), null, __keyGen, _mockPlayerService, _mockUnitService, _mockSettingsService);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     try{
-      new WorldServiceImpl(__dataSource, null, _mockPlayerService, _mockUnitService, _mockSettingsService);
+      new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), __dataSource, null, _mockPlayerService, _mockUnitService, _mockSettingsService);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     try{
-      new WorldServiceImpl(__dataSource, __keyGen, null, _mockUnitService, _mockSettingsService);
+      new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), __dataSource, __keyGen, null, _mockUnitService, _mockSettingsService);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     try{
-      new WorldServiceImpl(__dataSource, __keyGen, _mockPlayerService, null, _mockSettingsService);
+      new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), __dataSource, __keyGen, _mockPlayerService, null, _mockSettingsService);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}
     try{
-      new WorldServiceImpl(__dataSource, __keyGen, _mockPlayerService, _mockUnitService, null);
+      new WorldServiceImpl(LoggerFactory.getLogger(WorldServiceImpl.class), __dataSource, __keyGen, _mockPlayerService, _mockUnitService, null);
       fail("Expected NullPointerException");
     } catch(NullPointerException expected) {}    
   }

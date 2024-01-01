@@ -2,11 +2,17 @@ package romeo.settings.impl;
 
 import java.util.EventObject;
 
+import org.slf4j.LoggerFactory;
+
 import romeo.model.impl.AbstractService;
 import romeo.settings.api.ISettingsService;
 
 public class MockSettingsService extends AbstractService implements ISettingsService {
 
+  public MockSettingsService() {
+    super(LoggerFactory.getLogger(MockSettingsService.class));
+  }
+  
   /**
    * Made public for testing purposes
    */

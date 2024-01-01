@@ -11,9 +11,9 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
 
 import romeo.importdata.IUnitFile;
 import romeo.utils.Convert;
@@ -25,6 +25,8 @@ import romeo.utils.Convert;
  * does not support things such as quoting of values.
  */
 public class CsvUnitFile implements IUnitFile {
+  
+  private final Logger _log;
   private String[] _columns;
   private LinkedHashMap<String, Map<String, String>> _rows;
   private String _nameColumn;
@@ -38,10 +40,13 @@ public class CsvUnitFile implements IUnitFile {
    * @param columns
    * @param nameColumn
    */
-  public CsvUnitFile(File file, String[] columns, String nameColumn) {
-    if(file == null) {
-      throw new NullPointerException("file is null");
-    }
+  public CsvUnitFile(
+      Logger log,
+      File file, 
+      String[] columns, 
+      String nameColumn) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+    Objects.requireNonNull(file, "file may not be null");
     init(columns, nameColumn);
     try {
       if(!file.exists()) {
@@ -66,10 +71,13 @@ public class CsvUnitFile implements IUnitFile {
    * @param columns
    * @param nameColumn
    */
-  public CsvUnitFile(InputStream stream, String[] columns, String nameColumn) {
-    if(stream == null) {
-      throw new NullPointerException("stream is null");
-    }
+  public CsvUnitFile(
+      Logger log, 
+      InputStream stream, 
+      String[] columns, 
+      String nameColumn) {
+    _log = Objects.requireNonNull(log, "log may not be null");
+    Objects.requireNonNull(stream, "stream may not be null");
     init(columns, nameColumn);
     parseCsv(stream);
   }
@@ -98,8 +106,6 @@ public class CsvUnitFile implements IUnitFile {
    * @param stream
    */
   protected void parseCsv(InputStream stream) {
-    Log log = LogFactory.getLog(this.getClass());
-
     String nameColumn = getNameColumn();
     String[] columns = getColumns();
     try {
@@ -111,15 +117,15 @@ public class CsvUnitFile implements IUnitFile {
         reader = new BufferedReader(streamReader);
         String line;
         while((line = reader.readLine()) != null) {
-          log.info("Input Line=" + line);
+          _log.info("Input Line=" + line);
           line = line.trim();
           if(line.startsWith("#!COLUMNS=")) {
             line = line.substring(line.indexOf('=') + 1);
             columns = Convert.toStrArray(line, ",");
-            log.debug("New columns list=" + line);
+            _log.debug("New columns list=" + line);
           } else if(line.startsWith("#!NAMECOLUMN=")) {
             nameColumn = line.substring(line.indexOf('=') + 1);
-            log.debug("New nameColumn=" + nameColumn);
+            _log.debug("New nameColumn=" + nameColumn);
           } else if("".equals(line) || line.startsWith("#")) {
             ;
           } else {
@@ -134,7 +140,7 @@ public class CsvUnitFile implements IUnitFile {
             }
             String name = (String) columnValues.get(nameColumn);
             if(name != null) {
-              log.info("Parsed Record=" + columnValues);
+              _log.info("Parsed Record=" + columnValues);
               rowValues.put(name, columnValues);
               _names.add(name);
             }
