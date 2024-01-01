@@ -115,7 +115,11 @@ their appropriate field by unwanted whitespace)
 
 #154 Add support for horizontal scrolling gestures (vertical is already supported)
 
-#155 
+#155 Add support for increasing the font size
+
+#156 Add support for undo, redo in text fields
+
+#157 
 
 
 ---------------------------------------
